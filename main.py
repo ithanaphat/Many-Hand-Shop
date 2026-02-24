@@ -6,7 +6,8 @@ app = Flask(__name__)
 books = [
     {"id": 1, "title": "Man u 2 - 1 Liverpool", "author": "Bryan Mbuemo"},
     {"id": 2, "title": "Man City 2 - 1 Liverpool ", "author": "Erling Haaland"},
-    {"id": 3, "title": "Cold", "author": "Michel Carrick"}
+    {"id": 3, "title": "Cold", "author": "Michel Carrick"},
+    {"id": 4, "title": "Hot", "author": "John Smith"}
 ]
 
 @app.route("/")
