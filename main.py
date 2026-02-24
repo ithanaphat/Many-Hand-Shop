@@ -11,7 +11,7 @@ books = [
 
 @app.route("/")
 def hello_world():
-    return "<p>Welcome to MANY Hand Shop </p>" 
+    return "<p>ผมเอง ไอโอ๊ดไง</p>" 
 
 # Create (POST) operation
 @app.route('/books', methods=['POST'])
