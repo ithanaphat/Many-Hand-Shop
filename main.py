@@ -1,4 +1,4 @@
-from flask import Flask , jsonify,request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
@@ -12,7 +12,7 @@ books = [
 
 @app.route("/")
 def hello_world():
-    return "<p>ผมเอง ไอโอ๊ดไงง</p>" 
+    return render_template("index.html")
 
 # Create (POST) operation
 @app.route('/books', methods=['POST'])
