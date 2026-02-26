@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Many Hand Shop | Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .profile-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Register</h2>
+
+    <img id="preview" class="profile-preview" src="https://via.placeholder.com/120" alt="Profile Preview">
+
+    <input type="file" id="profilePic" accept="image/*"><br><br>
+
+    <input type="text" placeholder="Username"><br><br>
+    <input type="password" placeholder="Password"><br><br>
+    <input type="password" placeholder="Confirm Password"><br><br>
+    <input type="email" placeholder="Email"><br><br>
+
+    <a href="sign_in.html">Sign In</a><br><br>
+    <a href="index.html">Register</a>
+
+    <script>
+        const profileInput = document.getElementById("profilePic");
+        const preview = document.getElementById("preview");
+
+        profileInput.addEventListener("change", function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.addEventListener("load", function() {
+                    preview.src = reader.result;
+                });
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+</body>
+</html>
