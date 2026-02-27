@@ -1,17 +1,135 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="css/style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Many Hand Shop | Sign in</title>
-</head>
-<body>
-    <h2>Sign In</h2>
-    <input type="text" placeholder="Username & Email"><br><br>
-    <input type="password" placeholder="Password"><br><br>
+    <title>Many Hand Shop | Home</title>
 
-    <a href="home_signin.html">Sign In</a><br><br>
-    <a href="regis.html">Register</a>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        .navbar {
+            background-color: #727a60;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            color: white;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .nav-middle {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            border: 2px solid #b5b8a8;
+            border-radius: 20px;
+            padding: 5px 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-container input {
+            background: transparent;
+            border: none;
+            color: white;
+            outline: none;
+            width: 100%;
+            margin-left: 8px;
+            font-size: 16px;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="css/singinwindow.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="nav-left">
+        <span class="menu-icon">&#9776;</span>
+        <h1 class="logo">Many Hand Shop</h1>
+    </div>
+
+    <div class="nav-middle">
+        <div class="search-container">
+            <input type="text" placeholder="Search for products...">
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <a href="regis.html">Register</a>
+    </div>
+</nav>
+
+
+<div class="signin-wrapper">
+    <div class="box">
+        <h2 class="title">SIGN IN</h2>
+
+        <div class="form-content">
+            <!-- ฝั่งซ้าย -->
+            <div class="left">
+                <div class="label">Username & Email</div>
+                <input type="text" placeholder="Username & Email">
+
+                <div class="label">Password</div>
+                <input type="password" placeholder="Password">
+            </div>
+
+            <!-- ฝั่งขวา -->
+            <div class="right">
+                <img src="images/manyhandshop.png" alt="shop_img" class="shop_img">
+            </div>
+        </div>
+
+        <div class="text">
+            <p>Don't have an account? <a href="regis.html">Register</a></p>
+        </div>
+
+        <div class="button-container">
+            <a href="home_signin.html" class="button">Sign In</a>
+        </div>
+
+    </div>
+</div>
+
 </body>
 </html>
