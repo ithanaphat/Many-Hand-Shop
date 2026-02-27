@@ -1,0 +1,38 @@
+/* boxicons:like-filled */
+
+.icon-like-filled {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+}
+
+.icon-like-filled svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* boxicons:cart-filled */
+
+.icon-cart-filled {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    color: white; 
+    transition: 0.2s;
+}
+
+/* Vector */
+
+.icon-cart-filled svg {
+    position: absolute;
+    left: 8.29%;
+    right: 8.36%;
+    top: 8.33%;
+    bottom: 8.33%;
+    fill: currentColor; 
+}
+
+
+
