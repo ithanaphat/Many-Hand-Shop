@@ -1,22 +1,7 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
+const express = require("express")
+const app = express()
 
-const app = express();
-const PORT = process.env.PORT || 3000; 
 
-mongoose.connect(process.env.MONGODB_URI,{
-    useNewUrlParser: true ,
-    useUnifiedTopology :true
+app.listen(9000, ()=>{
+    console.log("ยินดีเข้าสู่เเก๊งทำไมเป็น step#1 test")
 })
-
-.then(() =>{
-    console.log('Connected to MongoDB Atlas!');
-})
-.catch((err) => 
-{
-    console.error('Error connectring to MongoDB Atlas :',err);
-})
-
-app.use(express.json());
-
