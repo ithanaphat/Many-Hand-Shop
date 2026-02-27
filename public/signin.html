@@ -1,135 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="CSS/style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Many Hand Shop | Home</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f7f7;
-        }
-
-        .navbar {
-            background-color: #727a60;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            color: white;
-        }
-
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .menu-icon {
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .logo {
-            font-size: 22px;
-            font-weight: bold;
-            margin: 0;
-        }
-
-        .nav-middle {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            border: 2px solid #b5b8a8;
-            border-radius: 20px;
-            padding: 5px 15px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .search-container input {
-            background: transparent;
-            border: none;
-            color: white;
-            outline: none;
-            width: 100%;
-            margin-left: 8px;
-            font-size: 16px;
-        }
-
-        .nav-right {
-            display: flex;
-            gap: 40px;
-        }
-
-        .nav-right a {
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-        }
-    </style>
-
-    <link rel="stylesheet" href="css/singinwindow.css">
+    <title>Many Hand Shop | Sign In</title>
 </head>
 
-<body>
+<body class="signin-page">
 
 <nav class="navbar">
     <div class="nav-left">
-        <span class="menu-icon">&#9776;</span>
+        <a href="index.html" aria-label="Go to home page">
+            <img src="images/logo-mhs.png" alt="Many Hand Shop Logo" class="mhs-logo-image">
+        </a>
         <h1 class="logo">Many Hand Shop</h1>
     </div>
 
     <div class="nav-middle">
         <div class="search-container">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="6"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
             <input type="text" placeholder="Search for products...">
         </div>
     </div>
 
     <div class="nav-right">
+        <a href="signin.html">Sign In</a>
         <a href="regis.html">Register</a>
     </div>
 </nav>
 
+<main class="signin-main">
+    <section class="signin-card">
+        <h2>Sign In</h2>
 
-<div class="signin-wrapper">
-    <div class="box">
-        <h2 class="title">SIGN IN</h2>
+        <form class="signin-form" action="home_signin.html" method="get">
+            <input type="text" placeholder="Username or Email" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit">Sign In</button>
+        </form>
 
-        <div class="form-content">
-            <!-- ฝั่งซ้าย -->
-            <div class="left">
-                <div class="label">Username & Email</div>
-                <input type="text" placeholder="Username & Email">
-
-                <div class="label">Password</div>
-                <input type="password" placeholder="Password">
-            </div>
-
-            <!-- ฝั่งขวา -->
-            <div class="right">
-                <img src="images/manyhandshop.png" alt="shop_img" class="shop_img">
-            </div>
-        </div>
-
-        <div class="text">
-            <p>Don't have an account? <a href="regis.html">Register</a></p>
-        </div>
-
-        <div class="button-container">
-            <a href="home_signin.html" class="button">Sign In</a>
-        </div>
-
-    </div>
-</div>
+        <p class="signin-footer">
+            Don't have an account?
+            <a href="regis.html">Register</a>
+        </p>
+    </section>
+</main>
 
 </body>
 </html>
