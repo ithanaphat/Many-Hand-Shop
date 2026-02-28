@@ -5,8 +5,24 @@ import Header from '../components/Header';
 function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const identifier = formData.get('identifier');
+    const password = formData.get('password');
+
+    const response = await fetch('http://localhost:9000/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: identifier, password }),
+    });
+
+    if (!response.ok) {
+      alert('Sign in failed');
+      return;
+    }
+
     if (onLoginSuccess) {
       onLoginSuccess();
     }

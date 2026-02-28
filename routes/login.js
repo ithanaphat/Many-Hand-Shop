@@ -6,6 +6,10 @@ const User = require("../models/user.js")
 router.post("/", async (req,res)=>{
     const {username, password} = req.body
 
+    if (!username || !password) {
+        return res.status(400).json({ message: "username and password are required" })
+    }
+
     try {
         const user = await User.findOne({
             username : username,
@@ -13,13 +17,13 @@ router.post("/", async (req,res)=>{
         })
 
         if(user){
-            res.send("login success")
+            res.status(200).json({ message: "login success" })
         }else {
-            res.send("loging fail")
+            res.status(401).json({ message: "login fail" })
         }
     } catch (err){
         console.log(err)
-        res.status(500).send("error")
+        res.status(500).json({ message: "error" })
     }   
 
 })
