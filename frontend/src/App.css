@@ -337,3 +337,74 @@ html, body, .App {
 .link-button:hover {
   opacity: 0.8;
 }
+
+.footer-spacer {
+  height: 35vh;
+  min-height: 180px;
+}
+
+.app-footer {
+  padding: 20px;
+  text-align: center;
+  color: #e7ebdf;
+  background: #000000;
+  font-size: 13px;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.footer-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  padding: 6px;
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.footer-brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.footer-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.footer-description {
+  margin: 0 auto 12px;
+  max-width: 720px;
+  line-height: 1.5;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  margin-bottom: 10px;
+}
+
+.footer-links a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.footer-copyright {
+  margin: 0;
+}
