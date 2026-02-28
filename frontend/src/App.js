@@ -6,6 +6,7 @@ import './App.css'; // นำเข้า CSS ตัวเดิมของค�
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ProductDetail from './pages/ProductDetail';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -30,6 +31,7 @@ function App() {
         />
         <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/product/:productId" element={<ProductDetail />} />
       </Routes>
     </Router>
   );

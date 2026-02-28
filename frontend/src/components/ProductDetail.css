@@ -1,0 +1,308 @@
+/* Loading and Error States */
+.loading {
+  text-align: center;
+  padding: 100px 20px;
+  font-size: 18px;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 20px;
+  margin: 20px;
+  background-color: #ffebee;
+  color: #c62828;
+  border-radius: 8px;
+  border-left: 4px solid #c62828;
+}
+
+.product-detail-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-top: 80px;
+}
+
+.product-detail {
+  display: flex;
+  gap: 60px;
+  padding: 60px 40px;
+  background-color: white;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Gallery Styling */
+.gallery {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.main-image {
+  width: 100%;
+  height: 400px;
+  background: #f0f0f0;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.thumbnail-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.thumb {
+  width: 80px;
+  height: 80px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb:hover {
+  border-color: #333;
+}
+
+/* Product Info Styling */
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info h2 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.info .seller {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+}
+
+.info .rating {
+  font-size: 14px;
+  color: #ff9800;
+  margin: 5px 0;
+}
+
+.info .price {
+  font-size: 36px;
+  font-weight: bold;
+  color: #333;
+  margin: 15px 0;
+}
+
+.product-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.quantity label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.qty-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.qty-btn:hover {
+  background: #e0e0e0;
+}
+
+.qty-value {
+  min-width: 40px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.buttons {
+  display: flex;
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.add, .buy {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.add {
+  background: #e8e8e8;
+  color: #333;
+}
+
+.add:hover {
+  background: #d0d0d0;
+}
+
+.buy {
+  background: #8a866c;
+  color: white;
+}
+
+.buy:hover {
+  background: #6f6b57;
+}
+
+.seller-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.seller-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.seller-info .seller-name {
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.seller-info .seller-status {
+  font-size: 12px;
+  color: #666;
+  margin: 3px 0 0 0;
+}
+
+.seller-info div {
+  flex: 1;
+}
+
+/* Related Products Section */
+.related-products-section {
+  padding: 60px 40px;
+  background-color: #f5f5f5;
+}
+
+.related-products-section h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #333;
+}
+
+.related {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Footer Simple */
+.footer-simple {
+  background-color: #333;
+  color: #ccc;
+  text-align: center;
+  padding: 30px 20px;
+  font-size: 14px;
+  margin-top: 40px;
+}
+
+.footer-simple p {
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-detail {
+    flex-direction: column;
+    gap: 30px;
+    padding: 30px 20px;
+  }
+
+  .main-image {
+    height: 300px;
+  }
+
+  .thumb {
+    width: 60px;
+    height: 60px;
+  }
+
+  .info h2 {
+    font-size: 24px;
+  }
+
+  .info .price {
+    font-size: 28px;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .related {
+    gap: 15px;
+  }
+
+  .related-products-section {
+    padding: 40px 20px;
+  }
+
+  .related-products-section h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+}
