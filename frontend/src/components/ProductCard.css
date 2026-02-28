@@ -1,0 +1,67 @@
+.product-card {
+  width: 240px;
+  position: relative; /* สำคัญมาก! เพื่อให้รูปและชื่อข้างในอ้างอิงตำแหน่งจากกล่องนี้ */
+  margin: 40px; /* เผื่อพื้นที่ด้านบนและซ้ายให้รูปโปรไฟล์ที่ล้นออกไป */
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* ตั้งค่ารูปโปรไฟล์ให้ลอยทับมุมซ้ายบน */
+.profile-pic {
+  position: absolute;
+  top: -25px;   /* ดึงรูปขึ้นไปเหนือขอบกล่อง */
+  left: -25px;  /* ดึงรูปไปทางซ้ายของขอบกล่อง */
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: 4px solid white; /* ขอบสีขาวตามแบบ */
+  object-fit: cover;
+  z-index: 2; /* สั่งให้อยู่ชั้นบนสุด ทับกล่องสีเทา */
+}
+
+/* ตั้งค่าชื่อแม่ค้า */
+.seller-name {
+  position: absolute;
+  top: -25px;
+  left: 50px; /* ขยับชื่อหนีรูปโปรไฟล์ไปทางขวา */
+  color: #b0a89a; /* สีเทาอมน้ำตาลตามแบบ */
+  font-size: 1rem;
+  z-index: 2;
+}
+
+/* กล่องจำลองรูปสินค้าสีเทา */
+.product-image-box {
+  width: 100%;
+  height: 240px;
+  background-color: #d1d1d1;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  
+  /* เพิ่มบรรทัดนี้ เพื่อตัดขอบรูปที่ล้นมุมโค้งๆ ออกไป */
+  overflow: hidden; 
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  /* ทำให้รูปซูมพอดีกล่อง สัดส่วนไม่เบี้ยว */
+  object-fit: cover; 
+}
+
+/* ส่วนจัดวางชื่อและราคาสินค้าให้อยู่ซ้าย-ขวา */
+.product-details {
+  display: flex;
+  justify-content: space-between; /* ดันข้อความไปชิดซ้าย-ขวา */
+  align-items: center;
+  margin-top: 15px;
+  padding: 0 5px;
+}
+
+.item-name {
+  font-size: 1.25rem;
+  color: #000;
+}
+
+.item-price {
+  font-size: 1.5rem;
+  color: #000;
+}
