@@ -1,4 +1,8 @@
-const Express = require("express")
-const Router = express.Router()
+const express = require("express")
+const router = express.Router()
 
-app.get("/")
+router.get("/", (req, res)=>{
+    res.sendFile("index.html")
+})
+
+module.exports = router
