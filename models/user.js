@@ -1,7 +1,10 @@
+const { request } = require("express")
 const mongoose = require("mongoose")
+const { stringify } = require("qs")
 
 //สร้าง schema 
 const userSchema = new mongoose.Schema({ 
+<<<<<<< HEAD
     username: {
     type: String,
     required: true
@@ -14,9 +17,97 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   }
+=======
+    username : {
+        type : String,
+        required: true, 
+        trim: true  //กันspaceหน้าหลัง
+    },
+    password : {
+        type : String,
+        required : true,
+        minlength: 8,
+        trim: true,  //กันspaceหน้าหลัง
+        select: false //กันแสดงออกมา
+    },
+    email : {
+        type : String,
+        required : true,
+        unique: true,
+        lowercase: true, //กันปัญหาตัวใหญ่ตัวเลิก EX TEST@gmail.com || test@gmail.com
+        trim: true,  //กันspaceหน้าหลัง
+        match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, //จัดเรียงรูปแบบ
+        
+    },
+    role : {
+        type : String,
+        enum : ['User','Admin'],
+        default: 'User' //ถ้าไม่มีการกำหนดให้เป็น User
+    },
+    phone : {
+     type : String,
+     required : true,
+     match : /^0\d{9}$/ //จัดเรียงรูปแบบ 0 นำหน้า
+    }
+}, { timestamps: true } // attrime 
+) 
+
+const productSchema = new mongoose.Schema({
+
+    name : {
+        type : String,
+        required : true,
+        trim: true,  //กันspaceหน้าหลัง
+    },
+    description : {
+        type : String,
+        required : true,
+        minlength : 10,
+        maxlength : 1000,
+        trim: true,  //กันspaceหน้าหลัง
+    },
+    price : {
+        type : Number,
+        required : true,
+        min : 0, //กันค่าติดลบ
+         set: v => Math.round(v * 100) / 100 //กันทศนิยมยาวเกิน
+    },
+
+   images: {
+    type: [String],
+    required : true,
+    validate: [arr => arr.length >= 2, 'At least 2 image required'] //กำหนดขั้นต่ำรูปภาพ
+},
+    stock : {
+        type : Number ,
+        min : 0,
+        default : 1
+    },
+    seller: {
+    type : mongoose.Schema.Types.ObjectId,
+    ref: 'User', //ตัวบอกว่า Obj นี้อ้างอิงไป Model "User"
+    required: true
+},
+category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category', 
+    required: true
+}  
+
+},{ timestamps: true }
+)
+productSchema.index({ category: 1 })
+productSchema.index({ seller: 1 })
+
+const orderSchema = new mongoose.Schema({
+    
+>>>>>>> 909e2058719d0b26e7874318023d60e476f05b5a
 })
+
 
 // Model เอาไว้คุยกับ Database
 const User = mongoose.model("User", userSchema) 
+const Order = mongoose.model("Order", orderSchema)
+const Product = mongoose.model("Product", productSchema)  
 
-module.exports = User
+module.exports = {User,Order,Product}
