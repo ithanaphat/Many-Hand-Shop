@@ -19,20 +19,24 @@ function Register() {
       return;
     }
 
-    const response = await fetch('http://localhost:9000/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
-    });
+    try {
+      const response = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      alert(data.message || 'Register failed');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        alert(data.message || 'Register failed');
+        return;
+      }
+
+      alert('Register success');
+      navigate('/login');
+    } catch (error) {
+      alert('Cannot connect to server');
     }
-
-    alert('Register success');
-    navigate('/login');
   };
 
   return (

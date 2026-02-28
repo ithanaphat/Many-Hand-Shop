@@ -12,14 +12,20 @@ function Login({ onLoginSuccess }) {
     const identifier = formData.get('identifier');
     const password = formData.get('password');
 
-    const response = await fetch('http://localhost:9000/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: identifier, password }),
-    });
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: identifier, password }),
+      });
 
-    if (!response.ok) {
-      alert('Sign in failed');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        alert(data.message || 'Sign in failed');
+        return;
+      }
+    } catch (error) {
+      alert('Cannot connect to server');
       return;
     }
 
