@@ -1,6 +1,10 @@
+const express = require("express")
+const router = express.Router()
+
 const loginRouter = require("./login")
 const registerRouter = require("./register")
 
-module.exports = {
-    loginRouter, registerRouter
-}
+router.use("/login", loginRouter)
+router.use("/Regis", registerRouter)
+
+module.exports = router

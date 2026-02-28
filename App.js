@@ -5,11 +5,10 @@ const router = require("./routes/index.js")
 
 const app = express()
 
-require("./config/db.js")
-
-app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, "public")))
+require("./config/db.js")
 app.use(cors())
 app.use(router)
 
