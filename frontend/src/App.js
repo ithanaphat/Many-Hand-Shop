@@ -1,31 +1,21 @@
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css'; // นำเข้า CSS ตัวเดิมของคุณ
+
+// นำเข้าแต่ละหน้า (Pages) ที่เราแยกไฟล์ไว้
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <div className="left">
-          <button className="brand-button" aria-label="Home">
-            <img src="/mhs.png" alt="logo" className="logo" />
-            <span className="brand">Many Hand Shop</span>
-          </button>
-        </div>
-
-        <div className="center">
-          <input
-            className="search"
-            type="search"
-            placeholder="Search..."
-            aria-label="Search"
-          />
-        </div>
-
-        <div className="right auth-buttons">
-          <button className="btn signin">sign in</button>
-          <button className="btn register">register</button>
-        </div>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Router>
   );
 }
 
