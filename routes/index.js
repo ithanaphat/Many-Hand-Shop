@@ -1,8 +1,6 @@
-const express = require("express")
-const router = express.Router()
+const loginRouter = require("./login")
+const registerRouter = require("./register")
 
-router.get("/", (req, res)=>{
-    res.sendFile("index.html")
-})
-
-module.exports = router
+module.exports = {
+    loginRouter, registerRouter
+}
