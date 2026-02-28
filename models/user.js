@@ -83,6 +83,81 @@ category: {
 
 },{ timestamps: true }
 )
+
+const orderSchema = new mongoose.Schema({
+
+       buyer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    
+  items: {
+    type: [{
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true
+        },
+        seller: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            min: 1
+        },
+        price: {
+            type: Number,
+            required: true,
+            min: 0
+        }
+    }],
+    required: true,
+    validate: [
+        arr => arr.length > 0,
+        'Order must contain at least one item' // ขั้นต่ำ1ชิ้น
+    ]
+},
+    
+     shippingInfo: { //เก็บที่อยู่
+        name: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        phone: {
+            type: String,
+            required: true,
+            match: /^0\d{9}$/   // เบอร์ไทย 10 หลัก
+        },
+        address: {
+            type: String,
+            required: true
+        }
+    },
+
+    shippingFee: { //ค่าจัดส่ง
+        type: Number,
+        default: 0,
+        min: 0
+    },
+      totalPrice: {//ค่าของ
+        type: Number,
+        required: true,
+        min: 0
+    },
+    paymentMethod: {//การจ่ายตัง
+        type: String,
+        enum: ['COD', 'Bank Transfer', 'Credit Card'],
+        required: true
+    },
+
+
+},{ timestamps: true })
+
 productSchema.index({ category: 1 })
 productSchema.index({ seller: 1 })
 
