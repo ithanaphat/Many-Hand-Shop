@@ -26,6 +26,13 @@ const userSchema = new mongoose.Schema({
         match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, //จัดเรียงรูปแบบ
         
     },
+    images: {
+    type: [String],
+    validate: [arr => arr.length = 1, '1 image required'] //กำหนดขั้นต่ำรูปภาพ
+    },
+    adderss : {
+        type : String
+    },
     role : {
         type : String,
         enum : ['User','Admin'],
