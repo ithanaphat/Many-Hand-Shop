@@ -3,7 +3,6 @@ const mongoose = require("mongoose")
 const { stringify } = require("qs")
 
 //สร้าง schema 
-
 const userSchema = new mongoose.Schema({ 
     username : {
         type : String,
@@ -13,7 +12,7 @@ const userSchema = new mongoose.Schema({
     password : {
         type : String,
         required : true,
-        minlength: 8,
+        minlength: 6,
         trim: true,  //กันspaceหน้าหลัง
         select: false //กันแสดงออกมา
     },
@@ -32,9 +31,8 @@ const userSchema = new mongoose.Schema({
         default: 'User' //ถ้าไม่มีการกำหนดให้เป็น User
     },
     phone : {
-     type : String,
-     required : true,
-     match : /^0\d{9}$/ //จัดเรียงรูปแบบ 0 นำหน้า
+        type : String,
+        match : /^0\d{9}$/ //จัดเรียงรูปแบบ 0 นำหน้า
     }
 }, { timestamps: true } // attrime 
 ) 
@@ -87,13 +85,81 @@ productSchema.index({ category: 1 })
 productSchema.index({ seller: 1 })
 
 const orderSchema = new mongoose.Schema({
+
+       buyer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     
-})
+  items: {
+    type: [{
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true
+        },
+        seller: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true,
+            min: 1
+        },
+        price: {
+            type: Number,
+            required: true,
+            min: 0
+        }
+    }],
+    required: true,
+    validate: [
+        arr => arr.length > 0,
+        'Order must contain at least one item' // ขั้นต่ำ1ชิ้น
+    ]
+},
+    
+     shippingInfo: { //เก็บที่อยู่
+        name: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        phone: {
+            type: String,
+            required: true,
+            match: /^0\d{9}$/   // เบอร์ไทย 10 หลัก
+        },
+        address: {
+            type: String,
+            required: true
+        }
+    },
+
+    shippingFee: { //ค่าจัดส่ง
+        type: Number,
+        default: 0,
+        min: 0
+    },
+      totalPrice: {//ค่าของ
+        type: Number,
+        required: true,
+        min: 0
+    },
+    paymentMethod: {//การจ่ายตัง
+        type: String,
+        enum: ['COD', 'Bank Transfer', 'Credit Card'],
+        required: true
+    },
+
+
+},{ timestamps: true })
 
 
 // Model เอาไว้คุยกับ Database
 const User = mongoose.model("User", userSchema) 
-const Order = mongoose.model("Order", orderSchema)
-const Product = mongoose.model("Product", productSchema)  
 
 module.exports = {User,Order,Product}
