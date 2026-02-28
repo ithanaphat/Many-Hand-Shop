@@ -2,15 +2,14 @@ const express = require("express")
 const router = express.Router()
 const User = require("../models/user.js")
 
-router.use(express.urlencoded({extended: true}))
 
-router.post("/login", async (req,res)=>{
-    const {Username, Password} = req.body
+router.post("/", async (req,res)=>{
+    const {username, password} = req.body
 
     try {
         const user = await User.findOne({
-            username : Username,
-            password : Password
+            username : username,
+            password : password
         })
 
         if(user){

@@ -4,6 +4,20 @@ const { stringify } = require("qs")
 
 //สร้าง schema 
 const userSchema = new mongoose.Schema({ 
+<<<<<<< HEAD
+    username: {
+    type: String,
+    required: true
+  },
+    password: {
+    type: String,
+    required: true
+  },
+    email: {
+    type: String,
+    required: true
+  }
+=======
     username : {
         type : String,
         required: true, 
@@ -87,6 +101,7 @@ productSchema.index({ seller: 1 })
 
 const orderSchema = new mongoose.Schema({
     
+>>>>>>> 909e2058719d0b26e7874318023d60e476f05b5a
 })
 
 
