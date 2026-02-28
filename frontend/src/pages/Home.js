@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 
-function Home() {
+function Home({ isLoggedIn }) {
   const navigate = useNavigate();
 
   return (
     <div className="App" style={{ backgroundColor: 'white', minHeight: '100vh' }}>
       <Header
+        isLoggedIn={isLoggedIn}
         onSignIn={() => navigate('/login')}
         onRegister={() => navigate('/register')}
       />

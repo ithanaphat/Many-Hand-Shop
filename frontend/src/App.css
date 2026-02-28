@@ -1,6 +1,6 @@
 .App {
   text-align: left;
-  padding-top: 5rem; /* ensure content sits below larger fixed header */
+  padding-top: 80px; /* ensure content sits below larger fixed header */
 }
 
 
@@ -10,21 +10,21 @@
 }
 
 .App-header {
-  padding: 1.2rem 1.5rem;
+  padding: 19.2px 24px;
   background: #666C49;
   color: #fff;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 12px;
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
   /* simple bottom bar */
-  border-bottom: 0rem solid #9DA693;
+  border-bottom: 0px solid #9DA693;
 }
 
 /* pseudo-element removed; border-bottom now provides the bar */
@@ -38,12 +38,12 @@
 }
 
 .small {
-  font-size: 0.75rem;
+  font-size: 12px;
 }
 
 .brand {
   margin: 0;
-  font-size: 1.45rem;
+  font-size: 26px;
   color: #fff;
   font-weight: 700;
 }
@@ -51,7 +51,7 @@
 .left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .center {
@@ -68,7 +68,7 @@
 
 .search {
   width: 100%;
-  padding: 0.45rem 0.9rem 0.45rem 2.2rem;
+  padding: 7.2px 14.4px 7.2px 35.2px;
   border-radius: 999px;
   border: 2px solid rgba(255,255,255,0.9);
   background: rgba(255,255,255,0.06);
@@ -85,7 +85,7 @@
 
 .search-icon {
   position: absolute;
-  left: 0.75rem;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   opacity: 0.9;
@@ -106,24 +106,24 @@
 
 .auth-buttons {
   display: flex;
-  gap: 0.35rem;
+  gap: 5.6px;
   align-items: center;
-  margin-left: 0.2rem;
-  margin-right: 0.2rem;
+  margin-left: 3.2px;
+  margin-right: 3.2px;
 }
 
 .btn {
-  padding: 0.35rem 0.65rem;
+  padding: 5.6px 10.4px;
   border: none;
   border-radius: 4px;
   background: transparent;
   color: #fff;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 15.2px;
 }
 
 .btn.register {
-  padding: 0.3rem 0.7rem;
+  padding: 4.8px 11.2px;
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 16px;
 }
@@ -137,7 +137,7 @@
 .brand-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 9.6px;
   border: none;
   background: transparent;
   color: #fff;
@@ -152,7 +152,7 @@
 }
 
 .brand-button .brand {
-  font-size: 1.35rem;
+  font-size: 25px;
   font-weight: 700;
   color: #fff;
 }
@@ -160,16 +160,16 @@
 /* Responsive: shrink search and stack controls on small screens */
 @media (max-width: 880px) {
   .search-wrap { width: 220px; max-width: 40vw; }
-  .center { position: static; transform: none; left: auto; top: auto; justify-content: flex-start; margin-left: 0.4rem; z-index: auto; }
-  .auth-buttons { margin-left: 0.3rem; gap: 0.3rem; }
+  .center { position: static; transform: none; left: auto; top: auto; justify-content: flex-start; margin-left: 6.4px; z-index: auto; }
+  .auth-buttons { margin-left: 4.8px; gap: 4.8px; }
 }
 
 /* Extra fallback for very small screens */
 @media (max-width: 520px) {
-  .App-header { padding: 0.85rem 0.85rem; }
+  .App-header { padding: 13.6px 13.6px; }
   .brand-button .logo { width: 32px; }
   .search-wrap { width: 160px; max-width: 55vw; }
-  .auth-buttons { margin-right: 0.4rem; }
+  .auth-buttons { margin-right: 6.4px; }
 }
 
 /* Use Montserrat for the app */
@@ -210,7 +210,7 @@ html, body, .App {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem;
+  padding: 20px;
 }
 
 .auth-card {
@@ -219,27 +219,27 @@ html, body, .App {
   background: #ffffff;
   border: 1px solid #e8ebe4;
   border-radius: 14px;
-  padding: 1.5rem;
+  padding: 24px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
 .form-title {
   text-align: center;
-  margin: 0 0 1rem;
+  margin: 0 0 16px;
   color: #1d1d1d;
 }
 
 .auth-form label {
   display: block;
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
   color: #1f1f1f;
-  font-size: 0.9rem;
+  font-size: 14.4px;
 }
 
 .auth-form input {
   width: 100%;
-  padding: 0.65rem 0.75rem;
-  margin-top: 0.25rem;
+  padding: 10.4px 12px;
+  margin-top: 4px;
   border: 1px solid #d4d8d0;
   border-radius: 10px;
   outline: none;
@@ -252,14 +252,14 @@ html, body, .App {
 
 .auth-submit {
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 16px;
   background: #666C49;
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 0.7rem 0.85rem;
+  padding: 11.2px 13.6px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 15.2px;
   font-weight: 600;
 }
 
@@ -273,7 +273,7 @@ html, body, .App {
   color: #fff;
   border: 1px solid transparent;
   border-radius: 10px;
-  padding: 0.45rem 0.75rem;
+  padding: 7.2px 12px;
   transition: background 0.18s ease, border-color 0.18s ease;
 }
 
@@ -287,10 +287,40 @@ html, body, .App {
   outline-offset: 1px;
 }
 
+.user-actions {
+  gap: 8px;
+}
+
+.icon-circle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.icon-circle-btn:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.75);
+  transform: translateY(-1px);
+}
+
+.nav-icon-svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+
 .alt-action {
   text-align: center;
-  margin-top: 1rem;
-  font-size: 0.9rem;
+  margin-top: 16px;
+  font-size: 14.4px;
   color: #2b2b2b;
 }
 

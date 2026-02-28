@@ -2,8 +2,16 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 
-function Login() {
+function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (onLoginSuccess) {
+      onLoginSuccess();
+    }
+    navigate('/home-user');
+  };
 
   return (
     <div className="App auth-page">
@@ -11,7 +19,7 @@ function Login() {
       <main className="auth-content">
         <section className="auth-card">
           <h1 className="form-title">Sign In</h1>
-          <form className="auth-form">
+          <form className="auth-form" onSubmit={handleSubmit}>
             <label>
               Username or Email
               <input type="text" name="identifier" required />
