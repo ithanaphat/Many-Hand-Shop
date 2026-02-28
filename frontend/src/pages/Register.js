@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 function Register() {
   const navigate = useNavigate();
@@ -76,6 +77,7 @@ function Register() {
         </p>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }
