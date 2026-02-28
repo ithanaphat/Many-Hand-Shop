@@ -12,14 +12,31 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     () => localStorage.getItem('mhs_logged_in') === 'true'
   );
+  const [currentUser, setCurrentUser] = useState(() => {
+    const raw = localStorage.getItem('mhs_user');
+    if (!raw) {
+      return null;
+    }
+    try {
+      return JSON.parse(raw);
+    } catch (error) {
+      return null;
+    }
+  });
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (user) => {
     localStorage.setItem('mhs_logged_in', 'true');
+    if (user) {
+      localStorage.setItem('mhs_user', JSON.stringify(user));
+      setCurrentUser(user);
+    }
     setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('mhs_logged_in');
+    localStorage.removeItem('mhs_user');
+    setCurrentUser(null);
     setIsLoggedIn(false);
   };
 
@@ -39,7 +56,7 @@ function App() {
         <Route
           path="/profile"
           element={
-            isLoggedIn ? <Profile isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
+            isLoggedIn ? <Profile isLoggedIn={true} onLogout={handleLogout} user={currentUser} /> : <Navigate to="/home" replace />
           }
         />
       </Routes>

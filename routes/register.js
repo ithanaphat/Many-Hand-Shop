@@ -5,7 +5,7 @@ const User = require("../models/user.js")
 
 //ทำการสร้าง Accout
 router.post("/", async (req, res)=>{
-    const {username, password, email} = req.body
+    const {username, password, email, name} = req.body
 
     if (!username || !password || !email) {
         return res.status(400).json({message: "username, email and password are required"})
@@ -20,6 +20,7 @@ router.post("/", async (req, res)=>{
     try{
         await User.create({
             username,
+            name: name || username,
             password,
             email,
             phone: "0000000000"

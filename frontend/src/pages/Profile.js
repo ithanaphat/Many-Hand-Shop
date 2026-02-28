@@ -4,9 +4,26 @@ import Header from '../components/Header';
 import InfoItem from '../components/InfoItem';
 import ProductItem from '../components/ProductItem';
 
-function Profile({ isLoggedIn, onLogout }) {
+function Profile({ isLoggedIn, onLogout, user }) {
   const ratingValue = 4;
   const maxRating = 5;
+  let localUser = null;
+  try {
+    localUser = JSON.parse(localStorage.getItem('mhs_user') || 'null');
+  } catch (error) {
+    localUser = null;
+  }
+
+  const profile = {
+    name: user?.name || localUser?.name || '',
+    username: user?.username || localUser?.username || '',
+    email: user?.email || localUser?.email || ''
+  };
+
+  const showValue = (value) => {
+    const text = String(value || '').trim();
+    return text ? text : '-';
+  };
 
   return (
     <div className="profile-page">
@@ -26,8 +43,8 @@ function Profile({ isLoggedIn, onLogout }) {
       <div className="content-body">
         <div className="profile-header-row">
           <div>
-            <h2 className="user-name">Name</h2>
-            <p className="user-id">USERNAME_q3s56a9s3</p>
+            <h2 className="user-name">{showValue(profile.name)}</h2>
+            <p className="user-id">{showValue(profile.username)}</p>
           </div>
           <div className="profile-badges">
             <span className="profile-badge rating-badge">
@@ -54,9 +71,9 @@ function Profile({ isLoggedIn, onLogout }) {
           {/* Information Section */}
           <div className="info-section section-card">
             <h3 className="section-header">Information</h3>
-            <InfoItem icon="✉️" text="myemail@gmail.com" />
-            <InfoItem icon="📞" text="012-3456789" />
-            <InfoItem icon="📍" text="Kasetsart University, Sri racha, Chonburi 20230" />
+            <InfoItem icon="🪪" text={showValue(profile.name)} />
+            <InfoItem icon="👤" text={showValue(profile.username)} />
+            <InfoItem icon="✉️" text={showValue(profile.email)} />
           </div>
 
           {/* On Sell Section */}

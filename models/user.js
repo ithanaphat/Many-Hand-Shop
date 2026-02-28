@@ -10,6 +10,11 @@ const userSchema = new mongoose.Schema({
         required: true, 
         trim: true  //กันspaceหน้าหลัง
     },
+    name: {
+        type: String,
+        trim: true,
+        default: ""
+    },
     password : {
         type : String,
         required : true,

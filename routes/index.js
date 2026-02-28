@@ -3,8 +3,10 @@ const router = express.Router()
 
 const loginRouter = require("./login")
 const registerRouter = require("./register")
+const profileRouter = require("./profile")
 
 router.use("/login", loginRouter)
 router.use("/register", registerRouter)
+router.use("/profile", profileRouter)
 
 module.exports = router

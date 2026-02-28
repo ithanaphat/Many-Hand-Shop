@@ -10,6 +10,7 @@ function Register() {
 
     const formData = new FormData(event.currentTarget);
     const username = formData.get('username');
+    const name = formData.get('name');
     const email = formData.get('email');
     const password = formData.get('password');
     const confirmPassword = formData.get('confirmPassword');
@@ -23,7 +24,7 @@ function Register() {
       const response = await fetch('/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, name, email, password }),
       });
 
       if (!response.ok) {

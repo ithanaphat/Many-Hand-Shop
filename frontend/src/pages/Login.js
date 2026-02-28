@@ -16,22 +16,28 @@ function Login({ onLoginSuccess }) {
       const response = await fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: identifier, password }),
+        body: JSON.stringify({ identifier, username: identifier, password }),
       });
 
+      const data = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
         alert(data.message || 'Sign in failed');
         return;
+      }
+
+      const fallbackUser = identifier.includes('@')
+        ? { name: identifier.split('@')[0], username: '', email: identifier }
+        : { name: identifier, username: identifier, email: '' };
+
+      if (onLoginSuccess) {
+        onLoginSuccess(data.user || fallbackUser);
       }
     } catch (error) {
       alert('Cannot connect to server');
       return;
     }
 
-    if (onLoginSuccess) {
-      onLoginSuccess();
-    }
     navigate('/home-user');
   };
 
