@@ -10,8 +10,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, "public")))
 require("./config/db.js")
 app.use(cors())
-app.use(router.loginRouter)
-app.use(router.registerRouter)
+app.use(router)
 
 app.listen(9000, ()=>{
     console.log("ยินดีเข้าสู่เเก๊งทำไมเป็น step#1 test")
