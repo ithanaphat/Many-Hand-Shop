@@ -1,11 +1,11 @@
 import React from 'react';
 
-function Footer() {
+function Footer({ showSpacer = true }) {
   const logoSrc = `${process.env.PUBLIC_URL || ''}/mhs.png`;
 
   return (
     <>
-      <div className="footer-spacer" aria-hidden="true" />
+      {showSpacer && <div className="footer-spacer" aria-hidden="true" />}
       <footer className="app-footer">
         <div className="footer-brand">
           <img
