@@ -6,6 +6,11 @@ const User = require("../models/user.js")
 //ทำการสร้าง Accout
 router.post("/", async (req, res)=>{
     const {username, password, email} = req.body
+
+    if (!username || !password || !email) {
+        return res.status(400).json({message: "username, email and password are required"})
+    }
+
     const checkEmail = await User.findOne({email})
 
     if(checkEmail){
@@ -16,9 +21,10 @@ router.post("/", async (req, res)=>{
         await User.create({
             username,
             password,
-            email
+            email,
+            phone: "0000000000"
         })
-        res.send("สมัครสำเร็จ")
+        res.status(201).json({message: "สมัครสำเร็จ"})
     }catch(err){
         console.log("FULL ERROR ↓↓↓")
         console.log(err.errors)

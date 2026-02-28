@@ -5,8 +5,30 @@ import Header from '../components/Header';
 function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const identifier = formData.get('identifier');
+    const password = formData.get('password');
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: identifier, password }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        alert(data.message || 'Sign in failed');
+        return;
+      }
+    } catch (error) {
+      alert('Cannot connect to server');
+      return;
+    }
+
     if (onLoginSuccess) {
       onLoginSuccess();
     }
