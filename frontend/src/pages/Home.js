@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 
-function Home({ isLoggedIn }) {
+function Home({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
 
   return (
@@ -13,6 +13,7 @@ function Home({ isLoggedIn }) {
         isLoggedIn={isLoggedIn}
         onSignIn={() => navigate('/login')}
         onRegister={() => navigate('/register')}
+        onLogout={onLogout}
       />
       
       <div style={{ padding: '100px 20px', display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>

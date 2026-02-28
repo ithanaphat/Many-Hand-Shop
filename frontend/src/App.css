@@ -291,6 +291,47 @@ html, body, .App {
   gap: 8px;
 }
 
+.profile-menu {
+  position: relative;
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 46px;
+  min-width: 130px;
+  background: #ffffff;
+  border: 1px solid #d9dece;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+  z-index: 1200;
+}
+
+.dropdown-item {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: #222222;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f0f3ea;
+}
+
+.dropdown-item.danger {
+  color: #a13030;
+}
+
+.dropdown-item.danger:hover {
+  background: #fff0f0;
+}
+
 .icon-circle-btn {
   width: 38px;
   height: 38px;
