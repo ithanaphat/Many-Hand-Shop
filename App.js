@@ -11,7 +11,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(express.static(path.join(__dirname, "public")))
 app.use(cors())
-app.use(router)
+app.use(router.loginRouter)
+app.use(router.registerRouter)
 
 app.listen(9000, ()=>{
     console.log("ยินดีเข้าสู่เเก๊งทำไมเป็น step#1 test")

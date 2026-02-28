@@ -1,5 +1,6 @@
 const express = require("express")
 const router = express.Router()
+const User = require("../models/user.js")
 
 //ทำการสร้าง Accout
 router.post("/regis.html", async (req, res)=>{
