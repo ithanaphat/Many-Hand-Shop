@@ -1,13 +1,21 @@
 import React from 'react';
-import Header from '../components/Header'; // ดึง Header มาใช้
+import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 
 function Register() {
+  const navigate = useNavigate();
+
   return (
-    <div className="App auth-page" style={{ backgroundColor: 'white', minHeight: '100vh' }}>
-      <Header onSignIn={() => {}} onRegister={() => {}} />
-      <div className="form-container">
-        <h1 className="form-title" style={{ color: '#000' }}>Register</h1>
-        <form>
+    <div className="App auth-page">
+      <Header onSignIn={() => navigate('/login')} onRegister={() => navigate('/register')} />
+      <main className="auth-content">
+        <section className="auth-card">
+        <h1 className="form-title">Register</h1>
+        <form className="auth-form">
+          <label>
+            Username
+            <input type="text" name="username" required />
+          </label>
           <label>
             Name
             <input type="text" name="name" required />
@@ -20,9 +28,20 @@ function Register() {
             Password
             <input type="password" name="password" required />
           </label>
-          <button type="submit" className="btn register">Create Account</button>
+          <label>
+            Confirm Password
+            <input type="password" name="confirmPassword" required />
+          </label>
+          <button type="submit" className="auth-submit">Create Account</button>
         </form>
-      </div>
+        <p className="alt-action">
+          Already have an account?{' '}
+          <button type="button" className="link-button" onClick={() => navigate('/login')}>
+            SIGN IN
+          </button>
+        </p>
+        </section>
+      </main>
     </div>
   );
 }

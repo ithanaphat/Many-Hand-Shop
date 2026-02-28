@@ -1,16 +1,16 @@
 .App {
   text-align: left;
-  padding-top: 3.5rem; /* ensure content sits below fixed header */
+  padding-top: 5rem; /* ensure content sits below larger fixed header */
 }
 
 
 .App-logo {
-  height: 40vmin;
+  height: 400vmin;
   pointer-events: none;
 }
 
 .App-header {
-  padding: 0.9rem 1.25rem;
+  padding: 1.2rem 1.5rem;
   background: #666C49;
   color: #fff;
   display: flex;
@@ -43,9 +43,9 @@
 
 .brand {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.45rem;
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .left {
@@ -67,15 +67,37 @@
 }
 
 .search {
-  width: 420px;
-  min-width: 300px;
-  max-width: 55%;
-  padding: 0.45rem 0.9rem;
+  width: 100%;
+  padding: 0.45rem 0.9rem 0.45rem 2.2rem;
   border-radius: 999px;
   border: 2px solid rgba(255,255,255,0.9);
   background: rgba(255,255,255,0.06);
   color: #fff;
   outline: none;
+}
+
+.search-wrap {
+  width: 420px;
+  min-width: 300px;
+  max-width: 55vw;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.9;
+  pointer-events: none;
+  color: rgba(255,255,255,0.95);
+  display: inline-flex;
+}
+
+.search-icon-svg {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
 .search::placeholder {
@@ -124,29 +146,29 @@
 }
 
 .brand-button .logo {
-  width: 40px;
+  width: 48px;
   height: auto;
   display: block;
 }
 
 .brand-button .brand {
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 1.35rem;
+  font-weight: 700;
   color: #fff;
 }
 
 /* Responsive: shrink search and stack controls on small screens */
 @media (max-width: 880px) {
-  .search { width: 220px; max-width: 40vw; }
+  .search-wrap { width: 220px; max-width: 40vw; }
   .center { position: static; transform: none; left: auto; top: auto; justify-content: flex-start; margin-left: 0.4rem; z-index: auto; }
   .auth-buttons { margin-left: 0.3rem; gap: 0.3rem; }
 }
 
 /* Extra fallback for very small screens */
 @media (max-width: 520px) {
-  .App-header { padding: 0.6rem 0.75rem; }
+  .App-header { padding: 0.85rem 0.85rem; }
   .brand-button .logo { width: 32px; }
-  .search { width: 160px; max-width: 55vw; }
+  .search-wrap { width: 160px; max-width: 55vw; }
   .auth-buttons { margin-right: 0.4rem; }
 }
 
@@ -177,84 +199,111 @@ html, body, .App {
 
 /* authentication pages (login/register) */
 .auth-page {
-  /* keep normal document flow so header stays at top */
-  display: block;
-  padding-top: 3.5rem; /* additional space under header for auth forms */
+  background: #f7f8f6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.form-container {
-  background: rgba(255,255,255,0.1);
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 360px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  margin: 4rem auto 0; /* push form down, center horizontally */
+.auth-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  border: 1px solid #e8ebe4;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
 .form-title {
   text-align: center;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem;
+  color: #1d1d1d;
 }
 
-.form-container form label {
+.auth-form label {
   display: block;
   margin-bottom: 0.75rem;
-  color: #fff;
+  color: #1f1f1f;
   font-size: 0.9rem;
 }
 
-.form-container input {
+.auth-form input {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.65rem 0.75rem;
   margin-top: 0.25rem;
-  border: 1px solid #ccc;
-  border-radius: 999px; /* very rounded inputs */
+  border: 1px solid #d4d8d0;
+  border-radius: 10px;
+  outline: none;
 }
 
-.form-container .btn {
+.auth-form input:focus {
+  border-color: #666C49;
+  box-shadow: 0 0 0 3px rgba(102,108,73,0.14);
+}
+
+.auth-submit {
   width: 100%;
   margin-top: 1rem;
-  background: #666C49; /* match header color */
+  background: #666C49;
   color: #fff;
-  border-radius: 999px; /* keep rounded look */
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.auth-submit:hover {
+  opacity: 0.95;
 }
 
 /* also make the auth header buttons same color */
 .auth-buttons .btn {
-  background: #666C49;
+  background: transparent;
   color: #fff;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.45rem 0.75rem;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.auth-buttons .btn:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.45);
+}
+
+.auth-buttons .btn:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.55);
+  outline-offset: 1px;
 }
 
 .alt-action {
   text-align: center;
   margin-top: 1rem;
   font-size: 0.9rem;
-  color: #000;
+  color: #2b2b2b;
 }
 
 .link-button {
   background: none;
   border: none;
-  color: #0066cc;
+  color: #4a5a37;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
   padding: 0;
   font: inherit;
+  font-weight: 600;
 }
 .link-button:hover {
   opacity: 0.8;
-}
-
-/* dark/bright backgrounds adjustments */
-.auth-page[style*="background-color: yellow"] .form-container {
-  background: rgba(0,0,0,0.05);
-}
-.auth-page[style*="background-color: yellow"] .form-container form label {
-  color: #000;
-}
-
-/* for white auth pages, make labels dark */
-.auth-page[style*="background-color: white"] .form-container form label {
-  color: #000;
 }
