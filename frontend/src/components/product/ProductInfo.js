@@ -24,6 +24,7 @@ const ProductInfo = ({ product }) => {
   const partial = rating % 1;
   const reviews = displayProduct.reviews || 124;
   const description = displayProduct.description || "Authentic pre-loved item in excellent condition. Perfect for collectors and fashion enthusiasts.";
+  const stock = displayProduct.stock ?? null;
 
   const getStarStyle = (index) => {
     if (index < fullStars) return { color: '#f5b301' };
@@ -55,6 +56,18 @@ const ProductInfo = ({ product }) => {
         <span className="pd-reviews">({reviews} reviews)</span>
       </div>
       <h3 className="price">${productPrice}</h3>
+
+      {stock !== null && (
+        <div className="stock-badge-row">
+          {stock === 0 ? (
+            <span className="stock-badge out">Out of Stock</span>
+          ) : stock <= 5 ? (
+            <span className="stock-badge low">เหลือเพียง {stock} ชิ้น!</span>
+          ) : (
+            <span className="stock-badge in">มีสินค้า ({stock} ชิ้น)</span>
+          )}
+        </div>
+      )}
 
       <div className="product-description">
         <p>{description}</p>
