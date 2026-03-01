@@ -12,6 +12,7 @@ function ProductCard(props) {
       productImage: props.productImage,
       itemName: props.itemName,
       itemPrice: props.itemPrice,
+      stock: props.stock,
       id: props.id
     };
     navigate(`/product/${props.id}`, { state: { product: productData } });
@@ -38,6 +39,17 @@ function ProductCard(props) {
         <span className="item-name">{props.itemName}</span>
         <span className="item-price">{props.itemPrice}$</span>
       </div>
+      {props.stock !== undefined && props.stock !== null && (
+        <div className="card-stock-row">
+          {props.stock === 0 ? (
+            <span className="card-stock out">Out of Stock</span>
+          ) : props.stock <= 5 ? (
+            <span className="card-stock low">Only {props.stock} left</span>
+          ) : (
+            <span className="card-stock in">In Stock</span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

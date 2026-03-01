@@ -6,6 +6,20 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
   const logoSrc = `${process.env.PUBLIC_URL || ''}/mhs.png`;
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
+  const [cartCount, setCartCount] = useState(0);
+
+  // อัปเดต cart count จาก localStorage
+  useEffect(() => {
+    const updateCount = () => {
+      const cart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+      setCartCount(cart.reduce((sum, i) => sum + i.quantity, 0));
+    };
+    updateCount();
+    window.addEventListener('storage', updateCount);
+    // poll ทุก 1 วิ เพื่อจับ update ใน tab เดียวกัน
+    const interval = setInterval(updateCount, 1000);
+    return () => { window.removeEventListener('storage', updateCount); clearInterval(interval); };
+  }, []);
 
   useEffect(() => {
     if (!isProfileMenuOpen) {
@@ -114,12 +128,15 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
               </div>
             )}
           </div>
-          <button className="icon-circle-btn" aria-label="Cart" title="Cart">
+          <button className="icon-circle-btn cart-icon-btn" aria-label="Cart" title="Cart" onClick={() => navigate('/cart')}>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="nav-icon-svg">
               <path d="M3 5H5L7 15H17L19 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <circle cx="9" cy="19" r="1.5" fill="currentColor" />
               <circle cx="16" cy="19" r="1.5" fill="currentColor" />
             </svg>
+            {cartCount > 0 && (
+              <span className="cart-badge">{cartCount > 99 ? '99+' : cartCount}</span>
+            )}
           </button>
         </div>
       ) : (

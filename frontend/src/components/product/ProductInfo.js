@@ -1,7 +1,11 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import QuantitySelector from "./QuantitySelector";
 import "./ProductDetail.css";
 
 const ProductInfo = ({ product }) => {
+  const navigate = useNavigate();
+  const [qty, setQty] = React.useState(1);
   const displayProduct = product || {
     name: "Product Name",
     sellerName: "Unknown Seller",
@@ -20,6 +24,7 @@ const ProductInfo = ({ product }) => {
   const partial = rating % 1;
   const reviews = displayProduct.reviews || 124;
   const description = displayProduct.description || "Authentic pre-loved item in excellent condition. Perfect for collectors and fashion enthusiasts.";
+  const stock = displayProduct.stock ?? null;
 
   const getStarStyle = (index) => {
     if (index < fullStars) return { color: '#f5b301' };
@@ -32,6 +37,36 @@ const ProductInfo = ({ product }) => {
       };
     }
     return { color: '#c8cfc0' };
+  };
+
+  const [cartMsg, setCartMsg] = React.useState('');
+
+  const handleAddToCart = () => {
+    const maxStock = stock ?? Infinity;
+    const cart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+    const existing = cart.find(i => i.id === (displayProduct._id || displayProduct.id));
+    if (existing) {
+      const newQty = existing.quantity + qty;
+      if (newQty > maxStock) {
+        setCartMsg(`Already in cart: ${existing.quantity} item(s) (max ${maxStock})`);
+        setTimeout(() => setCartMsg(''), 2500);
+        return;
+      }
+      existing.quantity = newQty;
+    } else {
+      const addQty = Math.min(qty, maxStock);
+      cart.push({
+        id: displayProduct._id || displayProduct.id || Date.now(),
+        name: productName,
+        price: productPrice,
+        image: displayProduct.images?.[0] || displayProduct.productImage || '',
+        quantity: addQty,
+        stock: maxStock === Infinity ? null : maxStock,
+      });
+    }
+    localStorage.setItem('mhs_cart', JSON.stringify(cart));
+    setCartMsg('Added to cart ✓');
+    setTimeout(() => setCartMsg(''), 2000);
   };
 
   return (
@@ -52,15 +87,31 @@ const ProductInfo = ({ product }) => {
       </div>
       <h3 className="price">${productPrice}</h3>
 
+      {stock !== null && (
+        <div className="stock-badge-row">
+          {stock === 0 ? (
+            <span className="stock-badge out">Out of Stock</span>
+          ) : stock <= 5 ? (
+            <span className="stock-badge low">Only {stock} left!</span>
+          ) : (
+            <span className="stock-badge in">In Stock ({stock} available)</span>
+          )}
+        </div>
+      )}
+
       <div className="product-description">
         <p>{description}</p>
       </div>
 
-      <QuantitySelector />
+<QuantitySelector quantity={qty} onQuantityChange={setQty} max={stock ?? undefined} />
 
       <div className="buttons">
-        <button className="add">ADD TO CART</button>
-        <button className="buy">BUY NOW</button>
+        <button className="add" onClick={handleAddToCart}>
+          {cartMsg || 'ADD TO CART'}
+        </button>
+        <button className="buy" onClick={() => navigate('/checkout', { state: { product: displayProduct, quantity: qty } })}>
+          BUY NOW
+        </button>
       </div>
 
       <div className="seller-info">
