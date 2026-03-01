@@ -8,7 +8,9 @@ const userSchema = new mongoose.Schema({
     username : {
         type : String,
         required: true, 
-        trim: true  //กันspaceหน้าหลัง
+        trim: true,//กันspaceหน้าหลัง
+        minlength : 3,
+        maxlength : 40,
     },
     password : {
         type : String,
@@ -28,9 +30,10 @@ const userSchema = new mongoose.Schema({
     },
     images: {
     type: [String],
+    required : true,
     validate: [arr => arr.length === 1] //กำหนดขั้นต่ำรูปภาพ
     },
-    adderss : {
+    address : {
         type : String
     },
     role : {
@@ -50,6 +53,8 @@ const productSchema = new mongoose.Schema({
         type : String,
         required : true,
         trim: true,  //กันspaceหน้าหลัง
+        minlength : 3,
+        maxlength : 300
     },
     description : {
         type : String,
@@ -72,7 +77,11 @@ const productSchema = new mongoose.Schema({
     stock : {
         type : Number ,
         min : 0,
-        default : 1
+        default : 1,
+          validate: { //กันเลขไม่ใช่จำนวนเต็ม
+            validator: Number.isInteger,
+            message: 'Stock must be integer'
+  }
     },
     seller: {
     type : mongoose.Schema.Types.ObjectId,
@@ -107,10 +116,14 @@ const orderSchema = new mongoose.Schema({
             ref: 'User',
             required: true
         },
-        quantity: {
+        quantity: { //ปริมาณ
             type: Number,
             required: true,
-            min: 1
+            min: 1,
+            validate: {
+                validator: Number.isInteger, //ต้องเป็นเลขจำนวนเต็มบวก
+                message: 'Quantity must be integer'
+                }
         },
         price: {
             type: Number,
@@ -167,9 +180,10 @@ productSchema.index({ seller: 1 })
 const categorySchema = new mongoose.Schema({
     name : {        
         type : String,
-        enum : ['Sport','Furniture','Fashion','Book','Electronics','Beauty','Baby & Kids','Pet Supplies'],
         required : true,
-        lowercase : true,
+        unique: true, //กันซ้ำ
+        enum : ['Sport','Furniture','Fashion','Book','Electronics','Beauty','Baby & Kids','Pet Supplies'],
+        lowercase : true, //บันทึกเป็นตัวเล็ก
         trim : true
     },
     description : {
@@ -200,7 +214,11 @@ const cartsSchema = new mongoose.Schema({
             quantity: {
                 type: Number,
                 required: true,
-                min: 1
+                min: 1,
+                validate: {
+                    validator: Number.isInteger,
+                     message: 'Quantity must be integer'
+                }
             },
             price: {
                 type: Number,
@@ -212,6 +230,10 @@ const cartsSchema = new mongoose.Schema({
     },
 
 }, { timestamps: true })
+
+orderSchema.index({ buyer: 1 })
+orderSchema.index({ createdAt: -1 })
+cartsSchema.index({ user: 1 })
 
 // Model เอาไว้คุยกับ Database
 const User = mongoose.model("User", userSchema) 
