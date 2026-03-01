@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import Header from "../components/Header";
-import ProductGallery from "../components/ProductGallery";
-import ProductInfo from "../components/ProductInfo";
-import RelatedProducts from "../components/RelatedProducts";
-import "../components/ProductDetail.css";
+import Header from "../components/layout/Header";
+import ProductGallery from "../components/product/ProductGallery";
+import ProductInfo from "../components/product/ProductInfo";
+import RelatedProducts from "../components/product/RelatedProducts";
+import "../components/product/ProductDetail.css";
 
 const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
   const { productId } = useParams();
