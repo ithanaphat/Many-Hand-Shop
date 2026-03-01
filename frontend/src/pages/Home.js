@@ -12,7 +12,7 @@ function Home({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:9000/api/products');
+        const response = await fetch('http://localhost:9000/api/product');
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
@@ -91,7 +91,7 @@ function Home({ isLoggedIn, onLogout }) {
         onLogout={onLogout}
       />
       
-      <div style={{ padding: '100px 20px', display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' }}>
+      <div style={{ padding: '120px 60px 60px 60px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '60px 20px' }}>
         {loading ? (
           <p>Loading products...</p>
         ) : (
@@ -99,11 +99,12 @@ function Home({ isLoggedIn, onLogout }) {
             <ProductCard 
               key={product._id}
               id={product._id}
-              sellerName={product.sellerName}
-              sellerImage={product.sellerImage}
+              sellerName={product.seller?.username || product.sellerName || 'Seller'}
+              sellerImage={product.seller?.images?.[0] || product.sellerImage || 'https://i.pravatar.cc/150?u=default'}
               productImage={product.images?.[0]}
               itemName={product.name}
               itemPrice={product.price}
+              stock={product.stock}
             />
           ))
         )}
