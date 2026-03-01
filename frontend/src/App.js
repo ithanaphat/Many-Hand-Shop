@@ -10,6 +10,8 @@ import ProductDetail from './pages/ProductDetail';
 import Profile from './pages/Profile';
 import SellerBoard from './pages/SellerBoard';
 import Cart from './pages/cart';
+import Checkout from './pages/Checkout';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -62,7 +64,12 @@ function App() {
             isLoggedIn ? <SellerBoard isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
           }
         />
-        <Route path="/cart" element={<Cart />} />
+        <Route
+          path="/checkout"
+          element={
+            isLoggedIn ? <Checkout isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
       </Routes>
     </Router>
   );

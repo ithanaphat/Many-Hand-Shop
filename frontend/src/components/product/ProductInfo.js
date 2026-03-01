@@ -1,8 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import QuantitySelector from "./QuantitySelector";
 import "./ProductDetail.css";
 
 const ProductInfo = ({ product }) => {
+  const navigate = useNavigate();
+  const [qty, setQty] = React.useState(1);
   const displayProduct = product || {
     name: "Product Name",
     sellerName: "Unknown Seller",
@@ -21,6 +25,7 @@ const ProductInfo = ({ product }) => {
   const partial = rating % 1;
   const reviews = displayProduct.reviews || 124;
   const description = displayProduct.description || "Authentic pre-loved item in excellent condition. Perfect for collectors and fashion enthusiasts.";
+  const stock = displayProduct.stock ?? null;
 
   const getStarStyle = (index) => {
     if (index < fullStars) return { color: '#f5b301' };
@@ -55,15 +60,29 @@ const ProductInfo = ({ product }) => {
       </div>
       <h3 className="price">${productPrice}</h3>
 
+      {stock !== null && (
+        <div className="stock-badge-row">
+          {stock === 0 ? (
+            <span className="stock-badge out">Out of Stock</span>
+          ) : stock <= 5 ? (
+            <span className="stock-badge low">เหลือเพียง {stock} ชิ้น!</span>
+          ) : (
+            <span className="stock-badge in">มีสินค้า ({stock} ชิ้น)</span>
+          )}
+        </div>
+      )}
+
       <div className="product-description">
         <p>{description}</p>
       </div>
 
-      <QuantitySelector />
+      <QuantitySelector quantity={qty} onQuantityChange={setQty} />
 
       <div className="buttons">
-        <button className="add" onClick={() => navigate('/cart')}>ADD TO CART</button>
-        <button classity="buy">BUY NOW</button>
+        <button className="add">ADD TO CART</button>
+        <button className="buy" onClick={() => navigate('/checkout', { state: { product: displayProduct, quantity: qty } })}>
+          BUY NOW
+        </button>
       </div>
 
       <div className="seller-info">
