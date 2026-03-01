@@ -1,6 +1,4 @@
-const { request } = require("express")
 const mongoose = require("mongoose")
-const { stringify } = require("qs")
 
 //สร้าง schema 
 
