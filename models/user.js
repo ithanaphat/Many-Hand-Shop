@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     },
     images: {
     type: [String],
-    validate: [arr => arr.length = 1, '1 image required'] //กำหนดขั้นต่ำรูปภาพ
+    validate: [arr => arr.length === 1] //กำหนดขั้นต่ำรูปภาพ
     },
     adderss : {
         type : String
@@ -46,7 +46,6 @@ const userSchema = new mongoose.Schema({
 ) 
 
 const productSchema = new mongoose.Schema({
-
     name : {
         type : String,
         required : true,
@@ -63,14 +62,13 @@ const productSchema = new mongoose.Schema({
         type : Number,
         required : true,
         min : 0, //กันค่าติดลบ
-         set: v => Math.round(v * 100) / 100 //กันทศนิยมยาวเกิน
+        set: v => Math.round(v * 100) / 100 //กันทศนิยมยาวเกิน
     },
-
    images: {
     type: [String],
     required : true,
     validate: [arr => arr.length >= 2, 'At least 2 image required'] //กำหนดขั้นต่ำรูปภาพ
-},
+    },
     stock : {
         type : Number ,
         min : 0,
@@ -80,14 +78,13 @@ const productSchema = new mongoose.Schema({
     type : mongoose.Schema.Types.ObjectId,
     ref: 'User', //ตัวบอกว่า Obj นี้อ้างอิงไป Model "User"
     required: true
-},
-category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category', 
-    required: true
-}  
-
-},{ timestamps: true }
+    },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category', 
+        required: true
+    }  
+    },{ timestamps: true }
 )
 
 const orderSchema = new mongoose.Schema({
@@ -176,7 +173,7 @@ const categorySchema = new mongoose.Schema({
         trim : true
     },
     description : {
-        type :string
+        type :String
     }
 
 },{ timestamps: true })
@@ -218,5 +215,6 @@ const cartsSchema = new mongoose.Schema({
 
 // Model เอาไว้คุยกับ Database
 const User = mongoose.model("User", userSchema) 
+const Product = mongoose.model("Product", productSchema)
 
-module.exports = User
+module.exports = {User, Product}

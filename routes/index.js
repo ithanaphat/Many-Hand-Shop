@@ -3,10 +3,10 @@ const router = express.Router()
 
 const loginRouter = require("./login")
 const registerRouter = require("./register")
-const productsRouter = require("./products")
+const productsRouter = require("./product")
 
 router.use("/login", loginRouter)
 router.use("/register", registerRouter)
-router.use("/api/products", productsRouter)
+router.use("/product", productsRouter)
 
 module.exports = router

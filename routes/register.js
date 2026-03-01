@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 
-const User = require("../models/user.js")
+const {User} = require("../models/user.js")
 
 //ทำการสร้าง Accout
 router.post("/", async (req, res)=>{
@@ -22,11 +22,9 @@ router.post("/", async (req, res)=>{
             username,
             password,
             email,
-            phone: "0000000000"
         })
         res.status(201).json({message: "สมัครสำเร็จ"})
     }catch(err){
-        console.log("FULL ERROR ↓↓↓")
         console.log(err.errors)
         res.status(400).json({message : err.message})
     }
