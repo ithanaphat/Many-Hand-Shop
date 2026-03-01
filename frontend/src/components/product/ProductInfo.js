@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import QuantitySelector from "./QuantitySelector";
@@ -40,7 +39,35 @@ const ProductInfo = ({ product }) => {
     return { color: '#c8cfc0' };
   };
 
-  const navigate = useNavigate();
+  const [cartMsg, setCartMsg] = React.useState('');
+
+  const handleAddToCart = () => {
+    const maxStock = stock ?? Infinity;
+    const cart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+    const existing = cart.find(i => i.id === (displayProduct._id || displayProduct.id));
+    if (existing) {
+      const newQty = existing.quantity + qty;
+      if (newQty > maxStock) {
+        setCartMsg(`มีในตะกร้าแล้ว ${existing.quantity} ชิ้น (สูงสุด ${maxStock})`);
+        setTimeout(() => setCartMsg(''), 2500);
+        return;
+      }
+      existing.quantity = newQty;
+    } else {
+      const addQty = Math.min(qty, maxStock);
+      cart.push({
+        id: displayProduct._id || displayProduct.id || Date.now(),
+        name: productName,
+        price: productPrice,
+        image: displayProduct.images?.[0] || displayProduct.productImage || '',
+        quantity: addQty,
+        stock: maxStock === Infinity ? null : maxStock,
+      });
+    }
+    localStorage.setItem('mhs_cart', JSON.stringify(cart));
+    setCartMsg('เพิ่มลงตะกร้าแล้ว ✓');
+    setTimeout(() => setCartMsg(''), 2000);
+  };
 
   return (
     <div className="info">
@@ -76,10 +103,12 @@ const ProductInfo = ({ product }) => {
         <p>{description}</p>
       </div>
 
-      <QuantitySelector quantity={qty} onQuantityChange={setQty} />
+<QuantitySelector quantity={qty} onQuantityChange={setQty} max={stock ?? undefined} />
 
       <div className="buttons">
-        <button className="add">ADD TO CART</button>
+        <button className="add" onClick={handleAddToCart}>
+          {cartMsg || 'ADD TO CART'}
+        </button>
         <button className="buy" onClick={() => navigate('/checkout', { state: { product: displayProduct, quantity: qty } })}>
           BUY NOW
         </button>

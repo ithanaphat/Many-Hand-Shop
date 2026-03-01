@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const QuantitySelector = ({ quantity, onQuantityChange }) => {
+const QuantitySelector = ({ quantity, onQuantityChange, max }) => {
   const [internalCount, setInternalCount] = useState(1);
 
   // Use controlled or uncontrolled mode
@@ -9,6 +9,8 @@ const QuantitySelector = ({ quantity, onQuantityChange }) => {
     if (onQuantityChange) onQuantityChange(val);
     else setInternalCount(val);
   };
+
+  const atMax = max != null && count >= max;
 
   return (
     <div className="quantity">
@@ -22,7 +24,9 @@ const QuantitySelector = ({ quantity, onQuantityChange }) => {
       <span className="qty-value">{count}</span>
       <button 
         className="qty-btn plus"
-        onClick={() => setCount(count + 1)}
+        onClick={() => !atMax && setCount(count + 1)}
+        disabled={atMax}
+        style={atMax ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
       >
         +
       </button>
