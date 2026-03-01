@@ -40,7 +40,6 @@ const userSchema = new mongoose.Schema({
     },
     phone : {
      type : String,
-     required : true,
      match : /^0\d{9}$/ //จัดเรียงรูปแบบ 0 นำหน้า
     }
 }, { timestamps: true } // attrime 
@@ -56,8 +55,8 @@ const productSchema = new mongoose.Schema({
     description : {
         type : String,
         required : true,
-        minlength : 10,
-        maxlength : 1000,
+        minlength : 10, //กำหนดขั้นต่ำ
+        maxlength : 1000, // กำหนดมากสุด
         trim: true,  //กันspaceหน้าหลัง
     },
     price : {
@@ -168,6 +167,19 @@ const orderSchema = new mongoose.Schema({
 productSchema.index({ category: 1 })
 productSchema.index({ seller: 1 })
 
+const categorySchema = new mongoose.Schema({
+    name : {
+        type : String,
+        enum : ['Sport','Furniture','Fashion','Book','Electronics','Beauty','Baby & Kids','Pet Supplies'],
+        required : true,
+        lowercase : true,
+        trim : true
+    },
+    description : {
+        type :string
+    }
+
+},{ timestamps: true })
 
 // Model เอาไว้คุยกับ Database
 const User = mongoose.model("User", userSchema) 
