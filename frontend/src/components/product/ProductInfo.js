@@ -1,5 +1,5 @@
 import QuantitySelector from "./QuantitySelector";
-import "../components/ProductDetail.css";
+import "./ProductDetail.css";
 
 const ProductInfo = ({ product }) => {
   const displayProduct = product || {

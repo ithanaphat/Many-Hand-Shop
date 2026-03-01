@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ProductCard from '../components/ProductCard';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import ProductCard from '../components/product/ProductCard';
 
 function Home({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();

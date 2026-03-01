@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './SellerBoard.css';
 import 'boxicons/css/boxicons.min.css';
-import Header from '../components/Header';
+import Header from '../components/layout/Header';
 
 const initialProducts = [
   {

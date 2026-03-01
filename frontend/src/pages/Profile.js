@@ -1,9 +1,9 @@
 import React from 'react';
-import '../components/Profile.css';
-import 'boxicons/css/boxicons.min.css'; // อย่าลืม import ไฟล์ CSS เข้ามา
-import Header from '../components/Header';
-import InfoItem from '../components/InfoItem';
-import ProductItem from '../components/ProductItem';
+import './Profile.css';
+import 'boxicons/css/boxicons.min.css';
+import Header from '../components/layout/Header';
+import InfoItem from '../components/shared/InfoItem';
+import ProductItem from '../components/product/ProductItem';
 
 function Profile({ isLoggedIn, onLogout }) {
   const ratingValue = 4;
