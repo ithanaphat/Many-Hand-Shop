@@ -9,7 +9,9 @@ import Register from './pages/Register';
 import ProductDetail from './pages/ProductDetail';
 import Profile from './pages/Profile';
 import SellerBoard from './pages/SellerBoard';
+import Cart from './pages/cart';
 import Checkout from './pages/Checkout';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(

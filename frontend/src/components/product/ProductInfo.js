@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import QuantitySelector from "./QuantitySelector";
@@ -38,6 +39,8 @@ const ProductInfo = ({ product }) => {
     }
     return { color: '#c8cfc0' };
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="info">
