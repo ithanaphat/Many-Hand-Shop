@@ -27,18 +27,28 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home isLoggedIn={false} onLogout={handleLogout} />} />
-        <Route path="/home" element={<Home isLoggedIn={false} onLogout={handleLogout} />} />
+        <Route path="/" element={<Home isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
+        <Route path="/home" element={<Home isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
         <Route
           path="/home-user"
           element={
             isLoggedIn ? <Home isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
           }
         />
-        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/product/:productId" element={<ProductDetail />} />
-          <Route
+        <Route
+          path="/login"
+          element={
+            isLoggedIn ? <Navigate to="/home-user" replace /> : <Login onLoginSuccess={handleLoginSuccess} />
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            isLoggedIn ? <Navigate to="/home-user" replace /> : <Register />
+          }
+        />
+        <Route path="/product/:productId" element={<ProductDetail isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
+        <Route
           path="/profile"
           element={
             isLoggedIn ? <Profile isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />

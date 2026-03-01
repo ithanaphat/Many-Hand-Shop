@@ -1,5 +1,6 @@
 import React from 'react';
-import '../components/Profile.css'; // อย่าลืม import ไฟล์ CSS เข้ามา
+import '../components/Profile.css';
+import 'boxicons/css/boxicons.min.css'; // อย่าลืม import ไฟล์ CSS เข้ามา
 import Header from '../components/Header';
 import InfoItem from '../components/InfoItem';
 import ProductItem from '../components/ProductItem';
@@ -14,11 +15,15 @@ function Profile({ isLoggedIn, onLogout }) {
 
       {/* 1. Purple Banner Area */}
       <div className="banner-container">
-        <div 
-          className="avatar-overlay" 
-          style={{ backgroundImage: `url('https://i.pravatar.cc/150?u=woody')` }}
-        >
-          <div className="camera-button">📷</div>
+        <div className="avatar-wrapper">
+          <div 
+            className="avatar-overlay" 
+            style={{ backgroundImage: `url('https://i.pravatar.cc/150?u=woody')` }}
+          >
+            <div className="camera-button">
+              <i className='bx bxs-camera' style={{ fontSize: '16px', color: '#555', lineHeight: 1 }}></i>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -67,9 +72,9 @@ function Profile({ isLoggedIn, onLogout }) {
             </div>
 
             <div className="product-list-scroll">
-              <ProductItem name="item name" price="99" />
-              <ProductItem name="item name" price="99" />
-              <ProductItem name="item name" price="99" />
+              <ProductItem name="Vintage T-Shirt" price="299" productImage="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300" />
+              <ProductItem name="Film Camera" price="850" productImage="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300" />
+              <ProductItem name="Denim Jacket" price="590" productImage="https://images.unsplash.com/photo-1542272604-787c62d465d1?w=300" />
             </div>
           </div>
         </div>

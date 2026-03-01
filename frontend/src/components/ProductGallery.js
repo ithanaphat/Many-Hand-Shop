@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./ProductGallery.css";
+import "./ProductDetail.css";
 
 const ProductGallery = ({ productImage }) => {
   // Handle both old format (productImage string) and new format (images array)
