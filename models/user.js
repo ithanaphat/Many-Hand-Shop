@@ -168,7 +168,7 @@ productSchema.index({ category: 1 })
 productSchema.index({ seller: 1 })
 
 const categorySchema = new mongoose.Schema({
-    name : {
+    name : {        
         type : String,
         enum : ['Sport','Furniture','Fashion','Book','Electronics','Beauty','Baby & Kids','Pet Supplies'],
         required : true,
@@ -180,6 +180,41 @@ const categorySchema = new mongoose.Schema({
     }
 
 },{ timestamps: true })
+
+const cartsSchema = new mongoose.Schema({
+    user : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        unique: true   // 1 user มีได้ 1 cart
+    },
+   items: {
+        type: [{
+            product: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product',
+                required: true
+            },
+            seller: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true,
+                min: 1
+            },
+            price: {
+                type: Number,
+                required: true,
+                min: 0
+            }
+        }],
+        default: []
+    },
+
+}, { timestamps: true })
 
 // Model เอาไว้คุยกับ Database
 const User = mongoose.model("User", userSchema) 
