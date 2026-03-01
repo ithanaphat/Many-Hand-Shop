@@ -48,7 +48,7 @@ const ProductInfo = ({ product }) => {
     if (existing) {
       const newQty = existing.quantity + qty;
       if (newQty > maxStock) {
-        setCartMsg(`มีในตะกร้าแล้ว ${existing.quantity} ชิ้น (สูงสุด ${maxStock})`);
+        setCartMsg(`Already in cart: ${existing.quantity} item(s) (max ${maxStock})`);
         setTimeout(() => setCartMsg(''), 2500);
         return;
       }
@@ -65,7 +65,7 @@ const ProductInfo = ({ product }) => {
       });
     }
     localStorage.setItem('mhs_cart', JSON.stringify(cart));
-    setCartMsg('เพิ่มลงตะกร้าแล้ว ✓');
+    setCartMsg('Added to cart ✓');
     setTimeout(() => setCartMsg(''), 2000);
   };
 
@@ -92,9 +92,9 @@ const ProductInfo = ({ product }) => {
           {stock === 0 ? (
             <span className="stock-badge out">Out of Stock</span>
           ) : stock <= 5 ? (
-            <span className="stock-badge low">เหลือเพียง {stock} ชิ้น!</span>
+            <span className="stock-badge low">Only {stock} left!</span>
           ) : (
-            <span className="stock-badge in">มีสินค้า ({stock} ชิ้น)</span>
+            <span className="stock-badge in">In Stock ({stock} available)</span>
           )}
         </div>
       )}

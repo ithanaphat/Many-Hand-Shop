@@ -42,11 +42,11 @@ function ProductCard(props) {
       {props.stock !== undefined && props.stock !== null && (
         <div className="card-stock-row">
           {props.stock === 0 ? (
-            <span className="card-stock out">หมดแล้ว</span>
+            <span className="card-stock out">Out of Stock</span>
           ) : props.stock <= 5 ? (
-            <span className="card-stock low">เหลือ {props.stock} ชิ้น</span>
+            <span className="card-stock low">Only {props.stock} left</span>
           ) : (
-            <span className="card-stock in">มีสินค้า</span>
+            <span className="card-stock in">In Stock</span>
           )}
         </div>
       )}
