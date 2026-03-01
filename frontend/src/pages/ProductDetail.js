@@ -6,7 +6,7 @@ import ProductInfo from "../components/ProductInfo";
 import RelatedProducts from "../components/RelatedProducts";
 import "../components/ProductDetail.css";
 
-const ProductDetail = () => {
+const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
   const { productId } = useParams();
   const location = useLocation();
   const [product, setProduct] = useState(location.state?.product || null);
@@ -41,7 +41,7 @@ const ProductDetail = () => {
 
   return (
     <>
-      <Header isLoggedIn={false} />
+      <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
       <div className="product-detail-container">
         {loading && <div className="loading">Loading product...</div>}
         {error && <div className="error">Error: {error}</div>}
