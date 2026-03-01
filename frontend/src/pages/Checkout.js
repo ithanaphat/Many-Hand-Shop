@@ -8,13 +8,23 @@ function Checkout({ isLoggedIn, onLogout }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Product passed from ProductInfo via navigate state
-  const { product, quantity: initQty = 1 } = location.state || {};
+  // รองรับทั้ง BUY NOW (product+quantity) และ Cart (cartItems)
+  const { product, quantity: initQty = 1, cartItems } = location.state || {};
+  const isCartMode = Array.isArray(cartItems) && cartItems.length > 0;
 
-  const productName    = product?.name || product?.itemName    || 'Product';
-  const productPrice   = Number(product?.price || product?.itemPrice || 0);
-  const productImage   = product?.productImage || product?.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300';
-  const sellerName     = product?.sellerName || product?.seller?.username || 'Seller';
+  // normalize เป็น array เดียวกัน
+  const orderItems = isCartMode
+    ? cartItems
+    : product
+      ? [{
+          id: product._id || product.id,
+          name: product.name || product.itemName || 'Product',
+          price: Number(product.price || product.itemPrice || 0),
+          image: product.productImage || product.images?.[0] || '',
+          quantity: initQty,
+          sellerName: product.sellerName || product.seller?.username || 'Seller',
+        }]
+      : [];
 
   const [quantity] = useState(initQty);
 
@@ -65,7 +75,7 @@ function Checkout({ isLoggedIn, onLogout }) {
 
   const applyPromo = () => {
     if (promoCode.trim().toUpperCase() === 'MHS10') {
-      setDiscount(Math.floor(productPrice * quantity * 0.1));
+      setDiscount(Math.floor(subtotalBase * 0.1));
       setPromoMsg('✓ Promo applied: 10% off');
     } else {
       setDiscount(0);
@@ -73,7 +83,8 @@ function Checkout({ isLoggedIn, onLogout }) {
     }
   };
 
-  const subtotal  = productPrice * quantity;
+  const subtotalBase = orderItems.reduce((sum, i) => sum + Number(i.price) * i.quantity, 0);
+  const subtotal  = subtotalBase;
   const shipping  = subtotal > 0 ? 40 : 0;
   const total     = Math.max(0, subtotal + shipping - discount);
 
@@ -181,16 +192,24 @@ function Checkout({ isLoggedIn, onLogout }) {
               <i className="bx bx-receipt"></i> Order Summary
             </h3>
 
-            {/* Product item */}
-            <div className="ck-order-item">
-              <img src={productImage} alt={productName} className="ck-order-img"
-                onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300'; }} />
-              <div className="ck-order-info">
-                <p className="ck-order-name">{productName}</p>
-                <p className="ck-order-seller">Sold by {sellerName}</p>
-                <p className="ck-order-qty">Qty: {quantity}</p>
-              </div>
-              <span className="ck-order-price">฿{(productPrice * quantity).toLocaleString()}</span>
+            {/* Product items */}
+            <div className="ck-order-items-list">
+              {orderItems.map((item, idx) => (
+                <div key={item.id || idx} className="ck-order-item">
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} className="ck-order-img"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                  ) : (
+                    <div className="ck-order-img ck-order-img-placeholder" />
+                  )}
+                  <div className="ck-order-info">
+                    <p className="ck-order-name">{item.name}</p>
+                    {item.sellerName && <p className="ck-order-seller">Sold by {item.sellerName}</p>}
+                    <p className="ck-order-qty">Qty: {item.quantity}</p>
+                  </div>
+                  <span className="ck-order-price">฿{(Number(item.price) * item.quantity).toLocaleString()}</span>
+                </div>
+              ))}
             </div>
 
             {/* Promo */}

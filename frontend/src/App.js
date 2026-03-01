@@ -70,6 +70,12 @@ function App() {
             isLoggedIn ? <Checkout isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
+        <Route
+          path="/cart"
+          element={
+            isLoggedIn ? <Cart isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
       </Routes>
     </Router>
   );

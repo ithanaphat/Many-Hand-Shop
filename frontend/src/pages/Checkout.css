@@ -108,6 +108,12 @@
   top: 100px;
 }
 
+.ck-order-items-list {
+  max-height: 320px;
+  overflow-y: auto;
+  margin-bottom: 4px;
+}
+
 .ck-order-item {
   display: flex;
   gap: 14px;
@@ -127,6 +133,10 @@
   object-fit: cover;
   border: 1px solid #eee;
   flex-shrink: 0;
+}
+
+.ck-order-img-placeholder {
+  background: #f0f2ec;
 }
 
 .ck-order-info {
