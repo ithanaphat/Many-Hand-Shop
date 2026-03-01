@@ -26,6 +26,13 @@ const userSchema = new mongoose.Schema({
         match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, //จัดเรียงรูปแบบ
         
     },
+    images: {
+    type: [String],
+    validate: [arr => arr.length = 1, '1 image required'] //กำหนดขั้นต่ำรูปภาพ
+    },
+    adderss : {
+        type : String
+    },
     role : {
         type : String,
         enum : ['User','Admin'],
@@ -33,7 +40,6 @@ const userSchema = new mongoose.Schema({
     },
     phone : {
      type : String,
-     required : true,
      match : /^0\d{9}$/ //จัดเรียงรูปแบบ 0 นำหน้า
     }
 }, { timestamps: true } // attrime 
@@ -49,8 +55,8 @@ const productSchema = new mongoose.Schema({
     description : {
         type : String,
         required : true,
-        minlength : 10,
-        maxlength : 1000,
+        minlength : 10, //กำหนดขั้นต่ำ
+        maxlength : 1000, // กำหนดมากสุด
         trim: true,  //กันspaceหน้าหลัง
     },
     price : {
@@ -161,6 +167,54 @@ const orderSchema = new mongoose.Schema({
 productSchema.index({ category: 1 })
 productSchema.index({ seller: 1 })
 
+const categorySchema = new mongoose.Schema({
+    name : {        
+        type : String,
+        enum : ['Sport','Furniture','Fashion','Book','Electronics','Beauty','Baby & Kids','Pet Supplies'],
+        required : true,
+        lowercase : true,
+        trim : true
+    },
+    description : {
+        type :string
+    }
+
+},{ timestamps: true })
+
+const cartsSchema = new mongoose.Schema({
+    user : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        unique: true   // 1 user มีได้ 1 cart
+    },
+   items: {
+        type: [{
+            product: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product',
+                required: true
+            },
+            seller: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true,
+                min: 1
+            },
+            price: {
+                type: Number,
+                required: true,
+                min: 0
+            }
+        }],
+        default: []
+    },
+
+}, { timestamps: true })
 
 // Model เอาไว้คุยกับ Database
 const User = mongoose.model("User", userSchema) 

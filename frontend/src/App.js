@@ -6,6 +6,7 @@ import './App.css'; // นำเข้า CSS ตัวเดิมของค�
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ProductDetail from './pages/ProductDetail';
 import Profile from './pages/Profile';
 
 function App() {
@@ -36,7 +37,8 @@ function App() {
         />
         <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="/register" element={<Register />} />
-        <Route
+        <Route path="/product/:productId" element={<ProductDetail />} />
+          <Route
           path="/profile"
           element={
             isLoggedIn ? <Profile isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
