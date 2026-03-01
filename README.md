@@ -9,20 +9,20 @@
 
 ```
 Many-Hand-Shop/
-├── server.js              # Entry point ของ Backend
-├── .env                   # Environment variables (MongoDB URL, PORT)
+├── server.js              # Entry point ของ Backend (port 9000)
+├── .env                   # Environment variables (MongoDB URL)
 ├── package.json
 │
 ├── config/
 │   └── db.js              # เชื่อมต่อ MongoDB
 │
 ├── models/
-│   └── user.js            # Mongoose schemas (User, Product, Category)
+│   └── user.js            # Mongoose schemas (User, Product, Category, Order)
 │
 ├── routes/
 │   ├── index.js           # รวม routes ทั้งหมด
-│   ├── login.js           # POST /login
-│   ├── register.js        # POST /register
+│   ├── login.js           # POST /api/login
+│   ├── register.js        # POST /api/register
 │   └── product.js         # CRUD /api/product
 │
 └── frontend/              # React App (Create React App)
@@ -35,6 +35,7 @@ Many-Hand-Shop/
         │   ├── ProductDetail.js # หน้ารายละเอียดสินค้า
         │   ├── Profile.js      # หน้าโปรไฟล์
         │   ├── SellerBoard.js  # หน้าจัดการสินค้าของ Seller
+        │   ├── Cart.js         # หน้าตะกร้าสินค้า
         │   └── Checkout.js     # หน้าชำระเงิน
         │
         └── components/
@@ -43,8 +44,11 @@ Many-Hand-Shop/
             │   └── Footer.js
             ├── product/
             │   ├── ProductCard.js
-            │   ├── ProductDetail.css
-            │   └── ...
+            │   ├── ProductGallery.js
+            │   ├── ProductInfo.js
+            │   ├── ProductItem.js
+            │   ├── QuantitySelector.js
+            │   └── RelatedProducts.js
             └── shared/
                 └── InfoItem.js
 ```
@@ -54,7 +58,7 @@ Many-Hand-Shop/
 ## ⚙️ การติดตั้ง (Setup)
 
 ### สิ่งที่ต้องมีก่อน
-- [Node.js](https://nodejs.org) (แนะนำ LTS)
+- [Node.js](https://nodejs.org) v18+ (ทดสอบกับ v24)
 - MongoDB Atlas account หรือ MongoDB local
 
 ### 1. ติดตั้ง dependencies
@@ -75,7 +79,6 @@ npm install
 
 ```env
 URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/<dbname>
-PORT=9000
 ```
 
 > ⚠️ ห้ามมีช่องว่างรอบเครื่องหมาย `=`
@@ -96,8 +99,14 @@ node server.js
 ### Terminal 2 — Frontend
 ```bash
 cd Many-Hand-Shop/frontend
-npm start
+DANGEROUSLY_DISABLE_HOST_CHECK=true npm start
 ```
+> **หมายเหตุสำหรับ Windows (PowerShell):**
+> ```powershell
+> $env:DANGEROUSLY_DISABLE_HOST_CHECK="true" ; npm start
+> ```
+> ต้องตั้งตัวแปรนี้เมื่อใช้ Node.js v18+ เนื่องจาก react-scripts 5 มีปัญหากับ `allowedHosts` บน Node เวอร์ชันใหม่
+
 รอจนขึ้น: `Compiled successfully!`
 
 ### เปิดเว็บ
@@ -111,8 +120,8 @@ http://localhost:3000
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/register` | สมัครสมาชิก |
-| POST | `/login` | เข้าสู่ระบบ |
+| POST | `/api/register` | สมัครสมาชิก |
+| POST | `/api/login` | เข้าสู่ระบบ |
 | GET | `/api/product` | ดึงสินค้าทั้งหมด |
 | GET | `/api/product/:id` | ดึงสินค้าตาม ID |
 | POST | `/api/product/Addproduct` | เพิ่มสินค้าใหม่ |
@@ -125,13 +134,15 @@ http://localhost:3000
 
 | หน้า | URL | เงื่อนไข |
 |------|-----|---------|
-| หน้าแรก | `/` | ทุกคนเข้าได้ |
-| Login | `/login` | ยังไม่ได้ login |
-| Register | `/register` | ยังไม่ได้ login |
-| รายละเอียดสินค้า | `/product/:id` | ทุกคนเข้าได้ |
+| หน้าแรก | `/` หรือ `/home` | ทุกคนเข้าได้ |
+| หน้าแรก (logged in) | `/home-user` | ต้อง login |
+| Login | `/login` | redirect ไป `/home-user` ถ้า login แล้ว |
+| Register | `/register` | redirect ไป `/home-user` ถ้า login แล้ว |
+| รายละเอียดสินค้า | `/product/:productId` | ทุกคนเข้าได้ |
+| ตะกร้าสินค้า | `/cart` | ต้อง login |
+| ชำระเงิน | `/checkout` | ต้อง login |
 | โปรไฟล์ | `/profile` | ต้อง login |
 | จัดการสินค้า | `/seller-board` | ต้อง login |
-| ชำระเงิน | `/checkout` | ต้อง login |
 
 ---
 
@@ -139,8 +150,8 @@ http://localhost:3000
 
 | ส่วน | เทคโนโลยี |
 |------|-----------|
-| Frontend | React 18, React Router v6 |
-| Backend | Node.js, Express.js |
-| Database | MongoDB Atlas, Mongoose |
+| Frontend | React 19, React Router v7 |
+| Backend | Node.js, Express.js 5 |
+| Database | MongoDB Atlas, Mongoose 9 |
 | Styling | CSS, Boxicons |
-| Auth | localStorage (JWT-ready) |
+| Auth | localStorage session |
