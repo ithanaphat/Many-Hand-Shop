@@ -1,7 +1,11 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import QuantitySelector from "./QuantitySelector";
 import "./ProductDetail.css";
 
 const ProductInfo = ({ product }) => {
+  const navigate = useNavigate();
+  const [qty, setQty] = React.useState(1);
   const displayProduct = product || {
     name: "Product Name",
     sellerName: "Unknown Seller",
@@ -56,11 +60,13 @@ const ProductInfo = ({ product }) => {
         <p>{description}</p>
       </div>
 
-      <QuantitySelector />
+      <QuantitySelector quantity={qty} onQuantityChange={setQty} />
 
       <div className="buttons">
         <button className="add">ADD TO CART</button>
-        <button className="buy">BUY NOW</button>
+        <button className="buy" onClick={() => navigate('/checkout', { state: { product: displayProduct, quantity: qty } })}>
+          BUY NOW
+        </button>
       </div>
 
       <div className="seller-info">

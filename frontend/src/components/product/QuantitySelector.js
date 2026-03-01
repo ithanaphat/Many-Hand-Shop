@@ -1,7 +1,14 @@
 import { useState } from "react";
 
-const QuantitySelector = () => {
-  const [count, setCount] = useState(1);
+const QuantitySelector = ({ quantity, onQuantityChange }) => {
+  const [internalCount, setInternalCount] = useState(1);
+
+  // Use controlled or uncontrolled mode
+  const count = quantity !== undefined ? quantity : internalCount;
+  const setCount = (val) => {
+    if (onQuantityChange) onQuantityChange(val);
+    else setInternalCount(val);
+  };
 
   return (
     <div className="quantity">
