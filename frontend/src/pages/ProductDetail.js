@@ -43,17 +43,17 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
     <>
       <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
       <div className="product-detail-container">
-        {loading && <div className="loading">Loading product...</div>}
-        {error && <div className="error">Error: {error}</div>}
-        {product && (
-          <>
+        <div className="product-detail-card">
+          {loading && <div className="loading">Loading product...</div>}
+          {error && <div className="error">Error: {error}</div>}
+          {product && (
             <div className="product-detail">
               <ProductGallery productImage={product.productImage || product.images?.[0]} />
               <ProductInfo product={product} />
             </div>
-            <RelatedProducts />
-          </>
-        )}
+          )}
+        </div>
+        <RelatedProducts />
       </div>
       <footer className="footer-simple">
         <p>&copy; 2026 Many Hand Shop. All rights reserved.</p>
