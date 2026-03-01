@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProductDetail from './pages/ProductDetail';
+import Profile from './pages/Profile';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -18,20 +19,31 @@ function App() {
     setIsLoggedIn(true);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('mhs_logged_in');
+    setIsLoggedIn(false);
+  };
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home isLoggedIn={false} />} />
-        <Route path="/home" element={<Home isLoggedIn={false} />} />
+        <Route path="/" element={<Home isLoggedIn={false} onLogout={handleLogout} />} />
+        <Route path="/home" element={<Home isLoggedIn={false} onLogout={handleLogout} />} />
         <Route
           path="/home-user"
           element={
-            isLoggedIn ? <Home isLoggedIn={true} /> : <Navigate to="/login" replace />
+            isLoggedIn ? <Home isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
           }
         />
         <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/product/:productId" element={<ProductDetail />} />
+          <Route
+          path="/profile"
+          element={
+            isLoggedIn ? <Profile isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
+          }
+        />
       </Routes>
     </Router>
   );
