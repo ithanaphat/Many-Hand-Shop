@@ -114,7 +114,7 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
               </div>
             )}
           </div>
-          <button className="icon-circle-btn" aria-label="Cart" title="Cart">
+          <button className="icon-circle-btn" aria-label="Cart" title="Cart" onClick={() => navigate('/cart')}>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="nav-icon-svg">
               <path d="M3 5H5L7 15H17L19 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <circle cx="9" cy="19" r="1.5" fill="currentColor" />

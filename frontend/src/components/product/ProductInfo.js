@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import QuantitySelector from "./QuantitySelector";
 import "./ProductDetail.css";
 
@@ -34,6 +35,8 @@ const ProductInfo = ({ product }) => {
     return { color: '#c8cfc0' };
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="info">
       <h2>{productName}</h2>
@@ -59,8 +62,8 @@ const ProductInfo = ({ product }) => {
       <QuantitySelector />
 
       <div className="buttons">
-        <button className="add">ADD TO CART</button>
-        <button className="buy">BUY NOW</button>
+        <button className="add" onClick={() => navigate('/cart')}>ADD TO CART</button>
+        <button classity="buy">BUY NOW</button>
       </div>
 
       <div className="seller-info">

@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import ProductDetail from './pages/ProductDetail';
 import Profile from './pages/Profile';
 import SellerBoard from './pages/SellerBoard';
+import Cart from './pages/cart';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -61,6 +62,7 @@ function App() {
             isLoggedIn ? <SellerBoard isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
           }
         />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </Router>
   );
