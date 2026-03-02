@@ -59,6 +59,10 @@
 .item-name {
   font-size: 1.25rem;
   color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
 
 .item-price {
