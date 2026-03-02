@@ -28,8 +28,7 @@ const userSchema = new mongoose.Schema({
     },
     images: {
     type: [String],
-    required : true,
-    validate: [arr => arr.length === 1] //กำหนดขั้นต่ำรูปภาพ
+    required: false, // ไม่บังคับ เพราะตอน register ยังไม่มีรูป
     },
     address : {
         type : String
