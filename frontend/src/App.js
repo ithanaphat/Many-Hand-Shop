@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import SellerBoard from './pages/SellerBoard';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Search from './pages/Search';
 
 
 function App() {
@@ -75,6 +76,10 @@ function App() {
           element={
             isLoggedIn ? <Cart isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
+        />
+        <Route
+          path="/search"
+          element={<Search isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
         />
       </Routes>
     </Router>

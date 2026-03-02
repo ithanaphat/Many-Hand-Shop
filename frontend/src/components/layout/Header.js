@@ -1,12 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const logoSrc = `${process.env.PUBLIC_URL || ''}/mhs.png`;
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
   const [cartCount, setCartCount] = useState(0);
+
+  // sync ค่าใน search box กับ query param ใน URL
+  const searchParams = new URLSearchParams(location.search);
+  const [searchValue, setSearchValue] = useState(searchParams.get('q') || '');
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setSearchValue(params.get('q') || '');
+  }, [location.search]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = searchValue.trim();
+    if (q) {
+      navigate(`/search?q=${encodeURIComponent(q)}`);
+    }
+  };
 
   // อัปเดต cart count จาก localStorage
   useEffect(() => {
@@ -95,12 +113,16 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
               <path d="M20 20L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </span>
-          <input
-            className="search"
-            type="search"
-            placeholder="Search..."
-            aria-label="Search"
-          />
+          <form onSubmit={handleSearch} style={{ display: 'contents' }}>
+            <input
+              className="search"
+              type="search"
+              placeholder="Search..."
+              aria-label="Search"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+          </form>
         </div>
       </div>
 
