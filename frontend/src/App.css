@@ -104,6 +104,58 @@
   color: rgba(255,255,255,0.85);
 }
 
+/* Search autocomplete dropdown */
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  z-index: 1300;
+  overflow: hidden;
+}
+
+.search-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #222;
+  font-size: 14px;
+  transition: background 0.15s;
+}
+
+.search-suggestion-item:hover {
+  background: #f0f3ea;
+}
+
+.suggestion-icon {
+  color: #999;
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+.suggestion-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-price {
+  font-size: 13px;
+  color: #666C49;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
 .auth-buttons {
   display: flex;
   gap: 5.6px;

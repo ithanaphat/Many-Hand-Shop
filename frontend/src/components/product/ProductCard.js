@@ -37,7 +37,7 @@ function ProductCard(props) {
 
       <div className="product-details">
         <span className="item-name">{props.itemName}</span>
-        <span className="item-price">{props.itemPrice}$</span>
+        <span className="item-price">{Number(props.itemPrice).toLocaleString()}$</span>
       </div>
       {props.stock !== undefined && props.stock !== null && (
         <div className="card-stock-row">

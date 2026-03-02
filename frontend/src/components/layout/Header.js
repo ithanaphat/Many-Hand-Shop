@@ -1,12 +1,76 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const logoSrc = `${process.env.PUBLIC_URL || ''}/mhs.png`;
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
   const [cartCount, setCartCount] = useState(0);
+
+  // sync ค่าใน search box กับ query param ใน URL
+  const searchParams = new URLSearchParams(location.search);
+  const [searchValue, setSearchValue] = useState(searchParams.get('q') || '');
+  const [allProducts, setAllProducts] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const searchWrapRef = useRef(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setSearchValue(params.get('q') || '');
+    setShowDropdown(false);
+  }, [location.search]);
+
+  // ดึงสินค้าทั้งหมดครั้งเดียวตอน mount
+  useEffect(() => {
+    fetch('http://localhost:9000/api/product')
+      .then((r) => r.json())
+      .then((data) => setAllProducts(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
+
+  // กรอง suggestions เมื่อ searchValue เปลี่ยน
+  useEffect(() => {
+    const q = searchValue.trim();
+    if (!q) {
+      setSuggestions([]);
+      setShowDropdown(false);
+      return;
+    }
+    const filtered = allProducts
+      .filter((p) => p.name?.toLowerCase().includes(q.toLowerCase()))
+      .slice(0, 6); // แสดงสูงสุด 6 รายการ
+    setSuggestions(filtered);
+    setShowDropdown(filtered.length > 0);
+  }, [searchValue, allProducts]);
+
+  // ปิด dropdown เมื่อคลิกนอก search-wrap
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchWrapRef.current && !searchWrapRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = searchValue.trim();
+    if (q) {
+      setShowDropdown(false);
+      navigate(`/search?q=${encodeURIComponent(q)}`);
+    }
+  };
+
+  const handleSuggestionClick = (name) => {
+    setSearchValue(name);
+    setShowDropdown(false);
+    navigate(`/search?q=${encodeURIComponent(name)}`);
+  };
 
   // อัปเดต cart count จาก localStorage
   useEffect(() => {
@@ -83,7 +147,7 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
       </div>
 
       <div className="center">
-        <div className="search-wrap">
+        <div className="search-wrap" ref={searchWrapRef}>
           <span className="search-icon" aria-hidden="true">
             <svg
               className="search-icon-svg"
@@ -95,12 +159,38 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
               <path d="M20 20L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </span>
-          <input
-            className="search"
-            type="search"
-            placeholder="Search..."
-            aria-label="Search"
-          />
+          <form onSubmit={handleSearch} style={{ display: 'contents' }}>
+            <input
+              className="search"
+              type="search"
+              placeholder="Search..."
+              aria-label="Search"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
+              autoComplete="off"
+            />
+          </form>
+          {showDropdown && (
+            <ul className="search-suggestions">
+              {suggestions.map((p) => (
+                <li
+                  key={p._id}
+                  className="search-suggestion-item"
+                  onMouseDown={() => handleSuggestionClick(p.name)}
+                >
+                  <span className="suggestion-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+                      <path d="M20 20L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                  <span className="suggestion-name">{p.name}</span>
+                  <span className="suggestion-price">{p.price}$</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
