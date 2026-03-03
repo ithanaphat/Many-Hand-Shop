@@ -18,11 +18,11 @@ const ProductInfo = ({ product }) => {
   const productPrice = displayProduct.price || displayProduct.itemPrice;
   const sellerName = displayProduct.sellerName || displayProduct.seller?.username || "Unknown";
   const sellerImage = displayProduct.sellerImage || "https://i.pravatar.cc/150?u=default";
-  const rating = displayProduct.rating || 4.2;
+  const rating = Number(displayProduct.sellerRating ?? displayProduct.seller?.rating ?? 0);
   const maxRating = 5;
   const fullStars = Math.floor(rating);
   const partial = rating % 1;
-  const reviews = displayProduct.reviews || 124;
+  const reviews = displayProduct.seller?.ratingCount || displayProduct.ratingCount || 0;
   const description = displayProduct.description || "Authentic pre-loved item in excellent condition. Perfect for collectors and fashion enthusiasts.";
   const stock = displayProduct.stock ?? null;
 
@@ -81,9 +81,9 @@ const ProductInfo = ({ product }) => {
               <span key={index} style={getStarStyle(index)}>★</span>
             ))}
           </span>
-          <span className="pd-rating-number">{rating}/{maxRating}</span>
+          <span className="pd-rating-number">{rating > 0 ? `${rating}/${maxRating}` : 'No rating'}</span>
         </span>
-        <span className="pd-reviews">({reviews} reviews)</span>
+        <span className="pd-reviews">({reviews} {reviews === 1 ? 'review' : 'reviews'})</span>
       </div>
       <h3 className="price">${Number(productPrice).toLocaleString()}</h3>
 

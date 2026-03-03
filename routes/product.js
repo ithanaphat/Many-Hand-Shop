@@ -43,7 +43,9 @@ const uploadToCloudinary = (buffer) =>
 
 router.get("/", async (req, res)=>{
     try{
-        const products = await Product.find().populate('seller', 'username images')
+        const filter = {}
+        if (req.query.seller) filter.seller = req.query.seller
+        const products = await Product.find(filter).populate('seller', 'username images rating ratingCount')
         res.json(products)   
     }catch(err){
         res.status(500).json({message : err.message})
@@ -52,7 +54,7 @@ router.get("/", async (req, res)=>{
 
 router.get("/:id", async (req, res)=>{
     try{
-        const product = await Product.findById(req.params.id).populate('seller', 'username images')
+        const product = await Product.findById(req.params.id).populate('seller', 'username images rating ratingCount')
         if(!product){
             return res.status(404).json({message : "ไม่มีใน Product"})
         }

@@ -17,7 +17,15 @@ router.post("/", async (req,res)=>{
         })
 
         if(user){
-            res.status(200).json({ message: "login success" })
+            res.status(200).json({
+                message: "login success",
+                user: { // ข้อมูลที่ต้องการส่งกลับไปให้ frontend
+                    id: user._id,
+                    username: user.username,
+                    images: user.images || [],
+                    rating: user.rating || 0
+                }
+            })
         }else {
             res.status(401).json({ message: "login fail" })
         }
