@@ -69,7 +69,7 @@ const productSchema = new mongoose.Schema({
    images: {
     type: [String],
     required : true,
-    validate: [arr => arr.length >= 2, 'At least 2 image required'] //กำหนดขั้นต่ำรูปภาพ
+    validate: [arr => arr.length >= 1, 'At least 1 image required'] //กำหนดขั้นต่ำรูปภาพ
     },
     stock : {
         type : Number ,
@@ -235,5 +235,6 @@ cartsSchema.index({ user: 1 })
 // Model เอาไว้คุยกับ Database
 const User = mongoose.model("User", userSchema) 
 const Product = mongoose.model("Product", productSchema)
+const Category = mongoose.model("Category", categorySchema)
 
-module.exports = {User, Product}
+module.exports = {User, Product, Category}

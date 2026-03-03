@@ -1,34 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './SellerBoard.css';
 import 'boxicons/css/boxicons.min.css';
 import Header from '../components/layout/Header';
 
-const initialProducts = [
-  {
-    id: 1,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300',
-    name: 'Vintage T-Shirt',
-    price: 299,
-    quantity: 5,
-    status: 'available',
-  },
-  {
-    id: 2,
-    image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300',
-    name: 'Film Camera',
-    price: 850,
-    quantity: 2,
-    status: 'available',
-  },
-  {
-    id: 3,
-    image: 'https://images.unsplash.com/photo-1542272604-787c62d465d1?w=300',
-    name: 'Denim Jacket',
-    price: 590,
-    quantity: 0,
-    status: 'sold',
-  },
-];
+const PRODUCT_API = '/api/product';
 
 const STATUS_LABELS = {
   available: 'Available',
@@ -36,10 +11,20 @@ const STATUS_LABELS = {
   hidden: 'Hidden',
 };
 
-let nextId = initialProducts.length + 1;
+const mapProductForBoard = (product) => ({
+  id: product._id || product.id,
+  image: Array.isArray(product.images) && product.images.length > 0
+    ? product.images[0]
+    : product.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300',
+  name: product.name,
+  price: Number(product.price) || 0,
+  quantity: Number(product.stock ?? product.quantity) || 0,
+  status: Number(product.stock ?? product.quantity) > 0 ? 'available' : 'sold',
+});
 
 function SellerBoard({ isLoggedIn, onLogout }) {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
+  const [isSubmittingAdd, setIsSubmittingAdd] = useState(false);
 
   // Edit modal state
   const [editProduct, setEditProduct] = useState(null);
@@ -51,12 +36,27 @@ function SellerBoard({ isLoggedIn, onLogout }) {
   // Add modal state
   const [showAddModal, setShowAddModal] = useState(false);
   const [addForm, setAddForm] = useState({
-    image: '',
+    imageFile: null,
     name: '',
+    description: '',
     price: '',
     quantity: '',
     status: 'available',
   });
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const response = await fetch(PRODUCT_API);
+        if (!response.ok) return;
+        const data = await response.json();
+        setProducts(Array.isArray(data) ? data.map(mapProductForBoard) : []);
+      } catch (error) {
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   /* ---- Edit ---- */
   const openEdit = (product) => {
@@ -100,7 +100,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
 
   /* ---- Add ---- */
   const openAdd = () => {
-    setAddForm({ image: '', name: '', price: '', quantity: '', status: 'available' });
+    setAddForm({ imageFile: null, name: '', description: '', price: '', quantity: '', status: 'available' });
     setShowAddModal(true);
   };
 
@@ -111,22 +111,55 @@ function SellerBoard({ isLoggedIn, onLogout }) {
     setAddForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const saveAdd = () => {
-    if (!addForm.name.trim() || addForm.price === '') return;
-    setProducts((prev) => [
-      ...prev,
-      {
-        id: nextId++,
-        image:
-          addForm.image.trim() ||
-          'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300',
-        name: addForm.name.trim(),
-        price: Number(addForm.price),
-        quantity: Number(addForm.quantity) || 0,
-        status: addForm.status,
-      },
-    ]);
-    closeAdd();
+  const handleAddImageChange = (e) => {
+    const pickedFile = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+    setAddForm((prev) => ({ ...prev, imageFile: pickedFile }));
+  };
+
+  const saveAdd = async () => {
+    if (!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile) return;
+
+    setIsSubmittingAdd(true);
+    try {
+      const imageFormData = new FormData();
+      imageFormData.append('image', addForm.imageFile);
+
+      const uploadResponse = await fetch(`${PRODUCT_API}/upload-image`, {
+        method: 'POST',
+        body: imageFormData,
+      });
+
+      const uploadData = await uploadResponse.json().catch(() => ({}));
+      if (!uploadResponse.ok || !uploadData.url) {
+        alert(uploadData.message || 'Upload image failed');
+        return;
+      }
+
+      const createResponse = await fetch(`${PRODUCT_API}/Addproduct`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: addForm.name.trim(),
+          description: addForm.description.trim(),
+          price: Number(addForm.price),
+          images: [uploadData.url],
+          stock: Number(addForm.quantity) || 0,
+        }),
+      });
+
+      const createData = await createResponse.json().catch(() => ({}));
+      if (!createResponse.ok || !createData.product) {
+        alert(createData.message || 'Add product failed');
+        return;
+      }
+
+      setProducts((prev) => [...prev, mapProductForBoard(createData.product)]);
+      closeAdd();
+    } catch (error) {
+      alert('Cannot connect to server');
+    } finally {
+      setIsSubmittingAdd(false);
+    }
   };
 
   return (
@@ -344,14 +377,24 @@ function SellerBoard({ isLoggedIn, onLogout }) {
               </div>
 
               <div className="sb-form-row">
-                <label>Image URL</label>
-                <input
-                  type="text"
-                  name="image"
-                  value={addForm.image}
+                <label>Description *</label>
+                <textarea
+                  name="description"
+                  value={addForm.description}
                   onChange={handleAddFormChange}
                   className="sb-input"
-                  placeholder="https://... (leave blank for default)"
+                  placeholder="Describe your product"
+                  rows="3"
+                />
+              </div>
+
+              <div className="sb-form-row">
+                <label>Image File *</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAddImageChange}
+                  className="sb-input"
                 />
               </div>
 
@@ -404,10 +447,10 @@ function SellerBoard({ isLoggedIn, onLogout }) {
               <button
                 className="btn-sb-save"
                 onClick={saveAdd}
-                disabled={!addForm.name.trim() || addForm.price === ''}
-                style={{ opacity: !addForm.name.trim() || addForm.price === '' ? 0.5 : 1 }}
+                disabled={!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || isSubmittingAdd}
+                style={{ opacity: !addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || isSubmittingAdd ? 0.5 : 1 }}
               >
-                Add
+                {isSubmittingAdd ? 'Uploading...' : 'Add'}
               </button>
             </div>
           </div>
