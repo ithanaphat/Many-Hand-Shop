@@ -50,24 +50,43 @@
 /* ส่วนจัดวางชื่อและราคาสินค้าให้อยู่ซ้าย-ขวา */
 .product-details {
   display: flex;
-  justify-content: space-between; /* ดันข้อความไปชิดซ้าย-ขวา */
-  align-items: center;
+  justify-content: space-between;
+  align-items: baseline;
   margin-top: 15px;
   padding: 0 5px;
+  gap: 6px;
 }
 
 .item-name {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #000;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 140px;
+  flex: 1;
+  min-width: 0;
 }
 
 .item-price {
-  font-size: 1.5rem;
+  font-weight: 700;
   color: #000;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.card-rating-row {
+  padding: 4px 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  color: #f5a623;
+}
+
+.card-rating-value {
+  color: #888;
+  font-size: 11px;
+  margin-left: 4px;
 }
 
 .card-stock-row {

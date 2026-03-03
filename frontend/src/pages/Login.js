@@ -19,10 +19,16 @@ function Login({ onLoginSuccess }) {
         body: JSON.stringify({ username: identifier, password }),
       });
 
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
         alert(data.message || 'Sign in failed');
         return;
+      }
+      if (data.user) {
+        localStorage.setItem('mhs_user_id', data.user.id);
+        localStorage.setItem('mhs_user_name', data.user.username);
+        localStorage.setItem('mhs_user_images', JSON.stringify(data.user.images || []));
+        localStorage.setItem('mhs_user_rating', data.user.rating || 0);
       }
     } catch (error) {
       alert('Cannot connect to server');

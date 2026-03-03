@@ -47,7 +47,9 @@ function SellerBoard({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const response = await fetch(PRODUCT_API);
+        const sellerId = localStorage.getItem('mhs_user_id');
+        const url = sellerId ? `${PRODUCT_API}?seller=${sellerId}` : PRODUCT_API;
+        const response = await fetch(url);
         if (!response.ok) return;
         const data = await response.json();
         setProducts(Array.isArray(data) ? data.map(mapProductForBoard) : []);
@@ -144,6 +146,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
           price: Number(addForm.price),
           images: [uploadData.url],
           stock: Number(addForm.quantity) || 0,
+          seller: localStorage.getItem('mhs_user_id') || undefined,
         }),
       });
 
@@ -377,6 +380,23 @@ function SellerBoard({ isLoggedIn, onLogout }) {
               </div>
 
               <div className="sb-form-row">
+                <label>Image File *</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAddImageChange}
+                  className="sb-input"
+                />
+                {addForm.imageFile && (
+                  <img
+                    src={URL.createObjectURL(addForm.imageFile)}
+                    alt="preview"
+                    style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8, marginTop: 8 }}
+                  />
+                )}
+              </div>
+
+              <div className="sb-form-row">
                 <label>Description *</label>
                 <textarea
                   name="description"
@@ -385,16 +405,6 @@ function SellerBoard({ isLoggedIn, onLogout }) {
                   className="sb-input"
                   placeholder="Describe your product"
                   rows="3"
-                />
-              </div>
-
-              <div className="sb-form-row">
-                <label>Image File *</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAddImageChange}
-                  className="sb-input"
                 />
               </div>
 

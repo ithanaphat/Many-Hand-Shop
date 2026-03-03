@@ -41,6 +41,17 @@ const userSchema = new mongoose.Schema({
     phone : {
      type : String,
      match : /^0\d{9}$/ //จัดเรียงรูปแบบ 0 นำหน้า
+    },
+    rating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
+    ratingCount: {
+        type: Number,
+        default: 0,
+        min: 0
     }
 }, { timestamps: true } // attrime 
 ) 

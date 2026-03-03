@@ -36,6 +36,10 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('mhs_logged_in');
+    localStorage.removeItem('mhs_user_id');
+    localStorage.removeItem('mhs_user_name');
+    localStorage.removeItem('mhs_user_images');
+    localStorage.removeItem('mhs_user_rating');
     setIsLoggedIn(false);
   };
 

@@ -105,6 +105,7 @@ function Home({ isLoggedIn, onLogout }) {
               itemName={product.name}
               itemPrice={product.price}
               stock={product.stock}
+              sellerRating={product.seller?.rating || product.sellerRating || 0}
             />
           ))
         )}

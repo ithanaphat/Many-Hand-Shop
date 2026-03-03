@@ -102,6 +102,7 @@ function Search({ isLoggedIn, onLogout }) {
                 itemName={product.name}
                 itemPrice={product.price}
                 stock={product.stock}
+                sellerRating={product.seller?.rating || 0}
               />
             ))}
           </div>
