@@ -79,6 +79,9 @@ npm install
 
 ```env
 URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/<dbname>
+CLOUDINARY_CLOUD_NAME=<your_cloud_name>
+CLOUDINARY_API_KEY=<your_api_key>
+CLOUDINARY_API_SECRET=<your_api_secret>
 ```
 
 > ⚠️ ห้ามมีช่องว่างรอบเครื่องหมาย `=`
@@ -124,6 +127,7 @@ http://localhost:3000
 | POST | `/api/login` | เข้าสู่ระบบ |
 | GET | `/api/product` | ดึงสินค้าทั้งหมด |
 | GET | `/api/product/:id` | ดึงสินค้าตาม ID |
+| POST | `/api/product/upload-image` | อัปโหลดรูปจากไฟล์ขึ้น Cloudinary |
 | POST | `/api/product/Addproduct` | เพิ่มสินค้าใหม่ |
 | PATCH | `/api/product/:id` | แก้ไขสินค้า |
 | DELETE | `/api/product/:id` | ลบสินค้า |

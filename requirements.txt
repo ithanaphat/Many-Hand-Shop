@@ -1,0 +1,21 @@
+Many-Hand-Shop Install Requirements
+
+This project uses Node.js (npm), not Python pip.
+Use the commands below to install all dependencies.
+
+1) Install backend dependencies (project root):
+   npm install
+
+2) Install frontend dependencies:
+   cd frontend
+   npm install
+
+One-line setup (from project root):
+   npm install && cd frontend && npm install
+
+Verify cloud upload packages (from project root):
+   npm ls cloudinary multer
+
+Required runtime:
+- Node.js 18+
+- npm 9+

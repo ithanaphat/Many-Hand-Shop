@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 import 'boxicons/css/boxicons.min.css';
 import Header from '../components/layout/Header';
@@ -6,6 +7,7 @@ import InfoItem from '../components/shared/InfoItem';
 import ProductItem from '../components/product/ProductItem';
 
 function Profile({ isLoggedIn, onLogout }) {
+  const navigate = useNavigate();
   const ratingValue = 4;
   const maxRating = 5;
 
@@ -51,7 +53,7 @@ function Profile({ isLoggedIn, onLogout }) {
 
         {/* Action Buttons */}
         <div className="action-group">
-          <button className="btn-add">ADD PRODUCT</button>
+          <button className="btn-add" onClick={() => navigate('/seller-board')}>ADD PRODUCT</button>
           <button className="btn-edit">EDIT PROFILE</button>
         </div>
 

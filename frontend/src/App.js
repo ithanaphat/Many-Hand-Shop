@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './App.css'; // นำเข้า CSS ตัวเดิมของคุณ
 
 // นำเข้าแต่ละหน้า (Pages) ที่เราแยกไฟล์ไว้
@@ -12,6 +12,16 @@ import SellerBoard from './pages/SellerBoard';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Search from './pages/Search';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname]);
+
+  return null;
+}
 
 
 function App() {
@@ -31,6 +41,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
         <Route path="/home" element={<Home isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
