@@ -86,6 +86,23 @@ CLOUDINARY_API_SECRET=<your_api_secret>
 
 > ⚠️ ห้ามมีช่องว่างรอบเครื่องหมาย `=`
 
+### 3. ตั้งค่า Cloudinary (สำหรับอัปโหลดรูปสินค้า)
+
+1) เข้า Cloudinary Console → **Settings** → **API Keys**
+
+2) คัดลอกค่าเหล่านี้มาใส่ใน `.env`
+- `CLOUDINARY_CLOUD_NAME` (เช่น `drssspev5`)
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+
+3) ตรวจว่า package ที่ใช้ upload ติดตั้งแล้ว
+
+```bash
+npm ls cloudinary multer
+```
+
+4) ถ้าขึ้น `Invalid cloud_name` ให้ตรวจว่าค่า `CLOUDINARY_CLOUD_NAME` ตรงกับชื่อใน Cloudinary Dashboard แบบตัวต่อตัว
+
 ---
 
 ## 🚀 วิธีรัน

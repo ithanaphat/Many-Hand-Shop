@@ -1,21 +1,14 @@
-Many-Hand-Shop Install Requirements
+# Many-Hand-Shop one-command setup (PowerShell)
+# Run from project root with this single command:
+# Get-Content .\requirements.txt | Where-Object { $_.Trim() -and -not $_.Trim().StartsWith('#') } | ForEach-Object { Invoke-Expression $_ }
 
-This project uses Node.js (npm), not Python pip.
-Use the commands below to install all dependencies.
+node -v
+npm -v
 
-1) Install backend dependencies (project root):
-   npm install
+npm install
 
-2) Install frontend dependencies:
-   cd frontend
-   npm install
+Push-Location frontend
+npm install
+Pop-Location
 
-One-line setup (from project root):
-   npm install && cd frontend && npm install
-
-Verify cloud upload packages (from project root):
-   npm ls cloudinary multer
-
-Required runtime:
-- Node.js 18+
-- npm 9+
+npm ls cloudinary multer
