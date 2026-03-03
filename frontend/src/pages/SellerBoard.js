@@ -51,7 +51,8 @@ function SellerBoard({ isLoggedIn, onLogout }) {
   // Add modal state
   const [showAddModal, setShowAddModal] = useState(false);
   const [addForm, setAddForm] = useState({
-    image: '',
+    imageFile: null,
+    imagePreview: '',
     name: '',
     price: '',
     quantity: '',
@@ -61,7 +62,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
   /* ---- Edit ---- */
   const openEdit = (product) => {
     setEditProduct(product);
-    setForm({ ...product });
+    setForm({ ...product, imageFile: null, imagePreview: '' });
   };
 
   const closeEdit = () => {
@@ -74,13 +75,40 @@ function SellerBoard({ isLoggedIn, onLogout }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const saveEdit = () => {
+  const handleImageFileChange = (e, isAdd = false) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const previewUrl = URL.createObjectURL(file);
+    if (isAdd) {
+      setAddForm((prev) => ({ ...prev, imageFile: file, imagePreview: previewUrl }));
+    } else {
+      setForm((prev) => ({ ...prev, imageFile: file, imagePreview: previewUrl }));
+    }
+  };
+
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await fetch('http://localhost:9000/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
+    return 'http://localhost:9000' + data.imageUrl;
+  };
+
+  const saveEdit = async () => {
+    let imageUrl = form.image;
+    if (form.imageFile) {
+      imageUrl = await uploadImage(form.imageFile);
+    }
     setProducts((prev) =>
       prev.map((p) =>
         p.id === editProduct.id
           ? {
               ...p,
               ...form,
+              image: imageUrl,
               price: Number(form.price),
               quantity: Number(form.quantity),
             }
@@ -100,26 +128,31 @@ function SellerBoard({ isLoggedIn, onLogout }) {
 
   /* ---- Add ---- */
   const openAdd = () => {
-    setAddForm({ image: '', name: '', price: '', quantity: '', status: 'available' });
+    setAddForm({ imageFile: null, imagePreview: '', name: '', price: '', quantity: '', status: 'available' });
     setShowAddModal(true);
   };
 
-  const closeAdd = () => setShowAddModal(false);
+  const closeAdd = () => {
+    setShowAddModal(false);
+    setAddForm({ imageFile: null, imagePreview: '', name: '', price: '', quantity: '', status: 'available' });
+  };
 
   const handleAddFormChange = (e) => {
     const { name, value } = e.target;
     setAddForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const saveAdd = () => {
+  const saveAdd = async () => {
     if (!addForm.name.trim() || addForm.price === '') return;
+    let imageUrl = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300';
+    if (addForm.imageFile) {
+      imageUrl = await uploadImage(addForm.imageFile);
+    }
     setProducts((prev) => [
       ...prev,
       {
         id: nextId++,
-        image:
-          addForm.image.trim() ||
-          'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300',
+        image: imageUrl,
         name: addForm.name.trim(),
         price: Number(addForm.price),
         quantity: Number(addForm.quantity) || 0,
@@ -233,7 +266,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
               {/* Preview */}
               <div className="sb-modal-preview">
                 <img
-                  src={form.image}
+                  src={form.imagePreview || form.image}
                   alt="preview"
                   className="sb-preview-img"
                   onError={(e) => {
@@ -256,15 +289,16 @@ function SellerBoard({ isLoggedIn, onLogout }) {
               </div>
 
               <div className="sb-form-row">
-                <label>Image URL</label>
+                <label>รูปภาพ</label>
                 <input
-                  type="text"
-                  name="image"
-                  value={form.image}
-                  onChange={handleFormChange}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageFileChange(e, false)}
                   className="sb-input"
-                  placeholder="https://..."
                 />
+                {form.imagePreview && (
+                  <p style={{ fontSize: 12, color: '#888', marginTop: 4 }}>ไฟล์ที่เลือก: {form.imageFile?.name}</p>
+                )}
               </div>
 
               <div className="sb-form-row-group">
@@ -344,15 +378,21 @@ function SellerBoard({ isLoggedIn, onLogout }) {
               </div>
 
               <div className="sb-form-row">
-                <label>Image URL</label>
+                <label>รูปภาพ</label>
                 <input
-                  type="text"
-                  name="image"
-                  value={addForm.image}
-                  onChange={handleAddFormChange}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageFileChange(e, true)}
                   className="sb-input"
-                  placeholder="https://... (leave blank for default)"
                 />
+                {addForm.imagePreview && (
+                  <img
+                    src={addForm.imagePreview}
+                    alt="preview"
+                    className="sb-preview-img"
+                    style={{ marginTop: 8, width: '100%', maxHeight: 150, objectFit: 'cover', borderRadius: 8 }}
+                  />
+                )}
               </div>
 
               <div className="sb-form-row-group">
