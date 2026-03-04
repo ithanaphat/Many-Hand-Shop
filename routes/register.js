@@ -1,4 +1,5 @@
 const express = require("express")
+const bcrypt = require("bcrypt")
 const router = express.Router()
 
 const {User} = require("../models/user.js")
@@ -11,7 +12,8 @@ router.post("/", async (req, res)=>{
         return res.status(400).json({message: "username, email and password are required"})
     }
 
-    const checkEmail = await User.findOne({email})
+    const checkEmail = await User.findOne({email})  
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     if(checkEmail){
         return res.status(400).json({message: "Email นี้ถูกใช้เเล้ว"})
@@ -20,7 +22,7 @@ router.post("/", async (req, res)=>{
     try{
         await User.create({
             username,
-            password,
+            password : hashedPassword,
             email,
         })
         res.status(201).json({message: "สมัครสำเร็จ"})
