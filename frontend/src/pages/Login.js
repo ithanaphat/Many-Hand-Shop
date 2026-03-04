@@ -25,8 +25,11 @@ function Login({ onLoginSuccess }) {
         return;
       }
       if (data.user) {
-        localStorage.setItem('mhs_user_id', data.user.id);
+        localStorage.setItem('mhs_user_id', data.user.id || data.user._id);
         localStorage.setItem('mhs_user_name', data.user.username);
+        localStorage.setItem('mhs_user_email', data.user.email || '');
+        localStorage.setItem('mhs_user_phone', data.user.phone || '');
+        localStorage.setItem('mhs_user_address', data.user.address || '');
         localStorage.setItem('mhs_user_images', JSON.stringify(data.user.images || []));
         localStorage.setItem('mhs_user_rating', data.user.rating || 0);
       }

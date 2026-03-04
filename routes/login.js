@@ -21,7 +21,11 @@ router.post("/", async (req,res)=>{
                 message: "login success",
                 user: { // ข้อมูลที่ต้องการส่งกลับไปให้ frontend
                     id: user._id,
+                    _id: user._id,
                     username: user.username,
+                    email: user.email || "",
+                    phone: user.phone || "",
+                    address: user.address || "",
                     images: user.images || [],
                     rating: user.rating || 0
                 }

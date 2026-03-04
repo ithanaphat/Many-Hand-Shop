@@ -53,12 +53,19 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(102, 108, 73, 0.2);
 }
 
 .btn-sb-add:hover {
   background: #556046;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 108, 73, 0.3);
+}
+
+.btn-sb-add:active {
+  transform: translateY(0);
 }
 
 .btn-sb-add i {
@@ -286,6 +293,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
 }
 
 .sb-form-row {
@@ -381,12 +390,24 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.2s;
   font-family: inherit;
+  box-shadow: 0 2px 8px rgba(102, 108, 73, 0.2);
 }
 
-.btn-sb-save:hover {
+.btn-sb-save:hover:not(:disabled) {
   background: #556046;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 108, 73, 0.3);
+}
+
+.btn-sb-save:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-sb-save:disabled {
+  background: #999;
+  cursor: not-allowed;
 }
 
 /* Delete confirmation */
@@ -412,4 +433,37 @@
 
 .btn-sb-delete-confirm:hover {
   background: #a93226;
+}
+
+/* File Upload Styling */
+.sb-file-upload-label {
+  cursor: pointer;
+  display: block;
+}
+
+.sb-file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #666c49 0%, #9da693 100%);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(102, 108, 73, 0.15);
+}
+
+.sb-file-upload-btn:hover {
+  background: linear-gradient(135deg, #9da693 0%, #666c49 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 108, 73, 0.3);
+}
+
+.sb-file-upload-btn:active {
+  transform: translateY(0);
 }
