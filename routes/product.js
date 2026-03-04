@@ -70,7 +70,7 @@ router.patch("/:id", async (req, res)=>{
         if(!updateproduct){
             return res.status(404).json({message : "ไม่มีใน Product"})
         }
-        res.json(updateproduct)   
+        res.json(updateproduct)
     }catch(err){
         res.status(400).json({message : err.message})
     }
@@ -82,7 +82,7 @@ router.delete("/:id", async (req, res)=>{
         if(!deleteproduct){
             return res.status(404).json({message : "ไม่มีใน Product"})
         }
-        res.json(deleteproduct)   
+        res.json(deleteproduct)
     }catch(err){
         res.status(500).json({message : err.message})
     }
