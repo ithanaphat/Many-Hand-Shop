@@ -22,6 +22,8 @@ function Profile({ isLoggedIn, onLogout }) {
   const [isSaving, setIsSaving] = useState(false);
   const [editForm, setEditForm] = useState(profile);
   const [sellerProducts, setSellerProducts] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
@@ -83,6 +85,69 @@ function Profile({ isLoggedIn, onLogout }) {
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImage = async () => {
+    if (!imageFile) {
+      alert('Please select an image');
+      return;
+    }
+
+    const userId = localStorage.getItem('mhs_user_id');
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    try {
+      const uploadResponse = await fetch('/api/product/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const uploadData = await uploadResponse.json().catch(() => ({}));
+      if (!uploadResponse.ok || !uploadData.url) {
+        alert(uploadData.message || 'Upload image failed');
+        return;
+      }
+
+      const patchResponse = await fetch(`/api/user/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          images: [uploadData.url]
+        }),
+      });
+
+      const patchData = await patchResponse.json().catch(() => ({}));
+      if (!patchResponse.ok) {
+        alert(patchData.message || 'Update profile failed');
+        return;
+      }
+
+      const updatedProfile = {
+        ...profile,
+        images: [uploadData.url]
+      };
+      setProfile(updatedProfile);
+      localStorage.setItem('mhs_user_images', JSON.stringify([uploadData.url]));
+      setImageFile(null);
+      setPreviewImage(null);
+      alert('Profile image updated successfully!');
+    } catch (error) {
+      alert('Cannot connect to server');
+      console.error(error);
+    }
   };
 
   const saveEdit = async () => {
@@ -148,9 +213,16 @@ function Profile({ isLoggedIn, onLogout }) {
             className="avatar-overlay" 
             style={{ backgroundImage: `url('${profile.images && profile.images[0] ? profile.images[0] : 'https://i.pravatar.cc/150?u=' + profile.username}')` }}
           >
-            <div className="camera-button">
+            <label className="camera-button" htmlFor="avatar-input" style={{ cursor: 'pointer' }}>
               <i className='bx bxs-camera' style={{ fontSize: '16px', color: '#555', lineHeight: 1 }}></i>
-            </div>
+            </label>
+            <input
+              id="avatar-input"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ display: 'none' }}
+            />
           </div>
         </div>
       </div>
@@ -222,6 +294,49 @@ function Profile({ isLoggedIn, onLogout }) {
           </div>
         </div>
       </div>
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div className="image-preview-backdrop" onClick={() => {
+          setImageFile(null);
+          setPreviewImage(null);
+        }}>
+          <div className="image-preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="image-preview-content">
+              <img src={previewImage} alt="preview" className="image-preview-large" />
+            </div>
+            
+            <div className="image-preview-actions">
+              <button 
+                className="image-btn-upload"
+                onClick={uploadImage}
+              >
+                <i className='bx bx-check' style={{ marginRight: '6px' }}></i>
+                Confirm
+              </button>
+              <button 
+                className="image-btn-change"
+                onClick={() => {
+                  document.getElementById('avatar-input').click();
+                }}
+              >
+                <i className='bx bx-edit' style={{ marginRight: '6px' }}></i>
+                Change Photo
+              </button>
+              <button 
+                className="image-btn-cancel"
+                onClick={() => {
+                  setImageFile(null);
+                  setPreviewImage(null);
+                }}
+              >
+                <i className='bx bx-x' style={{ marginRight: '6px' }}></i>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ===== Edit Profile Modal ===== */}
       {isEditOpen && (

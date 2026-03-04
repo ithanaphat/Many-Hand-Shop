@@ -381,12 +381,18 @@ function SellerBoard({ isLoggedIn, onLogout }) {
 
               <div className="sb-form-row">
                 <label>Image File *</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAddImageChange}
-                  className="sb-input"
-                />
+                <label className="sb-file-upload-label">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAddImageChange}
+                    style={{ display: 'none' }}
+                  />
+                  <span className="sb-file-upload-btn">
+                    <i className='bx bx-upload' style={{ marginRight: '6px' }}></i>
+                    {addForm.imageFile ? addForm.imageFile.name : 'Choose Image'}
+                  </span>
+                </label>
                 {addForm.imageFile && (
                   <img
                     src={URL.createObjectURL(addForm.imageFile)}
