@@ -38,6 +38,9 @@ function App() {
     localStorage.removeItem('mhs_logged_in');
     localStorage.removeItem('mhs_user_id');
     localStorage.removeItem('mhs_user_name');
+    localStorage.removeItem('mhs_user_email');
+    localStorage.removeItem('mhs_user_phone');
+    localStorage.removeItem('mhs_user_address');
     localStorage.removeItem('mhs_user_images');
     localStorage.removeItem('mhs_user_rating');
     setIsLoggedIn(false);

@@ -391,7 +391,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
                   <img
                     src={URL.createObjectURL(addForm.imageFile)}
                     alt="preview"
-                    style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8, marginTop: 8 }}
+                    style={{ width: '100%', maxHeight: 140, objectFit: 'cover', borderRadius: 8, marginTop: 8 }}
                   />
                 )}
               </div>

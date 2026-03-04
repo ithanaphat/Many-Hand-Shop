@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 import 'boxicons/css/boxicons.min.css';
@@ -8,8 +8,45 @@ import ProductItem from '../components/product/ProductItem';
 
 function Profile({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
-  const ratingValue = 4;
   const maxRating = 5;
+  const [profile, setProfile] = useState({
+    username: localStorage.getItem('mhs_user_name') || 'Name',
+    email: localStorage.getItem('mhs_user_email') || 'email@example.com',
+    phone: localStorage.getItem('mhs_user_phone') || '',
+    address: localStorage.getItem('mhs_user_address') || '',
+    images: JSON.parse(localStorage.getItem('mhs_user_images') || '[]'),
+    rating: parseFloat(localStorage.getItem('mhs_user_rating')) || 0
+  });
+
+  useEffect(() => {
+    const userId = localStorage.getItem('mhs_user_id');
+    if (!userId) return;
+
+    const loadProfile = async () => {
+      try {
+        const response = await fetch(`/api/user/${userId}`);
+        if (!response.ok) {
+          console.error('Failed to load profile:', response.status);
+          return;
+        }
+        const data = await response.json();
+        setProfile({
+          username: data.username || 'Name',
+          email: data.email || 'email@example.com',
+          phone: data.phone || '',
+          address: data.address || '',
+          images: data.images || [],
+          rating: data.rating || 0
+        });
+      } catch (error) {
+        console.error('Profile fetch error:', error);
+      }
+    };
+
+    loadProfile();
+  }, []);
+
+  const ratingValue = Math.round(profile.rating);
 
   return (
     <div className="profile-page">
@@ -20,7 +57,7 @@ function Profile({ isLoggedIn, onLogout }) {
         <div className="avatar-wrapper">
           <div 
             className="avatar-overlay" 
-            style={{ backgroundImage: `url('https://i.pravatar.cc/150?u=woody')` }}
+            style={{ backgroundImage: `url('${profile.images && profile.images[0] ? profile.images[0] : 'https://i.pravatar.cc/150?u=' + profile.username}')` }}
           >
             <div className="camera-button">
               <i className='bx bxs-camera' style={{ fontSize: '16px', color: '#555', lineHeight: 1 }}></i>
@@ -33,8 +70,8 @@ function Profile({ isLoggedIn, onLogout }) {
       <div className="content-body">
         <div className="profile-header-row">
           <div>
-            <h2 className="user-name">Name</h2>
-            <p className="user-id">USERNAME_q3s56a9s3</p>
+            <h2 className="user-name">{profile.username}</h2>
+            <p className="user-id">{profile.email}</p>
           </div>
           <div className="profile-badges">
             <span className="profile-badge rating-badge">
@@ -61,9 +98,9 @@ function Profile({ isLoggedIn, onLogout }) {
           {/* Information Section */}
           <div className="info-section section-card">
             <h3 className="section-header">Information</h3>
-            <InfoItem icon="✉️" text="myemail@gmail.com" />
-            <InfoItem icon="📞" text="012-3456789" />
-            <InfoItem icon="📍" text="Kasetsart University, Sri racha, Chonburi 20230" />
+            <InfoItem icon="✉️" text={profile.email || 'No email'} />
+            <InfoItem icon="📞" text={profile.phone || 'No phone'} />
+            <InfoItem icon="📍" text={profile.address || 'No address'} />
           </div>
 
           {/* On Sell Section */}
