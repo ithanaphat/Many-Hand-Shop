@@ -21,6 +21,7 @@ function Profile({ isLoggedIn, onLogout }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editForm, setEditForm] = useState(profile);
+  const [sellerProducts, setSellerProducts] = useState([]);
 
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
@@ -48,6 +49,24 @@ function Profile({ isLoggedIn, onLogout }) {
     };
 
     loadProfile();
+  }, []);
+
+  useEffect(() => {
+    const userId = localStorage.getItem('mhs_user_id');
+    if (!userId) return;
+
+    const loadSellerProducts = async () => {
+      try {
+        const response = await fetch(`/api/product?seller=${userId}`);
+        if (!response.ok) return;
+        const data = await response.json();
+        setSellerProducts(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Failed to load seller products:', error);
+      }
+    };
+
+    loadSellerProducts();
   }, []);
 
   const ratingValue = Math.round(profile.rating);
@@ -177,13 +196,28 @@ function Profile({ isLoggedIn, onLogout }) {
           <div className="section-card">
             <div className="sell-header">
               <h3 style={{ margin: 0 }}>On Sell</h3>
-              <button className="btn-total">TOTAL SELL</button>
+              <button className="btn-total">TOTAL {sellerProducts.length}</button>
             </div>
 
             <div className="product-list-scroll">
-              <ProductItem name="Vintage T-Shirt" price="299" productImage="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300" />
-              <ProductItem name="Film Camera" price="850" productImage="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=300" />
-              <ProductItem name="Denim Jacket" price="590" productImage="https://images.unsplash.com/photo-1542272604-787c62d465d1?w=300" />
+              {sellerProducts.length > 0 ? (
+                sellerProducts.map((product) => (
+                  <ProductItem
+                    key={product._id || product.id}
+                    name={product.name}
+                    price={product.price}
+                    productImage={
+                      Array.isArray(product.images) && product.images[0]
+                        ? product.images[0]
+                        : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300'
+                    }
+                  />
+                ))
+              ) : (
+                <p style={{ color: '#999', padding: '20px', textAlign: 'center', width: '100%' }}>
+                  No products on sell yet
+                </p>
+              )}
             </div>
           </div>
         </div>
