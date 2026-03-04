@@ -18,6 +18,10 @@ function Profile({ isLoggedIn, onLogout }) {
     rating: parseFloat(localStorage.getItem('mhs_user_rating')) || 0
   });
 
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editForm, setEditForm] = useState(profile);
+
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
     if (!userId) return;
@@ -47,6 +51,72 @@ function Profile({ isLoggedIn, onLogout }) {
   }, []);
 
   const ratingValue = Math.round(profile.rating);
+
+  const openEdit = () => {
+    setEditForm(profile);
+    setIsEditOpen(true);
+  };
+
+  const closeEdit = () => {
+    setIsEditOpen(false);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const saveEdit = async () => {
+    const userId = localStorage.getItem('mhs_user_id');
+    const payload = {
+      username: editForm.username?.trim(),
+      email: editForm.email?.trim(),
+      phone: editForm.phone?.trim(),
+      address: editForm.address?.trim(),
+    };
+
+    if (!payload.username || !payload.email) {
+      alert('Username และ Email จำเป็นต้องกรอก');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      if (userId) {
+        const response = await fetch(`/api/user/${userId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          alert(data.message || 'Edit profile failed');
+          return;
+        }
+
+        const updatedProfile = {
+          username: data.username || payload.username,
+          email: data.email || payload.email,
+          phone: data.phone || payload.phone,
+          address: data.address || payload.address,
+          images: data.images || profile.images,
+          rating: data.rating || profile.rating,
+        };
+        setProfile(updatedProfile);
+        setEditForm(updatedProfile);
+        localStorage.setItem('mhs_user_name', updatedProfile.username);
+        localStorage.setItem('mhs_user_email', updatedProfile.email);
+        localStorage.setItem('mhs_user_phone', updatedProfile.phone);
+        localStorage.setItem('mhs_user_address', updatedProfile.address);
+        closeEdit();
+      }
+    } catch (error) {
+      alert('Cannot connect to server');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="profile-page">
@@ -91,7 +161,7 @@ function Profile({ isLoggedIn, onLogout }) {
         {/* Action Buttons */}
         <div className="action-group">
           <button className="btn-add" onClick={() => navigate('/seller-board')}>ADD PRODUCT</button>
-          <button className="btn-edit">EDIT PROFILE</button>
+          <button className="btn-edit" onClick={openEdit}>EDIT PROFILE</button>
         </div>
 
         <div className="profile-sections">
@@ -118,6 +188,79 @@ function Profile({ isLoggedIn, onLogout }) {
           </div>
         </div>
       </div>
+
+      {/* ===== Edit Profile Modal ===== */}
+      {isEditOpen && (
+        <div className="profile-modal-backdrop" onClick={closeEdit}>
+          <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="profile-modal-header">
+              <h3>Edit Profile</h3>
+              <button className="profile-modal-close" onClick={closeEdit}>
+                <i className='bx bx-x'></i>
+              </button>
+            </div>
+
+            <div className="profile-modal-body">
+              <div className="profile-form-row">
+                <label>Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={editForm.username}
+                  onChange={handleEditChange}
+                  className="profile-input"
+                  placeholder="Username"
+                />
+              </div>
+
+              <div className="profile-form-row">
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={editForm.email}
+                  onChange={handleEditChange}
+                  className="profile-input"
+                  placeholder="email@example.com"
+                />
+              </div>
+
+              <div className="profile-form-row">
+                <label>Phone</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={editForm.phone}
+                  onChange={handleEditChange}
+                  className="profile-input"
+                  placeholder="0XX-XXXXXX"
+                />
+              </div>
+
+              <div className="profile-form-row">
+                <label>Address</label>
+                <textarea
+                  name="address"
+                  value={editForm.address}
+                  onChange={handleEditChange}
+                  className="profile-input"
+                  placeholder="Your address"
+                  rows="3"
+                />
+              </div>
+            </div>
+
+            <div className="profile-modal-footer">
+              <button className="profile-btn-cancel" onClick={closeEdit}>
+                Cancel
+              </button>
+              <button className="profile-btn-save" onClick={saveEdit} disabled={isSaving}>
+                {isSaving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
