@@ -283,6 +283,7 @@ function Profile({ isLoggedIn, onLogout }) {
                         ? product.images[0]
                         : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300'
                     }
+                    onClick={() => navigate(`/product/${product._id || product.id}`)}
                   />
                 ))
               ) : (
