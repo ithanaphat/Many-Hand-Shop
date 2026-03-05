@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ProductDetail from './pages/ProductDetail';
 import Profile from './pages/Profile';
+import SellerProfile from './pages/SellerProfile';
 import SellerBoard from './pages/SellerBoard';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -71,6 +72,7 @@ function App() {
           }
         />
         <Route path="/product/:productId" element={<ProductDetail isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
+        <Route path="/seller/:sellerId" element={<SellerProfile isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
         <Route
           path="/profile"
           element={
