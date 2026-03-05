@@ -11,6 +11,14 @@ const STATUS_LABELS = {
   hidden: 'Hidden',
 };
 
+const displayCategoryName = (name) => {
+  if (!name) return '';
+  return name
+    .split('&')
+    .map(part => part.trim().charAt(0).toUpperCase() + part.trim().slice(1))
+    .join(' & ');
+};
+
 const mapProductForBoard = (product) => ({
   id: product._id || product.id,
   image: Array.isArray(product.images) && product.images.length > 0
@@ -20,10 +28,13 @@ const mapProductForBoard = (product) => ({
   price: Number(product.price) || 0,
   quantity: Number(product.stock ?? product.quantity) || 0,
   status: Number(product.stock ?? product.quantity) > 0 ? 'available' : 'sold',
+  category: product.category?.name || product.category || '',
+  description: product.description || '',
 });
 
 function SellerBoard({ isLoggedIn, onLogout }) {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isSubmittingAdd, setIsSubmittingAdd] = useState(false);
 
   // Edit modal state
@@ -42,11 +53,24 @@ function SellerBoard({ isLoggedIn, onLogout }) {
     price: '',
     quantity: '',
     status: 'available',
+    category: '',
   });
 
   useEffect(() => {
-    const loadProducts = async () => {
+    const loadData = async () => {
       try {
+        // Load categories
+        const categoriesResponse = await fetch(`${PRODUCT_API}/categories`);
+        console.log("Categories response:", categoriesResponse.status);
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json();
+          console.log("Categories data:", categoriesData);
+          setCategories(categoriesData || []);
+        } else {
+          console.error("Failed to fetch categories:", categoriesResponse.statusText);
+        }
+
+        // Load products
         const sellerId = localStorage.getItem('mhs_user_id');
         const url = sellerId ? `${PRODUCT_API}?seller=${sellerId}` : PRODUCT_API;
         const response = await fetch(url);
@@ -54,10 +78,11 @@ function SellerBoard({ isLoggedIn, onLogout }) {
         const data = await response.json();
         setProducts(Array.isArray(data) ? data.map(mapProductForBoard) : []);
       } catch (error) {
+        console.error('Error loading data:', error);
       }
     };
 
-    loadProducts();
+    loadData();
   }, []);
 
   /* ---- Edit ---- */
@@ -102,7 +127,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
 
   /* ---- Add ---- */
   const openAdd = () => {
-    setAddForm({ imageFile: null, name: '', description: '', price: '', quantity: '', status: 'available' });
+    setAddForm({ imageFile: null, name: '', description: '', price: '', quantity: '', status: 'available', category: '' });
     setShowAddModal(true);
   };
 
@@ -119,7 +144,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
   };
 
   const saveAdd = async () => {
-    if (!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile) return;
+    if (!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || !addForm.category) return;
 
     setIsSubmittingAdd(true);
     try {
@@ -147,6 +172,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
           images: [uploadData.url],
           stock: Number(addForm.quantity) || 0,
           seller: localStorage.getItem('mhs_user_id') || undefined,
+          category: addForm.category,
         }),
       });
 
@@ -191,6 +217,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
                   <th>Name</th>
                   <th>Price</th>
                   <th style={{ textAlign: 'center' }}>Qty</th>
+                  <th>Category</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -210,6 +237,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
                       ฿{Number(product.price).toLocaleString()}
                     </td>
                     <td className="sb-qty">{product.quantity}</td>
+                    <td>{displayCategoryName(product.category)}</td>
                     <td>
                       <span
                         className={`sb-status-badge sb-status-${product.status}`}
@@ -239,7 +267,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
                 ))}
                 {products.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="sb-empty">
+                    <td colSpan="7" className="sb-empty">
                       <i
                         className="bx bx-package"
                         style={{ fontSize: 40, display: 'block', marginBottom: 10, color: '#ccc' }}
@@ -414,6 +442,23 @@ function SellerBoard({ isLoggedIn, onLogout }) {
                 />
               </div>
 
+              <div className="sb-form-row">
+                <label>Category *</label>
+                <select
+                  name="category"
+                  value={addForm.category}
+                  onChange={handleAddFormChange}
+                  className="sb-input sb-select"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat.name}>
+                      {displayCategoryName(cat.name)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="sb-form-row-group">
                 <div className="sb-form-row">
                   <label>Price (฿) *</label>
@@ -463,8 +508,8 @@ function SellerBoard({ isLoggedIn, onLogout }) {
               <button
                 className="btn-sb-save"
                 onClick={saveAdd}
-                disabled={!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || isSubmittingAdd}
-                style={{ opacity: !addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || isSubmittingAdd ? 0.5 : 1 }}
+                disabled={!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || !addForm.category || isSubmittingAdd}
+                style={{ opacity: !addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || !addForm.category || isSubmittingAdd ? 0.5 : 1 }}
               >
                 {isSubmittingAdd ? 'Uploading...' : 'Add'}
               </button>

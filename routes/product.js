@@ -41,11 +41,66 @@ const uploadToCloudinary = (buffer) =>
         stream.end(buffer)
     })
 
+// Initialize categories if they don't exist
+const initializeCategories = async () => {
+    const categories = [
+        { name: 'sport', displayName: 'Sport' },
+        { name: 'furniture', displayName: 'Furniture' },
+        { name: 'fashion', displayName: 'Fashion' },
+        { name: 'book', displayName: 'Book' },
+        { name: 'electronics', displayName: 'Electronics' },
+        { name: 'beauty', displayName: 'Beauty' },
+        { name: 'baby & kids', displayName: 'Baby & Kids' },
+        { name: 'pet supplies', displayName: 'Pet Supplies' }
+    ]
+    
+    try {
+        for (const cat of categories) {
+            try {
+                const exists = await Category.findOne({ name: cat.name })
+                if (!exists) {
+                    await Category.create({ name: cat.name, description: `${cat.displayName} products` })
+                    console.log(`✓ Created category: ${cat.name}`)
+                } else {
+                    console.log(`✓ Category already exists: ${cat.name}`)
+                }
+            } catch (createErr) {
+                if (createErr.code === 11000) {
+                    console.log(`✓ Category ${cat.name} exists (duplicate key)`)
+                } else {
+                    console.error(`✗ Error with category ${cat.name}:`, createErr.message)
+                }
+            }
+        }
+        
+        const allCats = await Category.find().select('name _id').sort({ name: 1 })
+        console.log(`✓ Total categories in DB: ${allCats.length}`)
+        return allCats
+    } catch (err) {
+        console.error("Error initializing categories:", err.message)
+        return []
+    }
+}
+
+router.get("/categories", async (req, res) => {
+    try {
+        console.log("📋 Fetching categories...")
+        await initializeCategories()
+        
+        const categories = await Category.find().select("name _id").sort({ name: 1 })
+        console.log(`✓ Returning ${categories.length} categories`)
+        res.json(categories)
+    } catch (err) {
+        console.error("❌ Error fetching categories:", err.message)
+        res.status(500).json({ message: err.message })
+    }
+})
+
 router.get("/", async (req, res)=>{
     try{
         const filter = {}
         if (req.query.seller) filter.seller = req.query.seller
-        const products = await Product.find(filter).populate('seller', 'username images rating ratingCount')
+        const products = await Product.find(filter).populate('seller', 'username images rating ratingCount').populate('category', 'name')
         res.json(products)   
     }catch(err){
         res.status(500).json({message : err.message})
@@ -54,7 +109,7 @@ router.get("/", async (req, res)=>{
 
 router.get("/:id", async (req, res)=>{
     try{
-        const product = await Product.findById(req.params.id).populate('seller', 'username images rating ratingCount')
+        const product = await Product.findById(req.params.id).populate('seller', 'username images rating ratingCount').populate('category', 'name')
         if(!product){
             return res.status(404).json({message : "ไม่มีใน Product"})
         }
@@ -138,12 +193,23 @@ router.post("/Addproduct", async (req,res)=>{
             sellerId = foundSeller?._id
         }
 
+        // Handle category - can be name or ID
         if (!categoryId) {
             const foundCategory = await Category.findOne().select("_id")
             categoryId = foundCategory?._id
+        } else if (typeof categoryId === 'string' && !categoryId.match(/^[0-9a-fA-F]{24}$/)) {
+            // If it looks like a name (not an ObjectId), find by name
+            const foundCategory = await Category.findOne({ name: categoryId.toLowerCase() })
+            if (foundCategory) {
+                categoryId = foundCategory._id
+            } else {
+                console.log(`Category not found: "${categoryId}"`)
+                return res.status(400).json({ message: `Category "${categoryId}" not found` })
+            }
         }
 
         if (!sellerId || !categoryId) {
+            console.log("Missing seller or category:", { sellerId, categoryId })
             return res.status(400).json({ message: "seller/category ไม่ครบ" })
         }
 

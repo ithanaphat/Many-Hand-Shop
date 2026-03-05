@@ -190,7 +190,6 @@ const categorySchema = new mongoose.Schema({
         type : String,
         required : true,
         unique: true, //กันซ้ำ
-        enum : ['Sport','Furniture','Fashion','Book','Electronics','Beauty','Baby & Kids','Pet Supplies'],
         lowercase : true, //บันทึกเป็นตัวเล็ก
         trim : true
     },
