@@ -18,6 +18,7 @@ const ProductInfo = ({ product }) => {
   const productPrice = displayProduct.price || displayProduct.itemPrice;
   const sellerName = displayProduct.sellerName || displayProduct.seller?.username || "Unknown";
   const sellerImage = displayProduct.sellerImage || "https://i.pravatar.cc/150?u=default";
+  const sellerId = displayProduct.seller?._id || displayProduct.seller || null;
   const rating = Number(displayProduct.sellerRating ?? displayProduct.seller?.rating ?? 0);
   const maxRating = 5;
   const fullStars = Math.floor(rating);
@@ -114,7 +115,12 @@ const ProductInfo = ({ product }) => {
         </button>
       </div>
 
-      <div className="seller-info">
+      <div
+        className="seller-info"
+        onClick={() => sellerId && navigate(`/seller/${sellerId}`)}
+        style={{ cursor: sellerId ? 'pointer' : 'default' }}
+        title={sellerId ? `View ${sellerName}'s profile` : ''}
+      >
         <img src={sellerImage} alt="Seller" className="seller-avatar" />
         <div>
           <p className="seller-name">{sellerName}</p>
