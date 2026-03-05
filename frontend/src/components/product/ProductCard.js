@@ -20,6 +20,13 @@ function ProductCard(props) {
     navigate(`/product/${props.id}`, { state: { product: productData } });
   };
 
+  const handleSellerClick = (e) => {
+    e.stopPropagation();
+    if (props.sellerId) {
+      navigate(`/seller/${props.sellerId}`);
+    }
+  };
+
   // Dynamic font size based on price length
   const priceStr = Number(props.itemPrice).toLocaleString() + '$';
   const priceFontSize = priceStr.length > 12 ? '0.78rem' : priceStr.length > 9 ? '0.95rem' : '1.1rem';
@@ -35,8 +42,21 @@ function ProductCard(props) {
       onClick={handleClick}
       style={{ cursor: "pointer" }}
     >
-      <img src={props.sellerImage} alt="seller" className="profile-pic" />
-      <span className="seller-name">{props.sellerName}</span>
+      <img
+        src={props.sellerImage}
+        alt="seller"
+        className="profile-pic"
+        onClick={handleSellerClick}
+        style={{ cursor: props.sellerId ? 'pointer' : 'default' }}
+        title={props.sellerId ? `View ${props.sellerName}'s profile` : ''}
+      />
+      <span
+        className="seller-name"
+        onClick={handleSellerClick}
+        style={{ cursor: props.sellerId ? 'pointer' : 'default' }}
+      >
+        {props.sellerName}
+      </span>
 
       <div className="product-image-box">
         <img

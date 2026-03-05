@@ -29,6 +29,7 @@ const mapProductForBoard = (product) => ({
   quantity: Number(product.stock ?? product.quantity) || 0,
   status: Number(product.stock ?? product.quantity) > 0 ? 'available' : 'sold',
   category: product.category?.name || product.category || '',
+  categoryId: product.category?._id?.toString() || '',
   description: product.description || '',
 });
 
@@ -101,28 +102,66 @@ function SellerBoard({ isLoggedIn, onLogout }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const saveEdit = () => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === editProduct.id
-          ? {
-              ...p,
-              ...form,
-              price: Number(form.price),
-              quantity: Number(form.quantity),
-            }
-          : p
-      )
-    );
-    closeEdit();
+  const saveEdit = async () => {
+    if (!editProduct?.id) return;
+    try {
+      const body = {
+        name: form.name?.trim(),
+        description: form.description?.trim(),
+        price: Number(form.price),
+        stock: Number(form.quantity),
+        images: form.image ? [form.image] : undefined,
+      };
+      if (form.categoryId) body.category = form.categoryId;
+      const res = await fetch(`${PRODUCT_API}/${editProduct.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert(data.message || 'Update failed');
+        return;
+      }
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === editProduct.id
+            ? {
+                ...p,
+                name: form.name,
+                description: form.description,
+                price: Number(form.price),
+                quantity: Number(form.quantity),
+                status: Number(form.quantity) > 0 ? 'available' : 'sold',
+                category: form.category,
+                categoryId: form.categoryId,
+                image: form.image,
+              }
+            : p
+        )
+      );
+      closeEdit();
+    } catch (err) {
+      alert('Cannot connect to server');
+    }
   };
 
   /* ---- Delete ---- */
   const confirmDelete = (id) => setDeleteId(id);
   const cancelDelete = () => setDeleteId(null);
-  const doDelete = () => {
-    setProducts((prev) => prev.filter((p) => p.id !== deleteId));
-    setDeleteId(null);
+  const doDelete = async () => {
+    try {
+      const res = await fetch(`${PRODUCT_API}/${deleteId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.message || 'Delete failed');
+        return;
+      }
+      setProducts((prev) => prev.filter((p) => p.id !== deleteId));
+      setDeleteId(null);
+    } catch (err) {
+      alert('Cannot connect to server');
+    }
   };
 
   /* ---- Add ---- */
@@ -329,6 +368,39 @@ function SellerBoard({ isLoggedIn, onLogout }) {
                   className="sb-input"
                   placeholder="https://..."
                 />
+              </div>
+
+              <div className="sb-form-row">
+                <label>Description</label>
+                <textarea
+                  name="description"
+                  value={form.description || ''}
+                  onChange={handleFormChange}
+                  className="sb-input"
+                  placeholder="Describe your product"
+                  rows="3"
+                />
+              </div>
+
+              <div className="sb-form-row">
+                <label>Category</label>
+                <select
+                  name="categoryId"
+                  value={form.categoryId || ''}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    const selectedCat = categories.find(c => c._id === selectedId);
+                    setForm(prev => ({ ...prev, categoryId: selectedId, category: selectedCat?.name || '' }));
+                  }}
+                  className="sb-input sb-select"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>
+                      {displayCategoryName(cat.name)}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="sb-form-row-group">

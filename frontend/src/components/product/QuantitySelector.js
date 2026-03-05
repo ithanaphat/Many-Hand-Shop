@@ -21,7 +21,20 @@ const QuantitySelector = ({ quantity, onQuantityChange, max }) => {
       >
         −
       </button>
-      <span className="qty-value">{count}</span>
+      <input
+        className="qty-value"
+        type="number"
+        min="1"
+        max={max != null ? max : undefined}
+        value={count}
+        onChange={(e) => {
+          const val = parseInt(e.target.value, 10);
+          if (isNaN(val) || val < 1) return setCount(1);
+          if (max != null && val > max) return setCount(max);
+          setCount(val);
+        }}
+        style={{ width: '48px',height: '40px', textAlign: 'center', border: '1px solid #ddd', borderRadius: '6px', padding: '4px 0', fontSize: '1rem', MozAppearance: 'textfield' }}
+      />
       <button 
         className="qty-btn plus"
         onClick={() => !atMax && setCount(count + 1)}
