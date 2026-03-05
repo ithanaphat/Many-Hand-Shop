@@ -99,6 +99,7 @@ function Home({ isLoggedIn, onLogout }) {
             <ProductCard 
               key={product._id}
               id={product._id}
+              sellerId={product.seller?._id}
               sellerName={product.seller?.username || product.sellerName || 'Seller'}
               sellerImage={product.seller?.images?.[0] || product.sellerImage || 'https://i.pravatar.cc/150?u=default'}
               productImage={product.images?.[0]}

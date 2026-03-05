@@ -93,6 +93,7 @@ function Search({ isLoggedIn, onLogout }) {
               <ProductCard
                 key={product._id}
                 id={product._id}
+                sellerId={product.seller?._id}
                 sellerName={product.seller?.username || 'Seller'}
                 sellerImage={
                   product.seller?.images?.[0] ||

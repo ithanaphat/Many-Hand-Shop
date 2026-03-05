@@ -10,16 +10,16 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
   const { productId } = useParams();
   const location = useLocation();
   const [product, setProduct] = useState(location.state?.product || null);
-  const [loading, setLoading] = useState(!product);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (product) return; // If product already loaded from navigation state, don't fetch
+    if (!productId) return;
 
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:9000/api/products/${productId}`);
+        const response = await fetch(`/api/product/${productId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch product");
         }
@@ -34,10 +34,8 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
       }
     };
 
-    if (productId) {
-      fetchProduct();
-    }
-  }, [productId, product]);
+    fetchProduct();
+  }, [productId]);
 
   return (
     <>
