@@ -20,6 +20,11 @@ function Home({ isLoggedIn, onLogout }) {
   const [popularProducts, setPopularProducts] = useState([]); // top items for the popular section
   const [loading, setLoading] = useState(true);
 
+  const handleCatalogClick = (categoryName) => {
+    const normalizedCategory = (categoryName || 'all').toLowerCase();
+    navigate(`/products?category=${encodeURIComponent(normalizedCategory)}`);
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       console.log('⏱️ fetching products from backend');
@@ -102,7 +107,11 @@ function Home({ isLoggedIn, onLogout }) {
           <h2 className="catalog-title">catalog</h2>
           <div className="catalog-items">
             {categories.map((cat) => (
-              <div key={cat.name} className="catalog-item">
+              <div
+                key={cat.name}
+                className="catalog-item"
+                onClick={() => handleCatalogClick(cat.name)}
+              >
                 <div className="catalog-icon">{cat.icon}</div>
                 <div className="catalog-name">{cat.name}</div>
               </div>
@@ -134,7 +143,12 @@ function Home({ isLoggedIn, onLogout }) {
 
         {/* ปุ่ม Show More */}
         <div className="show-more-container">
-          <button className="show-more-btn">SHOW MORE</button>
+          <button 
+            className="show-more-btn"
+            onClick={() => navigate('/products')}
+          >
+            SHOW MORE
+          </button>
         </div>
       </main>
       
