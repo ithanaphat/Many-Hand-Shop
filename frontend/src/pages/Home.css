@@ -1,3 +1,11 @@
+/* Brand palette */
+:root {
+  --brand-dark: #777d63;
+  --brand-soft: #9da693;
+  --brand-mist: #dbe2d3;
+  --brand-ink: #2f3b34;
+}
+
 /* ตั้งค่าพื้นฐานสำหรับหน้า Home */
 .home-page {
   background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
@@ -13,7 +21,7 @@
 
 /* ส่วน Popular สีเขียวด้านบน */
 .popular-section {
-  background: linear-gradient(135deg, #777D63 16%, #9DA693 80%);
+  background: linear-gradient(135deg, var(--brand-dark) 16%, var(--brand-soft) 80%);
   padding-top: 120px;
   padding-bottom: 80px;
   position: relative;
@@ -78,7 +86,7 @@
   right: -50%;
   width: 600px;
   height: 600px;
-  background: rgba(102, 126, 234, 0.03);
+  background: rgba(119, 125, 99, 0.08);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -99,7 +107,7 @@
   display: inline-block;
   width: 100px;
   height: 4px;
-  background: linear-gradient(135deg, #777D63 16%, #9DA693 80%);
+  background: linear-gradient(135deg, var(--brand-dark) 16%, var(--brand-soft) 80%);
   margin-left: 10px;
   vertical-align: middle;
   border-radius: 2px;
@@ -136,7 +144,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(119, 125, 99, 0.14) 0%, rgba(157, 166, 147, 0.2) 100%);
   border-radius: 15px;
   opacity: 0;
   transition: opacity 0.4s ease;
@@ -145,8 +153,8 @@
 
 .catalog-item:hover {
   transform: translateY(-12px) scale(1.08);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
-  border-color: #667eea;
+  box-shadow: 0 15px 40px rgba(119, 125, 99, 0.35);
+  border-color: var(--brand-dark);
 }
 
 .catalog-item:hover::before {
@@ -154,7 +162,7 @@
 }
 
 .catalog-item:hover .catalog-name {
-  color: #667eea;
+  color: var(--brand-dark);
 }
 
 .catalog-icon {
@@ -174,7 +182,7 @@
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 1px;
-  color: #2c3e50;
+  color: var(--brand-ink);
   transition: color 0.4s ease;
   text-transform: uppercase;
   position: relative;
@@ -200,7 +208,7 @@
 }
 
 .show-more-btn {
-  background: linear-gradient(135deg, #777D63 16%, #9DA693 80%);
+  background: linear-gradient(135deg, var(--brand-dark) 16%, var(--brand-soft) 80%);
   color: white;
   border: none;
   padding: 16px 60px;
@@ -209,7 +217,7 @@
   font-size: 15px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 25px rgba(119, 125, 99, 0.35);
   text-transform: uppercase;
   letter-spacing: 1px;
   position: relative;
@@ -229,7 +237,7 @@
 
 .show-more-btn:hover {
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 15px 40px rgba(119, 125, 99, 0.5);
 }
 
 .show-more-btn:hover::before {
