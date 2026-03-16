@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./ProductDetail.css";
 
 const ProductGallery = ({ productImage }) => {
-  // Handle both old format (productImage string) and new format (images array)
   let images = [];
   if (productImage) {
     images = [productImage, productImage, productImage, productImage];
@@ -16,6 +15,14 @@ const ProductGallery = ({ productImage }) => {
   }
 
   const [mainImage, setMainImage] = useState(images[0]);
+
+  useEffect(() => {
+    if (productImage) {
+      setMainImage(productImage);
+    } else {
+      setMainImage("https://via.placeholder.com/350");
+    }
+  }, [productImage]);
 
   return (
     <div className="gallery">

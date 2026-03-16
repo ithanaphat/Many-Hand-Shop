@@ -323,12 +323,14 @@
 }
 
 .related {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   flex-wrap: wrap;
   justify-content: center;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
 }
 
 /* Footer Simple */
@@ -378,7 +380,7 @@
   }
 
   .related {
-    gap: 15px;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .related-products-section {
