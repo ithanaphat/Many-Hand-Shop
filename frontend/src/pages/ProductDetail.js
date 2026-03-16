@@ -16,6 +16,11 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
   useEffect(() => {
     if (!productId) return;
 
+    window.scrollTo(0, 0);
+
+    setError(null);
+    setProduct(location.state?.product || null);
+
     const fetchProduct = async () => {
       try {
         setLoading(true);
@@ -35,7 +40,7 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
     };
 
     fetchProduct();
-  }, [productId]);
+  }, [productId, location.state]);
 
   return (
     <>
@@ -51,7 +56,7 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
             </div>
           )}
         </div>
-        <RelatedProducts />
+        <RelatedProducts key={productId} />
       </div>
       <footer className="footer-simple">
         <p>&copy; 2026 Many Hand Shop. All rights reserved.</p>
