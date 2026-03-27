@@ -4,7 +4,7 @@
   margin: 40px; /* เผื่อพื้นที่ด้านบนและซ้ายให้รูปโปรไฟล์ที่ล้นออกไป */
   font-family: 'Montserrat', sans-serif;
 }
-
+ 
 .card-popular-badge {
   position: absolute;
   top: -16px;
@@ -18,7 +18,7 @@
   z-index: 3;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
-
+ 
 /* ตั้งค่ารูปโปรไฟล์ให้ลอยทับมุมซ้ายบน */
 .profile-pic {
   position: absolute;
@@ -31,7 +31,7 @@
   object-fit: cover;
   z-index: 2; /* สั่งให้อยู่ชั้นบนสุด ทับกล่องสีเทา */
 }
-
+ 
 /* ตั้งค่าชื่อแม่ค้า */
 .seller-name {
   position: absolute;
@@ -41,7 +41,7 @@
   font-size: 1rem;
   z-index: 2;
 }
-
+ 
 /* กล่องจำลองรูปสินค้าสีเทา */
 .product-image-box {
   width: 100%;
@@ -49,18 +49,18 @@
   background-color: #d1d1d1;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  
+ 
   /* เพิ่มบรรทัดนี้ เพื่อตัดขอบรูปที่ล้นมุมโค้งๆ ออกไป */
-  overflow: hidden; 
+  overflow: hidden;
 }
-
+ 
 .product-image {
   width: 100%;
   height: 100%;
   /* ทำให้รูปซูมพอดีกล่อง สัดส่วนไม่เบี้ยว */
-  object-fit: cover; 
+  object-fit: cover;
 }
-
+ 
 /* ส่วนจัดวางชื่อและราคาสินค้าให้อยู่ซ้าย-ขวา */
 .product-details {
   display: flex;
@@ -70,7 +70,7 @@
   padding: 0 5px;
   gap: 6px;
 }
-
+ 
 .item-name {
   font-size: 1rem;
   color: #000;
@@ -80,14 +80,14 @@
   flex: 1;
   min-width: 0;
 }
-
+ 
 .item-price {
   font-weight: 700;
   color: #000;
   white-space: nowrap;
   flex-shrink: 0;
 }
-
+ 
 .card-rating-row {
   padding: 4px 5px 0;
   display: flex;
@@ -96,18 +96,18 @@
   font-size: 13px;
   color: #f5a623;
 }
-
+ 
 .card-rating-value {
   color: #888;
   font-size: 11px;
   margin-left: 4px;
 }
-
+ 
 .card-stock-row {
   padding: 0 5px;
   margin-top: 6px;
 }
-
+ 
 .card-stock {
   display: inline-block;
   padding: 2px 10px;
@@ -115,21 +115,46 @@
   font-size: 11px;
   font-weight: 600;
 }
-
+ 
 .card-stock.in {
   background: #e8f5e9;
   color: #2e7d32;
   border: 1px solid #a5d6a7;
 }
-
+ 
 .card-stock.low {
   background: #fff8e1;
   color: #e65100;
   border: 1px solid #ffcc80;
 }
-
+ 
 .card-stock.out {
   background: #ffebee;
   color: #c62828;
   border: 1px solid #ef9a9a;
+}
+ 
+/* Styles for popular product cards in popular section */
+.product-card.popular-item .item-name {
+  color: #ffffff;
+}
+ 
+.product-card.popular-item .item-price {
+  color: #ffffff;
+}
+ 
+.product-card.popular-item .seller-name {
+  color: #ffffff;
+}
+ 
+.product-card.popular-item .card-rating-row {
+  color: #ffffff;
+}
+ 
+.product-card.popular-item .card-rating-value {
+  color: #ffffff;
+}
+ 
+.product-card.popular-item .card-popular-badge {
+  color: #ffffff;
 }
