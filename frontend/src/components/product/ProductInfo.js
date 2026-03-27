@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import QuantitySelector from "./QuantitySelector";
 import "./ProductDetail.css";
-
+ 
 const ProductInfo = ({ product }) => {
   const navigate = useNavigate();
   const [qty, setQty] = React.useState(1);
@@ -12,7 +12,7 @@ const ProductInfo = ({ product }) => {
     price: "0",
     sellerImage: "https://i.pravatar.cc/150?u=default"
   };
-
+ 
   // Map database fields to component display
   const productName = displayProduct.name || displayProduct.itemName;
   const productPrice = displayProduct.price || displayProduct.itemPrice;
@@ -26,7 +26,7 @@ const ProductInfo = ({ product }) => {
   const reviews = displayProduct.seller?.ratingCount || displayProduct.ratingCount || 0;
   const description = displayProduct.description || "Authentic pre-loved item in excellent condition. Perfect for collectors and fashion enthusiasts.";
   const stock = displayProduct.stock ?? null;
-
+ 
   const getStarStyle = (index) => {
     if (index < fullStars) return { color: '#f5b301' };
     if (index === fullStars && partial > 0) {
@@ -39,9 +39,9 @@ const ProductInfo = ({ product }) => {
     }
     return { color: '#c8cfc0' };
   };
-
+ 
   const [cartMsg, setCartMsg] = React.useState('');
-
+ 
   const handleAddToCart = () => {
     const maxStock = stock ?? Infinity;
     const cart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
@@ -71,7 +71,12 @@ const ProductInfo = ({ product }) => {
     setCartMsg('Added to cart ✓');
     setTimeout(() => setCartMsg(''), 2000);
   };
-
+ 
+  const handleBuyNow = () => {
+    handleAddToCart();
+    navigate('/cart');
+  };
+ 
   return (
     <div className="info">
       <h2>{productName}</h2>
@@ -89,7 +94,7 @@ const ProductInfo = ({ product }) => {
         <span className="pd-reviews">({reviews} {reviews === 1 ? 'review' : 'reviews'})</span>
       </div>
       <h3 className="price">${Number(productPrice).toLocaleString()}</h3>
-
+ 
       {stock !== null && (
         <div className="stock-badge-row">
           {stock === 0 ? (
@@ -101,13 +106,13 @@ const ProductInfo = ({ product }) => {
           )}
         </div>
       )}
-
+ 
       <div className="product-description">
         <p>{description}</p>
       </div>
-
+ 
 <QuantitySelector quantity={qty} onQuantityChange={setQty} max={stock ?? undefined} />
-
+ 
       <div className="buttons">
         <button
           className="add"
@@ -117,11 +122,11 @@ const ProductInfo = ({ product }) => {
         >
           {stock === 0 ? 'OUT OF STOCK' : (cartMsg || 'ADD TO CART')}
         </button>
-        <button className="buy" onClick={() => navigate('/checkout', { state: { product: displayProduct, quantity: qty } })}>
+        <button className="buy" onClick={handleBuyNow} disabled={stock === 0} style={{ cursor: stock === 0 ? 'not-allowed' : 'pointer', opacity: stock === 0 ? 0.6 : 1 }}>
           BUY NOW
         </button>
       </div>
-
+ 
       <div
         className="seller-info"
         onClick={() => sellerId && navigate(`/seller/${sellerId}`)}
@@ -137,5 +142,6 @@ const ProductInfo = ({ product }) => {
     </div>
   );
 };
-
+ 
 export default ProductInfo;
+ 

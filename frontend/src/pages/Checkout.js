@@ -266,7 +266,7 @@ function Checkout({ isLoggedIn, onLogout }) {
                   <label className="ck-label">CVV</label>
                   <input className="ck-input" name="cvv" value={card.cvv}
                     onChange={handleCard} placeholder="•••" type="password"
-                    inputMode="numeric" required />
+                    inputMode="numeric" maxLength={3} required />
                 </div>
               </div>
             </div>

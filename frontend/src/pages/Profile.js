@@ -84,7 +84,12 @@ function Profile({ isLoggedIn, onLogout }) {
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setEditForm((prev) => ({ ...prev, [name]: value }));
+    if (name === 'phone') {
+      const numericValue = value.replace(/\D/g, '');
+      setEditForm((prev) => ({ ...prev, [name]: numericValue }));
+    } else {
+      setEditForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleImageChange = (e) => {
@@ -385,6 +390,8 @@ function Profile({ isLoggedIn, onLogout }) {
                   onChange={handleEditChange}
                   className="profile-input"
                   placeholder="0XX-XXXXXX"
+                  inputMode='numeric'
+                  maxLength={10}
                 />
               </div>
 
