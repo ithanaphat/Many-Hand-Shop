@@ -2,10 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProductCard.css";
 import 'boxicons/css/boxicons.min.css';
-
+ 
 function ProductCard(props) {
   const navigate = useNavigate();
-
+ 
   const handleClick = () => {
     const productData = {
       sellerImage: props.sellerImage,
@@ -19,26 +19,26 @@ function ProductCard(props) {
     };
     navigate(`/product/${props.id}`, { state: { product: productData } });
   };
-
+ 
   const handleSellerClick = (e) => {
     e.stopPropagation();
     if (props.sellerId) {
       navigate(`/seller/${props.sellerId}`);
     }
   };
-
+ 
   // Dynamic font size based on price length
   const priceStr = Number(props.itemPrice).toLocaleString() + '$';
   const priceFontSize = priceStr.length > 12 ? '0.78rem' : priceStr.length > 9 ? '0.95rem' : '1.1rem';
-
+ 
   // Seller rating stars
   const rating = Number(props.sellerRating) || 0;
   const fullStars = Math.floor(rating);
   const hasHalf = rating - fullStars >= 0.5;
-
+ 
   return (
     <div
-      className="product-card"
+      className={`product-card${Number(props.popularSoldCount) > 0 ? ' popular-item' : ''}`}
       onClick={handleClick}
       style={{ cursor: "pointer" }}
     >
@@ -60,7 +60,7 @@ function ProductCard(props) {
       >
         {props.sellerName}
       </span>
-
+ 
       <div className="product-image-box">
         <img
           src={props.productImage}
@@ -68,12 +68,12 @@ function ProductCard(props) {
           className="product-image"
         />
       </div>
-
+ 
       <div className="product-details">
         <span className="item-name">{props.itemName}</span>
         <span className="item-price" style={{ fontSize: priceFontSize }}>{Number(props.itemPrice).toLocaleString()}$</span>
       </div>
-
+ 
       <div className="card-rating-row">
         {[1, 2, 3, 4, 5].map((star) => (
           <i
@@ -89,7 +89,7 @@ function ProductCard(props) {
         ))}
         <span className="card-rating-value">{rating > 0 ? rating.toFixed(1) : 'No rating'}</span>
       </div>
-
+ 
       {props.stock !== undefined && props.stock !== null && (
         <div className="card-stock-row">
           {props.stock === 0 ? (
@@ -104,5 +104,6 @@ function ProductCard(props) {
     </div>
   );
 }
-
+ 
 export default ProductCard;
+ 
