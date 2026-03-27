@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./ProductDetail.css";
 
 const ProductGallery = ({ productImages = [] }) => {
   // ถ้า productImages ว่าง ใช้ placeholder
-  const images = productImages && productImages.length > 0 
-    ? productImages 
-    : ["https://via.placeholder.com/350"];
+  const images = useMemo(() => {
+    return productImages && productImages.length > 0
+      ? productImages
+      : ["https://via.placeholder.com/350"];
+  }, [productImages]);
 
-  const [mainImage, setMainImage] = useState(images[0]);
+  const [mainImage, setMainImage] = useState(() => images[0]);
 
   useEffect(() => {
     if (images.length > 0) {
