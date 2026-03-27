@@ -137,6 +137,16 @@ const orderSchema = new mongoose.Schema({
             type: Number,
             required: true,
             min: 0
+        },
+        review: {
+            rating: {
+                type: Number,
+                min: 1,
+                max: 5
+            },
+            ratedAt: {
+                type: Date
+            }
         }
     }],
     required: true,
@@ -240,11 +250,12 @@ const cartsSchema = new mongoose.Schema({
 
 orderSchema.index({ buyer: 1 })
 orderSchema.index({ createdAt: -1 })
-cartsSchema.index({ user: 1 })
 
 // Model เอาไว้คุยกับ Database
 const User = mongoose.model("User", userSchema) 
 const Product = mongoose.model("Product", productSchema)
 const Category = mongoose.model("Category", categorySchema)
+const Order = mongoose.model("Order", orderSchema)
+const Cart = mongoose.model("Cart", cartsSchema)
 
-module.exports = {User, Product, Category}
+module.exports = {User, Product, Category, Order, Cart}

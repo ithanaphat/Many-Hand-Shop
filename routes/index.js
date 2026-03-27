@@ -5,10 +5,12 @@ const loginRouter = require("./login")
 const registerRouter = require("./register")
 const productsRouter = require("./product")
 const userRouter = require("./user")
+const orderRouter = require("./order")
 
 router.use("/api/login", loginRouter)
 router.use("/api/register", registerRouter)
 router.use("/api/product", productsRouter)
 router.use("/api/user", userRouter)
+router.use("/api/order", orderRouter)
 
 module.exports = router

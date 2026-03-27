@@ -42,6 +42,9 @@ function ProductCard(props) {
       onClick={handleClick}
       style={{ cursor: "pointer" }}
     >
+      {Number(props.popularSoldCount) > 0 && (
+        <span className="card-popular-badge">Sold {Number(props.popularSoldCount)}</span>
+      )}
       <img
         src={props.sellerImage}
         alt="seller"
