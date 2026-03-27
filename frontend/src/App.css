@@ -1,6 +1,6 @@
 .App {
   text-align: left;
-  padding-top: 80px; /* ensure content sits below larger fixed header */
+  padding-top: clamp(72px, 7.8vw, 88px); /* ensure content sits below larger fixed header */
 }
 
 
@@ -10,7 +10,7 @@
 }
 
 .App-header {
-  padding: 19.2px 24px;
+  padding: clamp(12px, 1.6vw, 19px) clamp(12px, 2vw, 24px);
   background: #666C49;
   color: #fff;
   display: flex;
@@ -43,7 +43,7 @@
 
 .brand {
   margin: 0;
-  font-size: 26px;
+  font-size: clamp(18px, 1.25vw, 26px);
   color: #fff;
   font-weight: 700;
 }
@@ -77,9 +77,8 @@
 }
 
 .search-wrap {
-  width: 420px;
-  min-width: 300px;
-  max-width: 55vw;
+  width: min(420px, 55vw);
+  min-width: 230px;
   position: relative;
 }
 
@@ -198,20 +197,28 @@
 }
 
 .brand-button .logo {
-  width: 48px;
+  width: clamp(34px, 3vw, 48px);
   height: auto;
   display: block;
 }
 
 .brand-button .brand {
-  font-size: 25px;
+  font-size: clamp(17px, 1.3vw, 25px);
   font-weight: 700;
   color: #fff;
 }
 
+@media (max-width: 1120px) {
+  .search-wrap {
+    width: min(340px, 48vw);
+    min-width: 190px;
+  }
+}
+
 /* Responsive: shrink search and stack controls on small screens */
 @media (max-width: 880px) {
-  .search-wrap { width: 220px; max-width: 40vw; }
+  .App { padding-top: 70px; }
+  .search-wrap { width: min(280px, 62vw); max-width: 62vw; min-width: 0; }
   .center { position: static; transform: none; left: auto; top: auto; justify-content: flex-start; margin-left: 6.4px; z-index: auto; }
   .auth-buttons { margin-left: 4.8px; gap: 4.8px; }
 }
@@ -220,7 +227,8 @@
 @media (max-width: 520px) {
   .App-header { padding: 13.6px 13.6px; }
   .brand-button .logo { width: 32px; }
-  .search-wrap { width: 160px; max-width: 55vw; }
+  .brand-button .brand { display: none; }
+  .search-wrap { width: min(210px, 64vw); max-width: 64vw; }
   .auth-buttons { margin-right: 6.4px; }
 }
 
