@@ -3,7 +3,7 @@ const router = express.Router()
 const multer = require("multer")
 const cloudinary = require("cloudinary").v2
 
-const { Product, User, Category } = require("../models/user")
+const { Product, User, Category, Order } = require("../models/user")
 
 const upload = multer({ storage: multer.memoryStorage() })
 
@@ -104,6 +104,70 @@ router.get("/", async (req, res)=>{
         res.json(products)   
     }catch(err){
         res.status(500).json({message : err.message})
+    }
+})
+
+router.get("/popular", async (req, res) => {
+    try {
+        const requestedLimit = Number.parseInt(req.query.limit, 10)
+        const limit = Number.isInteger(requestedLimit) && requestedLimit > 0 ? requestedLimit : 4
+
+        const popularProducts = await Order.aggregate([
+            { $unwind: "$items" },
+            {
+                $group: {
+                    _id: "$items.product",
+                    totalSold: { $sum: "$items.quantity" },
+                    purchaseCount: { $sum: 1 },
+                    latestPurchaseAt: { $max: "$createdAt" },
+                },
+            },
+            { $sort: { totalSold: -1, purchaseCount: -1, latestPurchaseAt: -1 } },
+            { $limit: limit },
+        ])
+
+        if (popularProducts.length === 0) {
+            const fallbackProducts = await Product.find()
+                .sort({ createdAt: -1 })
+                .limit(limit)
+                .populate('seller', 'username images rating ratingCount')
+                .populate('category', 'name')
+
+            return res.json(
+                fallbackProducts.map((product) => ({
+                    ...product.toObject(),
+                    totalSold: 0,
+                    purchaseCount: 0,
+                }))
+            )
+        }
+
+        const productIds = popularProducts.map((item) => item._id)
+        const products = await Product.find({ _id: { $in: productIds } })
+            .populate('seller', 'username images rating ratingCount')
+            .populate('category', 'name')
+
+        const productsById = new Map(products.map((product) => [String(product._id), product]))
+
+        const orderedProducts = popularProducts
+            .map((item) => {
+                const product = productsById.get(String(item._id))
+                if (!product) {
+                    return null
+                }
+
+                return {
+                    ...product.toObject(),
+                    totalSold: item.totalSold,
+                    purchaseCount: item.purchaseCount,
+                }
+            })
+            .filter(Boolean)
+
+        res.json(orderedProducts)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: err.message })
     }
 })
 

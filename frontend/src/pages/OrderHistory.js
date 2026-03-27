@@ -7,6 +7,7 @@ import './OrderHistory.css';
 function OrderHistory({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
   const userId = localStorage.getItem('mhs_user_id');
+  const userName = localStorage.getItem('mhs_user_name') || 'Buyer';
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -46,6 +47,13 @@ function OrderHistory({ isLoggedIn, onLogout }) {
     () => orders.reduce((sum, order) => sum + order.items.length, 0),
     [orders]
   );
+
+  const ratedItems = useMemo(
+    () => orders.reduce((sum, order) => sum + order.items.filter((item) => item.review?.rating).length, 0),
+    [orders]
+  );
+
+  const pendingRatings = Math.max(totalItems - ratedItems, 0);
 
   const updateSelectedRating = (itemId, rating) => {
     setSelectedRatings((prev) => ({ ...prev, [itemId]: rating }));
@@ -120,15 +128,20 @@ function OrderHistory({ isLoggedIn, onLogout }) {
       />
 
       <main className="order-history-shell">
-        <section className="order-history-hero">
-          <div>
+        <section className="order-history-banner">
+          <div className="order-history-banner-copy">
             <p className="order-history-eyebrow">PURCHASED ITEMS</p>
-            <h1>Order history and seller ratings</h1>
+            <h1>Order history</h1>
             <p className="order-history-subtitle">
-              Review the items you already bought and rate each seller after the purchase is complete.
+              Keep track of everything you have bought and rate sellers after each completed purchase.
             </p>
+            <div className="order-history-banner-badges">
+              <span className="order-history-badge">Buyer: {userName}</span>
+              <span className="order-history-badge">Rated items: {ratedItems}</span>
+              <span className="order-history-badge soft">Pending ratings: {pendingRatings}</span>
+            </div>
           </div>
-          <div className="order-history-stats">
+          <div className="order-history-stats-panel">
             <div className="order-history-stat-card">
               <span className="order-history-stat-label">Orders</span>
               <strong>{orders.length}</strong>
@@ -137,19 +150,23 @@ function OrderHistory({ isLoggedIn, onLogout }) {
               <span className="order-history-stat-label">Purchased items</span>
               <strong>{totalItems}</strong>
             </div>
+            <div className="order-history-stat-card muted">
+              <span className="order-history-stat-label">Waiting for review</span>
+              <strong>{pendingRatings}</strong>
+            </div>
           </div>
         </section>
 
         {loading ? (
-          <section className="order-history-empty">
+          <section className="order-history-empty section-card">
             <p>Loading your orders...</p>
           </section>
         ) : error ? (
-          <section className="order-history-empty error">
+          <section className="order-history-empty section-card error">
             <p>{error}</p>
           </section>
         ) : orders.length === 0 ? (
-          <section className="order-history-empty">
+          <section className="order-history-empty section-card">
             <h2>No purchase history yet</h2>
             <p>Once you complete checkout, your purchased items will appear here.</p>
             <button type="button" className="order-history-primary-btn" onClick={() => navigate('/products')}>
@@ -161,19 +178,34 @@ function OrderHistory({ isLoggedIn, onLogout }) {
             {orders.map((order) => (
               <article key={order._id} className="order-history-card">
                 <div className="order-history-card-head">
-                  <div>
+                  <div className="order-history-card-head-main">
                     <p className="order-history-order-id">Order #{String(order._id).slice(-6).toUpperCase()}</p>
                     <h2>{new Date(order.createdAt).toLocaleDateString('en-GB', {
                       day: '2-digit',
                       month: 'short',
                       year: 'numeric',
                     })}</h2>
+                    <div className="order-history-meta-row">
+                      <span className="order-history-meta-pill">{order.paymentMethod || 'Payment unavailable'}</span>
+                      <span className="order-history-meta-pill">Shipping ฿{Number(order.shippingFee || 0).toLocaleString()}</span>
+                    </div>
                   </div>
                   <div className="order-history-summary">
                     <span>{order.items.length} item{order.items.length > 1 ? 's' : ''}</span>
                     <strong>฿{Number(order.totalPrice || 0).toLocaleString()}</strong>
                   </div>
                 </div>
+
+                {order.shippingInfo?.address && (
+                  <div className="order-history-shipping-box">
+                    <span className="order-history-shipping-label">Ship to</span>
+                    <p>
+                      {order.shippingInfo.name || 'Customer'}
+                      {order.shippingInfo.phone ? ` • ${order.shippingInfo.phone}` : ''}
+                    </p>
+                    <p>{order.shippingInfo.address}</p>
+                  </div>
+                )}
 
                 <div className="order-history-items">
                   {order.items.map((item) => {
@@ -195,14 +227,19 @@ function OrderHistory({ isLoggedIn, onLogout }) {
 
                           <div className="order-history-item-copy">
                             <h3>{item.product?.name || 'Product removed'}</h3>
-                            <button
-                              type="button"
-                              className="order-history-link-btn"
-                              onClick={() => sellerProfile && navigate(sellerProfile)}
-                              disabled={!sellerProfile}
-                            >
-                              {item.seller?.username || 'Unknown seller'}
-                            </button>
+                            <div className="order-history-item-subrow">
+                              <button
+                                type="button"
+                                className="order-history-link-btn"
+                                onClick={() => sellerProfile && navigate(sellerProfile)}
+                                disabled={!sellerProfile}
+                              >
+                                {item.seller?.username || 'Unknown seller'}
+                              </button>
+                              <span className="order-history-item-status">
+                                {item.review?.rating ? 'Reviewed' : 'Awaiting rating'}
+                              </span>
+                            </div>
                             <p>Quantity: {item.quantity}</p>
                             <p>Paid: ฿{(Number(item.price || 0) * Number(item.quantity || 0)).toLocaleString()}</p>
                           </div>

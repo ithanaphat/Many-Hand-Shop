@@ -29,16 +29,27 @@ function Home({ isLoggedIn, onLogout }) {
     const fetchProducts = async () => {
       console.log('⏱️ fetching products from backend');
       try {
-        const response = await fetch('http://localhost:9000/api/product');
-        console.log('🗂️ response status', response.status);
-        if (response.ok) {
-          const data = await response.json();
+        const [productsResponse, popularResponse] = await Promise.all([
+          fetch('http://localhost:9000/api/product'),
+          fetch('http://localhost:9000/api/product/popular?limit=4'),
+        ]);
+
+        console.log('🗂️ products status', productsResponse.status);
+        console.log('🗂️ popular status', popularResponse.status);
+
+        if (productsResponse.ok) {
+          const data = await productsResponse.json();
           console.log('✅ got products', data.length, 'items');
           setProducts(data);
-          // derive popular products from the full list. you can adjust criteria (rating, sold count, etc.)
-          setPopularProducts(data.slice(0, 4));
+
+          if (popularResponse.ok) {
+            const popularData = await popularResponse.json();
+            setPopularProducts(Array.isArray(popularData) ? popularData : data.slice(0, 4));
+          } else {
+            setPopularProducts(data.slice(0, 4));
+          }
         } else {
-          console.warn('⚠️ backend returned non-OK status', response.status);
+          console.warn('⚠️ backend returned non-OK status', productsResponse.status);
           // Fallback mock data
           const mock = [
             { _id: 1, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=1" },
@@ -52,6 +63,12 @@ function Home({ isLoggedIn, onLogout }) {
       } catch (err) {
         console.error('Error fetching products:', err);
         setProducts([
+          { _id: 1, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=1" },
+          { _id: 2, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=2" },
+          { _id: 3, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=3" },
+          { _id: 4, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=4" },
+        ]);
+        setPopularProducts([
           { _id: 1, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=1" },
           { _id: 2, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=2" },
           { _id: 3, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=3" },
