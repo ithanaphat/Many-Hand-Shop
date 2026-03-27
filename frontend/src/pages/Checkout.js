@@ -63,7 +63,14 @@ function Checkout({ isLoggedIn, onLogout }) {
   const [submitError, setSubmitError] = useState('');
 
   /* ── helpers ── */
-  const handleAddress = (e) => setAddress((p) => ({ ...p, [e.target.name]: e.target.value }));
+  const handleAddress = (e) => {
+    const { name, value } = e.target;
+    if (name === 'phone' || name === 'zip') {
+      setAddress((p) => ({ ...p, [name]: value.replace(/\D/g, '') }));
+    } else {
+      setAddress((p) => ({ ...p, [name]: value }));
+    }
+  };
 
   const formatCardNumber = (val) => {
     const digits = val.replace(/\D/g, '').slice(0, 16);
@@ -199,7 +206,7 @@ function Checkout({ isLoggedIn, onLogout }) {
               <div className="ck-form-row">
                 <label className="ck-label">Phone</label>
                 <input className="ck-input" name="phone" value={address.phone}
-                  onChange={handleAddress} placeholder="08X-XXX-XXXX" required />
+                  onChange={handleAddress} placeholder="08X-XXX-XXXX" inputMode="numeric" maxLength={10} required />
               </div>
             </div>
 

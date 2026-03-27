@@ -48,7 +48,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
   // Add modal state
   const [showAddModal, setShowAddModal] = useState(false);
   const [addForm, setAddForm] = useState({
-    imageFile: null,
+    imageFiles: [],
     name: '',
     description: '',
     price: '',
@@ -166,7 +166,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
 
   /* ---- Add ---- */
   const openAdd = () => {
-    setAddForm({ imageFile: null, name: '', description: '', price: '', quantity: '', status: 'available', category: '' });
+    setAddForm({ imageFiles: [], name: '', description: '', price: '', quantity: '', status: 'available', category: '' });
     setShowAddModal(true);
   };
 
@@ -178,27 +178,33 @@ function SellerBoard({ isLoggedIn, onLogout }) {
   };
 
   const handleAddImageChange = (e) => {
-    const pickedFile = e.target.files && e.target.files[0] ? e.target.files[0] : null;
-    setAddForm((prev) => ({ ...prev, imageFile: pickedFile }));
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    setAddForm((prev) => ({ ...prev, imageFiles: files }));
   };
 
   const saveAdd = async () => {
-    if (!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || !addForm.category) return;
+    if (!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || addForm.imageFiles.length === 0 || !addForm.category) return;
 
     setIsSubmittingAdd(true);
     try {
-      const imageFormData = new FormData();
-      imageFormData.append('image', addForm.imageFile);
+      // Upload all images
+      const uploadedUrls = [];
+      for (const imageFile of addForm.imageFiles) {
+        const imageFormData = new FormData();
+        imageFormData.append('image', imageFile);
 
-      const uploadResponse = await fetch(`${PRODUCT_API}/upload-image`, {
-        method: 'POST',
-        body: imageFormData,
-      });
+        const uploadResponse = await fetch(`${PRODUCT_API}/upload-image`, {
+          method: 'POST',
+          body: imageFormData,
+        });
 
-      const uploadData = await uploadResponse.json().catch(() => ({}));
-      if (!uploadResponse.ok || !uploadData.url) {
-        alert(uploadData.message || 'Upload image failed');
-        return;
+        const uploadData = await uploadResponse.json().catch(() => ({}));
+        if (!uploadResponse.ok || !uploadData.url) {
+          alert(uploadData.message || `Upload image failed: ${imageFile.name}`);
+          setIsSubmittingAdd(false);
+          return;
+        }
+        uploadedUrls.push(uploadData.url);
       }
 
       const createResponse = await fetch(`${PRODUCT_API}/Addproduct`, {
@@ -208,7 +214,7 @@ function SellerBoard({ isLoggedIn, onLogout }) {
           name: addForm.name.trim(),
           description: addForm.description.trim(),
           price: Number(addForm.price),
-          images: [uploadData.url],
+          images: uploadedUrls,
           stock: Number(addForm.quantity) || 0,
           seller: localStorage.getItem('mhs_user_id') || undefined,
           category: addForm.category,
@@ -480,25 +486,35 @@ function SellerBoard({ isLoggedIn, onLogout }) {
               </div>
 
               <div className="sb-form-row">
-                <label>Image File *</label>
+                <label>Image Files (Multiple) *</label>
                 <label className="sb-file-upload-label">
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     onChange={handleAddImageChange}
                     style={{ display: 'none' }}
                   />
                   <span className="sb-file-upload-btn">
                     <i className='bx bx-upload' style={{ marginRight: '6px' }}></i>
-                    {addForm.imageFile ? addForm.imageFile.name : 'Choose Image'}
+                    {addForm.imageFiles.length > 0 ? `${addForm.imageFiles.length} image(s) selected` : 'Choose Images'}
                   </span>
                 </label>
-                {addForm.imageFile && (
-                  <img
-                    src={URL.createObjectURL(addForm.imageFile)}
-                    alt="preview"
-                    style={{ width: '100%', maxHeight: 140, objectFit: 'cover', borderRadius: 8, marginTop: 8 }}
-                  />
+                {addForm.imageFiles.length > 0 && (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: 8 }}>
+                    {addForm.imageFiles.map((file, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: '100px', height: '100px' }}>
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`preview-${idx}`}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }}
+                        />
+                        <span style={{ fontSize: '12px', position: 'absolute', bottom: 2, left: 2, background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '2px 4px', borderRadius: 4 }}>
+                          {idx + 1}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
 
@@ -580,8 +596,8 @@ function SellerBoard({ isLoggedIn, onLogout }) {
               <button
                 className="btn-sb-save"
                 onClick={saveAdd}
-                disabled={!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || !addForm.category || isSubmittingAdd}
-                style={{ opacity: !addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || !addForm.imageFile || !addForm.category || isSubmittingAdd ? 0.5 : 1 }}
+                disabled={!addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || addForm.imageFiles.length === 0 || !addForm.category || isSubmittingAdd}
+                style={{ opacity: !addForm.name.trim() || addForm.price === '' || !addForm.description.trim() || addForm.imageFiles.length === 0 || !addForm.category || isSubmittingAdd ? 0.5 : 1 }}
               >
                 {isSubmittingAdd ? 'Uploading...' : 'Add'}
               </button>

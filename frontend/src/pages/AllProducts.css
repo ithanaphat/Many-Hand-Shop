@@ -14,14 +14,15 @@
 .all-products-container {
   max-width: 1570px;
   margin: 0 auto;
-  padding: 120px 40px 80px;
+  padding: 70px 40px 80px;
+  margin-top: -20px;
 }
 
 .products-header {
   background: linear-gradient(135deg, #9da693 16%, #dbe2d3 80%);
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-  padding: 42px 28px;
+  padding: 60px 28px 70px;
   margin-bottom: 36px;
   width: 100vw;
   margin-left: calc(50% - 50vw);

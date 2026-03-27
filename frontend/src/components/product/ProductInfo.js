@@ -109,8 +109,13 @@ const ProductInfo = ({ product }) => {
 <QuantitySelector quantity={qty} onQuantityChange={setQty} max={stock ?? undefined} />
 
       <div className="buttons">
-        <button className="add" onClick={handleAddToCart}>
-          {cartMsg || 'ADD TO CART'}
+        <button
+          className="add"
+          onClick={handleAddToCart}
+          disabled={stock === 0}
+          style={{ cursor: stock === 0 ? 'not-allowed' : 'pointer', opacity: stock === 0 ? 0.6 : 1 }}
+        >
+          {stock === 0 ? 'OUT OF STOCK' : (cartMsg || 'ADD TO CART')}
         </button>
         <button className="buy" onClick={() => navigate('/checkout', { state: { product: displayProduct, quantity: qty } })}>
           BUY NOW

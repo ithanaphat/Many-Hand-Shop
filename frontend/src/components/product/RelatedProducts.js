@@ -91,7 +91,7 @@ const RelatedProducts = () => {
 
   return (
     <div className="related-products-section">
-      <h2>Related Products You Might Like</h2>
+      <h2>Products You Might Like</h2>
       {loading ? (
         <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>
       ) : products.length > 0 ? (

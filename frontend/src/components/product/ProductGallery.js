@@ -1,28 +1,21 @@
 import { useEffect, useState } from "react";
 import "./ProductDetail.css";
 
-const ProductGallery = ({ productImage }) => {
-  let images = [];
-  if (productImage) {
-    images = [productImage, productImage, productImage, productImage];
-  } else {
-    images = [
-      "https://via.placeholder.com/350",
-      "https://via.placeholder.com/70",
-      "https://via.placeholder.com/70",
-      "https://via.placeholder.com/70"
-    ];
-  }
+const ProductGallery = ({ productImages = [] }) => {
+  // ถ้า productImages ว่าง ใช้ placeholder
+  const images = productImages && productImages.length > 0 
+    ? productImages 
+    : ["https://via.placeholder.com/350"];
 
   const [mainImage, setMainImage] = useState(images[0]);
 
   useEffect(() => {
-    if (productImage) {
-      setMainImage(productImage);
+    if (images.length > 0) {
+      setMainImage(images[0]);
     } else {
       setMainImage("https://via.placeholder.com/350");
     }
-  }, [productImage]);
+  }, [images]);
 
   return (
     <div className="gallery">
