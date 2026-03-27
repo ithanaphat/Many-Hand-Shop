@@ -61,6 +61,8 @@ const ProductInfo = ({ product }) => {
         name: productName,
         price: productPrice,
         image: displayProduct.images?.[0] || displayProduct.productImage || '',
+        sellerId,
+        sellerName,
         quantity: addQty,
         stock: maxStock === Infinity ? null : maxStock,
       });

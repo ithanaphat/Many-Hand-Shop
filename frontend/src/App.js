@@ -14,6 +14,7 @@ import SellerBoard from './pages/SellerBoard';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Search from './pages/Search';
+import OrderHistory from './pages/OrderHistory';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -98,6 +99,12 @@ function App() {
           path="/cart"
           element={
             isLoggedIn ? <Cart isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            isLoggedIn ? <OrderHistory isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
         <Route

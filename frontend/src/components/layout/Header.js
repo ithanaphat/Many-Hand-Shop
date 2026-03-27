@@ -117,6 +117,11 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
     navigate('/profile');
   };
 
+  const handleOrdersClick = () => {
+    setIsProfileMenuOpen(false);
+    navigate('/orders');
+  };
+
   const handleLogoutClick = () => {
     setIsProfileMenuOpen(false);
     navigate('/home', { replace: true });
@@ -213,6 +218,7 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
               <div className="profile-dropdown" role="menu" aria-label="Profile menu">
                 <button type="button" className="dropdown-item" onClick={handleHomeClick}>Home</button>
                 <button type="button" className="dropdown-item" onClick={handleProfileClick}>Profile</button>
+                <button type="button" className="dropdown-item" onClick={handleOrdersClick}>Order History</button>
                 <button type="button" className="dropdown-item" onClick={handleSellerBoardClick}>Seller Board</button>
                 <button type="button" className="dropdown-item danger" onClick={handleLogoutClick}>Log out</button>
               </div>

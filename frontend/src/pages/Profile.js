@@ -252,6 +252,7 @@ function Profile({ isLoggedIn, onLogout }) {
         {/* Action Buttons */}
         <div className="action-group">
           <button className="btn-add" onClick={() => navigate('/seller-board')}>ADD PRODUCT</button>
+          <button className="btn-edit" onClick={() => navigate('/orders')}>ORDER HISTORY</button>
           <button className="btn-edit" onClick={openEdit}>EDIT PROFILE</button>
         </div>
 

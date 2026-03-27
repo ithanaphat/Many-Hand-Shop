@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Checkout.css';
 import 'boxicons/css/boxicons.min.css';
@@ -13,20 +13,29 @@ function Checkout({ isLoggedIn, onLogout }) {
   const isCartMode = Array.isArray(cartItems) && cartItems.length > 0;
 
   // normalize เป็น array เดียวกัน
-  const orderItems = isCartMode
-    ? cartItems
-    : product
-      ? [{
-          id: product._id || product.id,
-          name: product.name || product.itemName || 'Product',
-          price: Number(product.price || product.itemPrice || 0),
-          image: product.productImage || product.images?.[0] || '',
-          quantity: initQty,
-          sellerName: product.sellerName || product.seller?.username || 'Seller',
-        }]
-      : [];
-
-  const [quantity] = useState(initQty);
+  const orderItems = useMemo(() => (
+    isCartMode
+      ? cartItems.map((item) => ({
+          id: item.id || item._id,
+          name: item.name || item.itemName || 'Product',
+          price: Number(item.price || item.itemPrice || 0),
+          image: item.image || item.productImage || item.images?.[0] || '',
+          quantity: Number(item.quantity || 1),
+          sellerId: item.sellerId || item.seller?._id || item.seller || null,
+          sellerName: item.sellerName || item.seller?.username || 'Seller',
+        }))
+      : product
+        ? [{
+            id: product._id || product.id,
+            name: product.name || product.itemName || 'Product',
+            price: Number(product.price || product.itemPrice || 0),
+            image: product.productImage || product.images?.[0] || '',
+            quantity: initQty,
+            sellerId: product.seller?._id || product.seller || null,
+            sellerName: product.sellerName || product.seller?.username || 'Seller',
+          }]
+        : []
+  ), [cartItems, initQty, isCartMode, product]);
 
   /* ── Address form ── */
   const [address, setAddress] = useState({
@@ -50,6 +59,8 @@ function Checkout({ isLoggedIn, onLogout }) {
   const [discount, setDiscount] = useState(0);
   const [promoMsg, setPromoMsg] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   /* ── helpers ── */
   const handleAddress = (e) => setAddress((p) => ({ ...p, [e.target.name]: e.target.value }));
@@ -90,9 +101,67 @@ function Checkout({ isLoggedIn, onLogout }) {
 
 
   /* ── submit ── */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setShowSuccess(true);
+
+    if (orderItems.length === 0) {
+      setSubmitError('No items selected for checkout.');
+      return;
+    }
+
+    const userId = localStorage.getItem('mhs_user_id');
+    if (!userId) {
+      navigate('/login');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const response = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          buyer: userId,
+          items: orderItems.map((item) => ({
+            product: item.id,
+            seller: item.sellerId,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          shippingInfo: {
+            name: address.fullName,
+            phone: address.phone,
+            address: [address.addressLine, address.city, address.province, address.zip]
+              .filter(Boolean)
+              .join(', '),
+          },
+          shippingFee: shipping,
+          totalPrice: total,
+          paymentMethod: 'Credit Card',
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setSubmitError(data.message || 'Checkout failed.');
+        return;
+      }
+
+      if (isCartMode) {
+        const purchasedIds = new Set(orderItems.map((item) => String(item.id)));
+        const savedCart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+        const nextCart = savedCart.filter((item) => !purchasedIds.has(String(item.id || item._id)));
+        localStorage.setItem('mhs_cart', JSON.stringify(nextCart));
+      }
+
+      setShowSuccess(true);
+    } catch (error) {
+      setSubmitError('Cannot connect to server.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -100,6 +169,18 @@ function Checkout({ isLoggedIn, onLogout }) {
       <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
 
       <div className="checkout-container">
+        {orderItems.length === 0 ? (
+          <div className="ck-card" style={{ width: '100%', textAlign: 'center' }}>
+            <h3 className="ck-card-title">
+              <i className="bx bx-cart"></i> No items to checkout
+            </h3>
+            <p>Please return to your cart or a product page and select something first.</p>
+            <button type="button" className="ck-pay-btn" onClick={() => navigate('/cart')}>
+              Go to Cart
+            </button>
+          </div>
+        ) : (
+          <>
         {/* ── LEFT ── */}
         <div className="checkout-left">
 
@@ -249,14 +330,19 @@ function Checkout({ isLoggedIn, onLogout }) {
             {/* Pay button */}
             <button type="submit" form="checkout-form" className="ck-pay-btn">
               <i className="bx bx-lock-alt"></i>
-              Pay ฿{total.toLocaleString()}
+              {isSubmitting ? 'Processing...' : `Pay ฿${total.toLocaleString()}`}
             </button>
+            {submitError && (
+              <p style={{ fontSize: 13, color: '#c0392b', marginTop: 12 }}>{submitError}</p>
+            )}
             <p className="ck-secure-note">
               <i className="bx bx-shield-quarter"></i>
               Secured with SSL encryption
             </p>
           </div>
         </div>
+          </>
+        )}
       </div>
 
       {/* ── Success Modal ── */}
@@ -271,8 +357,8 @@ function Checkout({ isLoggedIn, onLogout }) {
               Your order has been placed.<br />
               We'll notify you when it's on the way.
             </p>
-            <button className="ck-success-btn" onClick={() => navigate('/home-user')}>
-              Back to Home
+            <button className="ck-success-btn" onClick={() => navigate('/orders')}>
+              View Order History
             </button>
           </div>
         </div>
