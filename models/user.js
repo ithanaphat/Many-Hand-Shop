@@ -165,7 +165,7 @@ const orderSchema = new mongoose.Schema({
         phone: {
             type: String,
             required: true,
-            match: /^0\d{9}$/   // เบอร์ไทย 10 หลัก
+            match: /^\+?[\d\s\-()]{7,20}$/
         },
         address: {
             type: String,

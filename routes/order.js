@@ -108,10 +108,6 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ message: "Total price mismatch" })
         }
 
-        for (const item of normalizedItems) {
-            await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } })
-        }
-
         const order = await Order.create({
             buyer,
             items: normalizedItems,
@@ -124,6 +120,10 @@ router.post("/", async (req, res) => {
             totalPrice: calculatedTotal,
             paymentMethod,
         })
+
+        for (const item of normalizedItems) {
+            await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } })
+        }
 
         const populatedOrder = await Order.findById(order._id)
             .populate("items.product", "name images")
