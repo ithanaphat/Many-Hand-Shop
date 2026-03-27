@@ -110,6 +110,7 @@ function Home({ isLoggedIn, onLogout }) {
                 itemPrice={product.price}
                 stock={product.stock}
                 sellerRating={product.seller?.rating || product.sellerRating || 0}
+                popularSoldCount={Number(product.totalSold || 0)}
               />
             ))}
           </div>

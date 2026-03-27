@@ -11,6 +11,7 @@ function OrderHistory({ isLoggedIn, onLogout }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all');
   const [selectedRatings, setSelectedRatings] = useState({});
   const [submittingItemId, setSubmittingItemId] = useState('');
 
@@ -54,6 +55,23 @@ function OrderHistory({ isLoggedIn, onLogout }) {
   );
 
   const pendingRatings = Math.max(totalItems - ratedItems, 0);
+
+  const filteredOrders = useMemo(() => {
+    if (activeFilter === 'all') {
+      return orders;
+    }
+
+    return orders
+      .map((order) => ({
+        ...order,
+        items: order.items.filter((item) => (
+          activeFilter === 'pending'
+            ? !item.review?.rating
+            : Boolean(item.review?.rating)
+        )),
+      }))
+      .filter((order) => order.items.length > 0);
+  }, [activeFilter, orders]);
 
   const updateSelectedRating = (itemId, rating) => {
     setSelectedRatings((prev) => ({ ...prev, [itemId]: rating }));
@@ -157,6 +175,33 @@ function OrderHistory({ isLoggedIn, onLogout }) {
           </div>
         </section>
 
+        {!loading && !error && orders.length > 0 && (
+          <section className="order-history-filter-bar section-card">
+            <span className="order-history-filter-label">Filter items:</span>
+            <button
+              type="button"
+              className={`order-history-filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setActiveFilter('all')}
+            >
+              All ({totalItems})
+            </button>
+            <button
+              type="button"
+              className={`order-history-filter-btn ${activeFilter === 'pending' ? 'active' : ''}`}
+              onClick={() => setActiveFilter('pending')}
+            >
+              Pending rating ({pendingRatings})
+            </button>
+            <button
+              type="button"
+              className={`order-history-filter-btn ${activeFilter === 'rated' ? 'active' : ''}`}
+              onClick={() => setActiveFilter('rated')}
+            >
+              Rated ({ratedItems})
+            </button>
+          </section>
+        )}
+
         {loading ? (
           <section className="order-history-empty section-card">
             <p>Loading your orders...</p>
@@ -173,9 +218,17 @@ function OrderHistory({ isLoggedIn, onLogout }) {
               Browse products
             </button>
           </section>
+        ) : filteredOrders.length === 0 ? (
+          <section className="order-history-empty section-card">
+            <h2>No items in this filter</h2>
+            <p>Try another filter to see your purchased items.</p>
+            <button type="button" className="order-history-primary-btn" onClick={() => setActiveFilter('all')}>
+              Show all
+            </button>
+          </section>
         ) : (
           <section className="order-history-list">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <article key={order._id} className="order-history-card">
                 <div className="order-history-card-head">
                   <div className="order-history-card-head-main">
