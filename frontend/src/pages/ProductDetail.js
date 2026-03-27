@@ -51,7 +51,7 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
           {error && <div className="error">Error: {error}</div>}
           {product && (
             <div className="product-detail">
-              <ProductGallery productImage={product.productImage || product.images?.[0]} />
+              <ProductGallery productImages={product.images || [product.productImage]?.filter(Boolean)} />
               <ProductInfo product={product} />
             </div>
           )}
