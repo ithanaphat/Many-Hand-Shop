@@ -75,7 +75,19 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
   // อัปเดต cart count จาก localStorage
   useEffect(() => {
     const updateCount = () => {
-      const cart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+      const userId = localStorage.getItem('mhs_user_id');
+      if (!userId) {
+        setCartCount(0);
+        return;
+      }
+      const cartStorageKey = `mhs_cart_${userId}`;
+      let cart = JSON.parse(localStorage.getItem(cartStorageKey) || '[]');
+      if (cart.length === 0) {
+        const legacyCart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+        if (legacyCart.length > 0) {
+          cart = legacyCart;
+        }
+      }
       setCartCount(cart.reduce((sum, i) => sum + i.quantity, 0));
     };
     updateCount();
