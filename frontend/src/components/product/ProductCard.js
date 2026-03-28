@@ -95,7 +95,7 @@ function ProductCard(props) {
             }
           />
         ))}
-        <span className="card-rating-value">{rating > 0 ? rating.toFixed(1) : 'No rating'}</span>
+        <span className="card-rating-value">{rating > 0 ? (Number.isInteger(rating) ? String(rating) : rating.toFixed(1)) : '0/0'}</span>
       </div>
  
       {props.stock !== undefined && props.stock !== null && (
