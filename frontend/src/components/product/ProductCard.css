@@ -37,10 +37,16 @@
 .seller-name {
   position: absolute;
   top: -22px;
-  left: 44px; /* ขยับชื่อหนีรูปโปรไฟล์ไปทางขวา */
-  color: #b0a89a; /* สีเทาอมน้ำตาลตามแบบ */
+  left: 55px; /* ขยับเพิ่มจาก 44px เป็น 55px เพื่อให้พ้นรูปโปรไฟล์ชัวร์ๆ */
+  color: #b0a89a;
   font-size: clamp(0.86rem, 1.2vw, 1rem);
   z-index: 2;
+  
+  /* 3 บรรทัดล่างนี้คือตัวตีกรอบไม่ให้ล้นไปทับการ์ดข้างๆ */
+  max-width: calc(100% - 60px); /* บังคับความกว้างไม่ให้ล้นขอบขวาของการ์ด */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
  
 /* กล่องจำลองรูปสินค้าสีเทา */
@@ -102,7 +108,7 @@
   }
 
   .seller-name {
-    left: 46px;
+    left: 55px;
   }
 }
  

@@ -629,7 +629,7 @@ function Profile({ isLoggedIn, onLogout }) {
  
       {/* ===== Edit Profile Modal ===== */}
       {isEditOpen && (
-        <div className="profile-modal-backdrop" onClick={closeEdit}>
+        <div className="profile-modal-backdrop">
           <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
             <div className="profile-modal-header">
               <h3>Edit Profile</h3>
