@@ -5,7 +5,7 @@ import 'boxicons/css/boxicons.min.css';
 import Header from '../components/layout/Header';
 import InfoItem from '../components/shared/InfoItem';
 import ProductItem from '../components/product/ProductItem';
-
+ 
 function Profile({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
   const maxRating = 5;
@@ -17,7 +17,7 @@ function Profile({ isLoggedIn, onLogout }) {
     images: JSON.parse(localStorage.getItem('mhs_user_images') || '[]'),
     rating: parseFloat(localStorage.getItem('mhs_user_rating')) || 0
   });
-
+ 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -31,11 +31,11 @@ function Profile({ isLoggedIn, onLogout }) {
   const [sellerProducts, setSellerProducts] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-
+ 
   // Helper function to split address string into components
   const parseAddress = (addressStr) => {
     if (!addressStr) return { houseNumber: '', subDistrict: '', district: '', province: '', postalCode: '' };
-    
+   
     // Try to parse address in format: "houseNumber, subDistrict, district, province, postalCode"
     const parts = addressStr.split(',').map(p => p.trim());
     return {
@@ -46,16 +46,16 @@ function Profile({ isLoggedIn, onLogout }) {
       postalCode: parts[4] || ''
     };
   };
-
+ 
   // Helper function to combine address components
   const combineAddress = (houseNumber, subDistrict, district, province, postalCode) => {
     return [houseNumber, subDistrict, district, province, postalCode].filter(Boolean).join(', ');
   };
-
+ 
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
     if (!userId) return;
-
+ 
     const loadProfile = async () => {
       try {
         const response = await fetch(`/api/user/${userId}`);
@@ -76,14 +76,14 @@ function Profile({ isLoggedIn, onLogout }) {
         console.error('Profile fetch error:', error);
       }
     };
-
+ 
     loadProfile();
   }, []);
-
+ 
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
     if (!userId) return;
-
+ 
     const loadSellerProducts = async () => {
       try {
         const response = await fetch(`/api/product?seller=${userId}`);
@@ -94,12 +94,12 @@ function Profile({ isLoggedIn, onLogout }) {
         console.error('Failed to load seller products:', error);
       }
     };
-
+ 
     loadSellerProducts();
   }, []);
-
+ 
   const ratingValue = Math.round(profile.rating);
-
+ 
   const openEdit = () => {
     const addressParts = parseAddress(profile.address);
     setEditForm({
@@ -108,22 +108,33 @@ function Profile({ isLoggedIn, onLogout }) {
     });
     setIsEditOpen(true);
   };
-
+ 
   const closeEdit = () => {
     setIsEditOpen(false);
   };
-
+ 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-
+ 
+    // Validation by field
     if (name === 'phone') {
-      const numericValue = value.replace(/\D/g, '');
+      // Phone: digits only, max 10
+      const numericValue = value.replace(/\D/g, '').slice(0, 10);
       setEditForm((prev) => ({ ...prev, [name]: numericValue }));
+    } else if (name === 'postalCode') {
+      // Postal Code: digits only, max 5
+      const numericValue = value.replace(/\D/g, '').slice(0, 5);
+      setEditForm((prev) => ({ ...prev, [name]: numericValue }));
+    } else if (['subDistrict', 'district', 'province'].includes(name)) {
+      // Letters + Thai chars + spaces only (remove numbers and special characters)
+      const filtered = value.replace(/[^a-zA-Z\u0E00-\u0E7F\s]/g, '');
+      setEditForm((prev) => ({ ...prev, [name]: filtered }));
     } else {
+      // houseNumber, username, email: allow all characters
       setEditForm((prev) => ({ ...prev, [name]: value }));
     }
   };
-
+ 
   const handleImageChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -135,29 +146,29 @@ function Profile({ isLoggedIn, onLogout }) {
       reader.readAsDataURL(file);
     }
   };
-
+ 
   const uploadImage = async () => {
     if (!imageFile) {
       alert('Please select an image');
       return;
     }
-
+ 
     const userId = localStorage.getItem('mhs_user_id');
     const formData = new FormData();
     formData.append('image', imageFile);
-
+ 
     try {
       const uploadResponse = await fetch('/api/product/upload-image', {
         method: 'POST',
         body: formData,
       });
-
+ 
       const uploadData = await uploadResponse.json().catch(() => ({}));
       if (!uploadResponse.ok || !uploadData.url) {
         alert(uploadData.message || 'Upload image failed');
         return;
       }
-
+ 
       const patchResponse = await fetch(`/api/user/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -165,13 +176,13 @@ function Profile({ isLoggedIn, onLogout }) {
           images: [uploadData.url]
         }),
       });
-
+ 
       const patchData = await patchResponse.json().catch(() => ({}));
       if (!patchResponse.ok) {
         alert(patchData.message || 'Update profile failed');
         return;
       }
-
+ 
       const updatedProfile = {
         ...profile,
         images: [uploadData.url]
@@ -186,7 +197,7 @@ function Profile({ isLoggedIn, onLogout }) {
       console.error(error);
     }
   };
-
+ 
   const saveEdit = async () => {
     const userId = localStorage.getItem('mhs_user_id');
     const combinedAddress = combineAddress(
@@ -196,19 +207,19 @@ function Profile({ isLoggedIn, onLogout }) {
       editForm.province,
       editForm.postalCode
     );
-
+ 
     const payload = {
       username: editForm.username?.trim(),
       email: editForm.email?.trim(),
       phone: editForm.phone?.trim(),
       address: combinedAddress,
     };
-
+ 
     if (!payload.username || !payload.email) {
-      alert('Username และ Email จำเป็นต้องกรอก');
+      alert('Username and Email are required');
       return;
     }
-
+ 
     setIsSaving(true);
     try {
       if (userId) {
@@ -217,13 +228,13 @@ function Profile({ isLoggedIn, onLogout }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-
+ 
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
           alert(data.message || 'Edit profile failed');
           return;
         }
-
+ 
         const updatedProfile = {
           username: data.username || payload.username,
           email: data.email || payload.email,
@@ -249,16 +260,16 @@ function Profile({ isLoggedIn, onLogout }) {
       setIsSaving(false);
     }
   };
-
+ 
   return (
     <div className="profile-page">
       <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
-
+ 
       {/* 1. Purple Banner Area */}
       <div className="banner-container">
         <div className="avatar-wrapper">
-          <div 
-            className="avatar-overlay" 
+          <div
+            className="avatar-overlay"
             style={{ backgroundImage: `url('${profile.images && profile.images[0] ? profile.images[0] : 'https://i.pravatar.cc/150?u=' + profile.username}')` }}
           >
             <label className="camera-button" htmlFor="avatar-input" style={{ cursor: 'pointer' }}>
@@ -274,7 +285,7 @@ function Profile({ isLoggedIn, onLogout }) {
           </div>
         </div>
       </div>
-
+ 
       {/* 2. Main Content */}
       <div className="content-body">
         <div className="profile-header-row">
@@ -296,14 +307,14 @@ function Profile({ isLoggedIn, onLogout }) {
             </span>
           </div>
         </div>
-
+ 
         {/* Action Buttons */}
         <div className="action-group">
           <button className="btn-add" onClick={() => navigate('/seller-board')}>ADD PRODUCT</button>
           <button className="btn-edit" onClick={() => navigate('/orders')}>ORDER HISTORY</button>
           <button className="btn-edit" onClick={openEdit}>EDIT PROFILE</button>
         </div>
-
+ 
         <div className="profile-sections">
           {/* Information Section */}
           <div className="info-section section-card">
@@ -312,14 +323,14 @@ function Profile({ isLoggedIn, onLogout }) {
             <InfoItem icon="📞" text={profile.phone || 'No phone'} />
             <InfoItem icon="📍" text={profile.address || 'No address'} />
           </div>
-
+ 
           {/* On Sell Section */}
           <div className="section-card">
             <div className="sell-header">
               <h3 style={{ margin: 0 }}>On Sell</h3>
               <button className="btn-total">TOTAL {sellerProducts.length}</button>
             </div>
-
+ 
             <div className="product-list-scroll">
               {sellerProducts.length > 0 ? (
                 sellerProducts.map((product) => (
@@ -344,7 +355,7 @@ function Profile({ isLoggedIn, onLogout }) {
           </div>
         </div>
       </div>
-
+ 
       {/* Image Preview Modal */}
       {previewImage && (
         <div className="image-preview-backdrop" onClick={() => {
@@ -355,16 +366,16 @@ function Profile({ isLoggedIn, onLogout }) {
             <div className="image-preview-content">
               <img src={previewImage} alt="preview" className="image-preview-large" />
             </div>
-            
+           
             <div className="image-preview-actions">
-              <button 
+              <button
                 className="image-btn-upload"
                 onClick={uploadImage}
               >
                 <i className='bx bx-check' style={{ marginRight: '6px' }}></i>
                 Confirm
               </button>
-              <button 
+              <button
                 className="image-btn-change"
                 onClick={() => {
                   document.getElementById('avatar-input').click();
@@ -373,7 +384,7 @@ function Profile({ isLoggedIn, onLogout }) {
                 <i className='bx bx-edit' style={{ marginRight: '6px' }}></i>
                 Change Photo
               </button>
-              <button 
+              <button
                 className="image-btn-cancel"
                 onClick={() => {
                   setImageFile(null);
@@ -387,7 +398,7 @@ function Profile({ isLoggedIn, onLogout }) {
           </div>
         </div>
       )}
-
+ 
       {/* ===== Edit Profile Modal ===== */}
       {isEditOpen && (
         <div className="profile-modal-backdrop" onClick={closeEdit}>
@@ -398,7 +409,7 @@ function Profile({ isLoggedIn, onLogout }) {
                 <i className='bx bx-x'></i>
               </button>
             </div>
-
+ 
             <div className="profile-modal-body">
               <div className="profile-form-row">
                 <label>Username</label>
@@ -411,7 +422,7 @@ function Profile({ isLoggedIn, onLogout }) {
                   placeholder="Username"
                 />
               </div>
-
+ 
               <div className="profile-form-row">
                 <label>Email</label>
                 <input
@@ -423,7 +434,7 @@ function Profile({ isLoggedIn, onLogout }) {
                   placeholder="email@example.com"
                 />
               </div>
-
+ 
               <div className="profile-form-row">
                 <label>Phone</label>
                 <input
@@ -432,78 +443,82 @@ function Profile({ isLoggedIn, onLogout }) {
                   value={editForm.phone}
                   onChange={handleEditChange}
                   className="profile-input"
-                  placeholder="0XX-XXXXXX"
+                  placeholder="08X-XXX-XXXX"
+                  maxLength={10}
+                  inputMode="numeric"
                 />
               </div>
-
-              {/* House Number / Address Detail */}
+ 
+              {/* Address */}
               <div className="profile-form-row">
-                <label>เลขที่/ที่อยู่ (House Number / Address)</label>
+                <label>Address</label>
                 <input
                   type="text"
                   name="houseNumber"
                   value={editForm.houseNumber}
                   onChange={handleEditChange}
                   className="profile-input"
-                  placeholder="เช่น 45/6 ร้านทองค้าขาย"
+                  placeholder="e.g., 45/6 Building Name"
                 />
               </div>
-
+ 
               {/* Address Fields - Row 1 */}
               <div className="profile-form-group-2col">
                 <div className="profile-form-row">
-                  <label>ตำบล/แขวง (Sub-District)</label>
+                  <label>Sub-District</label>
                   <input
                     type="text"
                     name="subDistrict"
                     value={editForm.subDistrict}
                     onChange={handleEditChange}
                     className="profile-input"
-                    placeholder="ตำบล/แขวง"
+                    placeholder="Sub-District"
                   />
                 </div>
-
+ 
                 <div className="profile-form-row">
-                  <label>อำเภอ/เขต (District)</label>
+                  <label>District</label>
                   <input
                     type="text"
                     name="district"
                     value={editForm.district}
                     onChange={handleEditChange}
                     className="profile-input"
-                    placeholder="อำเภอ/เขต"
+                    placeholder="District"
                   />
                 </div>
               </div>
-
+ 
               {/* Address Fields - Row 2 */}
               <div className="profile-form-group-2col">
                 <div className="profile-form-row">
-                  <label>จังหวัด (Province)</label>
+                  <label>Province</label>
                   <input
                     type="text"
                     name="province"
                     value={editForm.province}
                     onChange={handleEditChange}
                     className="profile-input"
-                    placeholder="จังหวัด"
+                    placeholder="Province"
                   />
                 </div>
-
+ 
                 <div className="profile-form-row">
-                  <label>รหัสไปรษณีย์ (Postal Code)</label>
+                  <label>Postal Code</label>
                   <input
                     type="text"
                     name="postalCode"
                     value={editForm.postalCode}
                     onChange={handleEditChange}
                     className="profile-input"
-                    placeholder="รหัสไปรษณีย์"
+                    placeholder="10400"
+                    maxLength={5}
+                    inputMode="numeric"
                   />
                 </div>
               </div>
             </div>
-
+ 
             <div className="profile-modal-footer">
               <button className="profile-btn-cancel" onClick={closeEdit}>
                 Cancel
@@ -518,5 +533,5 @@ function Profile({ isLoggedIn, onLogout }) {
     </div>
   );
 }
-
+ 
 export default Profile;
