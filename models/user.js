@@ -248,6 +248,53 @@ const cartsSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
+const historyproductSchema = new mongoose.Schema({
+  name : {
+        type : String,
+        required : true,
+        trim: true,  //กันspaceหน้าหลัง
+        minlength : 3,
+        maxlength : 300
+    },
+    description : {
+        type : String,
+        required : true,
+        minlength : 10, //กำหนดขั้นต่ำ
+        maxlength : 1000, // กำหนดมากสุด
+        trim: true,  //กันspaceหน้าหลัง
+    },
+    price : {
+        type : Number,
+        required : true,
+        min : 0, //กันค่าติดลบ
+        set: v => Math.round(v * 100) / 100 //กันทศนิยมยาวเกิน
+    },
+   images: {
+    type: [String],
+    required : true,
+    validate: [arr => arr.length >= 1, 'At least 1 image required'] //กำหนดขั้นต่ำรูปภาพ
+    },
+    stock : {
+        type : Number ,
+        min : 0,
+        default : 1,
+          validate: { //กันเลขไม่ใช่จำนวนเต็ม
+            validator: Number.isInteger,
+            message: 'Stock must be integer'
+  }
+    },
+    seller: {
+    type : mongoose.Schema.Types.ObjectId,
+    ref: 'User', //ตัวบอกว่า Obj นี้อ้างอิงไป Model "User"
+    required: true
+    },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category', 
+        required: true
+    }  
+}, { timestamps: true })
+
 orderSchema.index({ buyer: 1 })
 orderSchema.index({ createdAt: -1 })
 
@@ -257,5 +304,6 @@ const Product = mongoose.model("Product", productSchema)
 const Category = mongoose.model("Category", categorySchema)
 const Order = mongoose.model("Order", orderSchema)
 const Cart = mongoose.model("Cart", cartsSchema)
+const Historyproduct = mongoose.model("historyproduct", historyproductSchema)
 
-module.exports = {User, Product, Category, Order, Cart}
+module.exports = {User, Product, Category, Order, Cart,Historyproduct}
