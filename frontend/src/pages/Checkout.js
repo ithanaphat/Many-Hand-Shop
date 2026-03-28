@@ -3,15 +3,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './Checkout.css';
 import 'boxicons/css/boxicons.min.css';
 import Header from '../components/layout/Header';
-
+ 
 function Checkout({ isLoggedIn, onLogout }) {
   const location = useLocation();
   const navigate = useNavigate();
-
+ 
   // รองรับทั้ง BUY NOW (product+quantity) และ Cart (cartItems)
   const { product, quantity: initQty = 1, cartItems } = location.state || {};
   const isCartMode = Array.isArray(cartItems) && cartItems.length > 0;
-
+ 
   // normalize เป็น array เดียวกัน
   const orderItems = useMemo(() => (
     isCartMode
@@ -36,17 +36,18 @@ function Checkout({ isLoggedIn, onLogout }) {
           }]
         : []
   ), [cartItems, initQty, isCartMode, product]);
-
+ 
   /* ── Address form ── */
   const [address, setAddress] = useState({
     fullName: '',
     phone: '',
-    addressLine: '',
-    city: '',
+    houseNumber: '',
+    subDistrict: '',
+    district: '',
     province: '',
-    zip: '',
+    postalCode: '',
   });
-
+ 
   /* ── Card form ── */
   const [card, setCard] = useState({
     holderName: '',
@@ -54,43 +55,55 @@ function Checkout({ isLoggedIn, onLogout }) {
     expiry: '',
     cvv: '',
   });
-
+ 
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [promoMsg, setPromoMsg] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-
+ 
   /* ── helpers ── */
   const handleAddress = (e) => {
     const { name, value } = e.target;
-    if (name === 'phone' || name === 'zip') {
-      setAddress((p) => ({ ...p, [name]: value.replace(/\D/g, '') }));
+ 
+    // Validation by field
+    if (name === 'phone') {
+      // Phone: digits only, max 10
+      setAddress((p) => ({ ...p, [name]: value.replace(/\D/g, '').slice(0, 10) }));
+    } else if (name === 'postalCode') {
+      // Postal Code: digits only, max 5
+      setAddress((p) => ({ ...p, [name]: value.replace(/\D/g, '').slice(0, 5) }));
+    } else if (['fullName', 'subDistrict', 'district', 'province'].includes(name)) {
+      // Letters + Thai chars + spaces only (remove numbers and special characters)
+      const filtered = value.replace(/[^a-zA-Z\u0E00-\u0E7F\s]/g, '');
+      setAddress((p) => ({ ...p, [name]: filtered }));
     } else {
+      // houseNumber: allow all characters
       setAddress((p) => ({ ...p, [name]: value }));
     }
   };
-
+ 
   const formatCardNumber = (val) => {
     const digits = val.replace(/\D/g, '').slice(0, 16);
     return digits.replace(/(.{4})/g, '$1 ').trim();
   };
-
+ 
   const formatExpiry = (val) => {
     const digits = val.replace(/\D/g, '').slice(0, 4);
     if (digits.length > 2) return digits.slice(0, 2) + '/' + digits.slice(2);
     return digits;
   };
-
+ 
   const handleCard = (e) => {
     let { name, value } = e.target;
+    if (name === 'holderName') value = value.replace(/[^a-zA-Z\u0E00-\u0E7F\s]/g, '');
     if (name === 'number') value = formatCardNumber(value);
     if (name === 'expiry') value = formatExpiry(value);
     if (name === 'cvv') value = value.replace(/\D/g, '').slice(0, 4);
     setCard((p) => ({ ...p, [name]: value }));
   };
-
+ 
   const applyPromo = () => {
     if (promoCode.trim().toUpperCase() === 'MHS10') {
       setDiscount(Math.floor(subtotalBase * 0.1));
@@ -100,31 +113,31 @@ function Checkout({ isLoggedIn, onLogout }) {
       setPromoMsg('✗ Invalid promo code');
     }
   };
-
+ 
   const subtotalBase = orderItems.reduce((sum, i) => sum + Number(i.price) * i.quantity, 0);
   const subtotal  = subtotalBase;
   const shipping  = subtotal > 0 ? 40 : 0;
   const total     = Math.max(0, subtotal + shipping - discount);
-
-
+ 
+ 
   /* ── submit ── */
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+ 
     if (orderItems.length === 0) {
       setSubmitError('No items selected for checkout.');
       return;
     }
-
+ 
     const userId = localStorage.getItem('mhs_user_id');
     if (!userId) {
       navigate('/login');
       return;
     }
-
+ 
     setIsSubmitting(true);
     setSubmitError('');
-
+ 
     try {
       const response = await fetch('/api/order', {
         method: 'POST',
@@ -140,7 +153,7 @@ function Checkout({ isLoggedIn, onLogout }) {
           shippingInfo: {
             name: address.fullName,
             phone: address.phone,
-            address: [address.addressLine, address.city, address.province, address.zip]
+            address: [address.houseNumber, address.subDistrict, address.district, address.province, address.postalCode]
               .filter(Boolean)
               .join(', '),
           },
@@ -149,20 +162,20 @@ function Checkout({ isLoggedIn, onLogout }) {
           paymentMethod: 'Credit Card',
         }),
       });
-
+ 
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         setSubmitError(data.message || 'Checkout failed.');
         return;
       }
-
+ 
       if (isCartMode) {
         const purchasedIds = new Set(orderItems.map((item) => String(item.id)));
         const savedCart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
         const nextCart = savedCart.filter((item) => !purchasedIds.has(String(item.id || item._id)));
         localStorage.setItem('mhs_cart', JSON.stringify(nextCart));
       }
-
+ 
       setShowSuccess(true);
     } catch (error) {
       setSubmitError('Cannot connect to server.');
@@ -170,11 +183,11 @@ function Checkout({ isLoggedIn, onLogout }) {
       setIsSubmitting(false);
     }
   };
-
+ 
   return (
     <div className="checkout-page">
       <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
-
+ 
       <div className="checkout-container">
         {orderItems.length === 0 ? (
           <div className="ck-card" style={{ width: '100%', textAlign: 'center' }}>
@@ -190,13 +203,13 @@ function Checkout({ isLoggedIn, onLogout }) {
           <>
         {/* ── LEFT ── */}
         <div className="checkout-left">
-
+ 
           {/* Shipping Address */}
           <div className="ck-card">
             <h3 className="ck-card-title">
               <i className="bx bx-map-pin"></i> Shipping Address
             </h3>
-
+ 
             <div className="ck-form-row-group">
               <div className="ck-form-row">
                 <label className="ck-label">Full Name</label>
@@ -209,53 +222,61 @@ function Checkout({ isLoggedIn, onLogout }) {
                   onChange={handleAddress} placeholder="08X-XXX-XXXX" inputMode="numeric" maxLength={10} required />
               </div>
             </div>
-
+ 
             <div className="ck-form-row">
               <label className="ck-label">Address</label>
-              <input className="ck-input" name="addressLine" value={address.addressLine}
-                onChange={handleAddress} placeholder="House no., Street, Sub-district" required />
+              <input className="ck-input" name="houseNumber" value={address.houseNumber}
+                onChange={handleAddress} placeholder="e.g., 45/6 Building Name" required />
             </div>
-
+ 
             <div className="ck-form-row-group">
               <div className="ck-form-row">
-                <label className="ck-label">City / District</label>
-                <input className="ck-input" name="city" value={address.city}
-                  onChange={handleAddress} placeholder="Bangkok" required />
+                <label className="ck-label">Sub-District</label>
+                <input className="ck-input" name="subDistrict" value={address.subDistrict}
+                  onChange={handleAddress} placeholder="Sub-District" required />
               </div>
+              <div className="ck-form-row">
+                <label className="ck-label">District</label>
+                <input className="ck-input" name="district" value={address.district}
+                  onChange={handleAddress} placeholder="District" required />
+              </div>
+            </div>
+ 
+            <div className="ck-form-row-group">
               <div className="ck-form-row">
                 <label className="ck-label">Province</label>
                 <input className="ck-input" name="province" value={address.province}
-                  onChange={handleAddress} placeholder="Bangkok" required />
+                  onChange={handleAddress} placeholder="Province" required />
               </div>
               <div className="ck-form-row">
-                <label className="ck-label">Zip Code</label>
-                <input className="ck-input" name="zip" value={address.zip}
-                  onChange={handleAddress} placeholder="10400" maxLength={5} required />
+                <label className="ck-label">Postal Code</label>
+                <input className="ck-input" name="postalCode" value={address.postalCode}
+                  onChange={handleAddress} placeholder="10400" maxLength={5} inputMode="numeric" required />
               </div>
             </div>
           </div>
-
+ 
           {/* Payment */}
           <form id="checkout-form" onSubmit={handleSubmit}>
             <div className="ck-card">
               <h3 className="ck-card-title">
                 <i className="bx bx-credit-card"></i> Payment — Credit Card
               </h3>
-
+ 
               {/* Card Fields */}
               <div className="ck-form-row">
                 <label className="ck-label">Cardholder Name</label>
                 <input className="ck-input" name="holderName" value={card.holderName}
                   onChange={handleCard} placeholder="Name on card" required />
               </div>
-
+ 
               <div className="ck-form-row">
                 <label className="ck-label">Card Number</label>
                 <input className="ck-input" name="number" value={card.number}
                   onChange={handleCard} placeholder="0000 0000 0000 0000"
                   inputMode="numeric" required />
               </div>
-
+ 
               <div className="ck-form-row-group">
                 <div className="ck-form-row">
                   <label className="ck-label">Expiry Date</label>
@@ -266,21 +287,21 @@ function Checkout({ isLoggedIn, onLogout }) {
                   <label className="ck-label">CVV</label>
                   <input className="ck-input" name="cvv" value={card.cvv}
                     onChange={handleCard} placeholder="•••" type="password"
-                    inputMode="numeric" 
+                    inputMode="numeric"
                     maxLength={3} required />
                 </div>
               </div>
             </div>
           </form>
         </div>
-
+ 
         {/* ── RIGHT — Order Summary ── */}
         <div className="checkout-right">
           <div className="ck-card">
             <h3 className="ck-card-title">
               <i className="bx bx-receipt"></i> Order Summary
             </h3>
-
+ 
             {/* Product items */}
             <div className="ck-order-items-list">
               {orderItems.map((item, idx) => (
@@ -300,7 +321,7 @@ function Checkout({ isLoggedIn, onLogout }) {
                 </div>
               ))}
             </div>
-
+ 
             {/* Promo */}
             
             {promoMsg && (
@@ -308,7 +329,7 @@ function Checkout({ isLoggedIn, onLogout }) {
                 {promoMsg}
               </p>
             )}
-
+ 
             {/* Totals */}
             <div className="ck-summary-rows">
               <div className="ck-summary-row">
@@ -330,7 +351,7 @@ function Checkout({ isLoggedIn, onLogout }) {
                 <span>฿{total.toLocaleString()}</span>
               </div>
             </div>
-
+ 
             {/* Pay button */}
             <button type="submit" form="checkout-form" className="ck-pay-btn">
               <i className="bx bx-lock-alt"></i>
@@ -348,7 +369,7 @@ function Checkout({ isLoggedIn, onLogout }) {
           </>
         )}
       </div>
-
+ 
       {/* ── Success Modal ── */}
       {showSuccess && (
         <div className="ck-success-backdrop">
@@ -370,5 +391,5 @@ function Checkout({ isLoggedIn, onLogout }) {
     </div>
   );
 }
-
+ 
 export default Checkout;
