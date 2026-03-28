@@ -122,7 +122,7 @@ const ProductInfo = ({ product }) => {
         </span>
         <span className="pd-reviews">({reviews} {reviews === 1 ? 'review' : 'reviews'})</span>
       </div>
-      <h3 className="price">${Number(productPrice).toLocaleString()}</h3>
+      <h3 className="price">฿{Number(productPrice).toLocaleString()}</h3>
  
       {stock !== null && (
         <div className="stock-badge-row">

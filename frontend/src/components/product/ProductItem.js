@@ -17,7 +17,7 @@ const ProductItem = ({ name, price, productImage, sellerImage, sellerName, onCli
 
     <div className="product-details">
       <span className="item-name" style={{ fontSize: '0.85rem' }}>{name}</span>
-      <span className="item-price" style={{ fontSize: '0.95rem' }}>{price}$</span>
+      <span className="item-price" style={{ fontSize: '0.95rem' }}>฿{price}</span>
     </div>
   </div>
 );
