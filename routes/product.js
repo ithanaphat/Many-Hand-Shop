@@ -2,8 +2,6 @@ const express = require("express")
 const router = express.Router()
 const multer = require("multer")
 const cloudinary = require("cloudinary").v2
-const auth = require("../middleware/auth")
-
 const { Product, User, Category, Order } = require("../models/user")
 
 const upload = multer({ storage: multer.memoryStorage() })
@@ -184,14 +182,11 @@ router.get("/:id", async (req, res)=>{
     }
 })
 
-router.patch("/:id", auth, async (req, res)=>{
+router.patch("/:id", async (req, res)=>{
     try{
         const product = await Product.findById(req.params.id)
         if(!product){
             return res.status(404).json({message : "Product not found"})
-        }
-        if(String(product.seller) !== String(req.user._id)){
-            return res.status(403).json({message : "You can only edit your own products"})
         }
         const updateproduct = await Product.findByIdAndUpdate(req.params.id, req.body, {new : true, runValidators: true})
         res.json(updateproduct)
@@ -200,14 +195,11 @@ router.patch("/:id", auth, async (req, res)=>{
     }
 })
 
-router.delete("/:id", auth, async (req, res)=>{
+router.delete("/:id", async (req, res)=>{
     try{
         const product = await Product.findById(req.params.id)
         if(!product){
             return res.status(404).json({message : "Product not found"})
-        }
-        if(String(product.seller) !== String(req.user._id)){
-            return res.status(403).json({message : "You can only delete your own products"})
         }
         await Product.findByIdAndDelete(req.params.id)
         res.json({ message: "Product deleted" })
@@ -216,7 +208,7 @@ router.delete("/:id", auth, async (req, res)=>{
     }
 })
 
-router.post("/upload-image", auth, upload.single("image"), async (req, res) => {
+router.post("/upload-image", upload.single("image"), async (req, res) => {
     if (!hasCloudinaryUrl && !hasCloudinaryParts) {
         const missingVars = [
             "CLOUDINARY_CLOUD_NAME",
@@ -245,7 +237,7 @@ router.post("/upload-image", auth, upload.single("image"), async (req, res) => {
     }
 })
 
-router.post("/Addproduct", auth, async (req,res)=>{
+router.post("/Addproduct", async (req,res)=>{
     const {name, description, price, images, stock, seller, category} = req.body
     const normalizedImages = Array.isArray(images)
         ? images.filter(Boolean)
