@@ -55,15 +55,14 @@ function Checkout({ isLoggedIn, onLogout }) {
     expiry: '',
     cvv: '',
   });
- 
-  const [promoCode, setPromoCode] = useState('');
-  const [discount, setDiscount] = useState(0);
-  const [promoMsg, setPromoMsg] = useState('');
+
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [isProfileAddressApplied, setIsProfileAddressApplied] = useState(false);
   const [previousAddress, setPreviousAddress] = useState(null);
+
+  const discount = 0; // Promo code feature disabled
  
   /* ── helpers ── */
   const handleAddress = (e) => {
@@ -106,16 +105,6 @@ function Checkout({ isLoggedIn, onLogout }) {
     setCard((p) => ({ ...p, [name]: value }));
   };
  
-  const applyPromo = () => {
-    if (promoCode.trim().toUpperCase() === 'MHS10') {
-      setDiscount(Math.floor(subtotalBase * 0.1));
-      setPromoMsg('✓ Promo applied: 10% off');
-    } else {
-      setDiscount(0);
-      setPromoMsg('✗ Invalid promo code');
-    }
-  };
-
   const loadAddressFromProfile = () => {
     if (isProfileAddressApplied && previousAddress) {
       setAddress(previousAddress);
@@ -417,15 +406,7 @@ function Checkout({ isLoggedIn, onLogout }) {
                 </div>
               ))}
             </div>
- 
-            {/* Promo */}
-            
-            {promoMsg && (
-              <p style={{ fontSize: 12, color: discount > 0 ? '#2e7d32' : '#c0392b', margin: '-8px 0 12px' }}>
-                {promoMsg}
-              </p>
-            )}
- 
+
             {/* Totals */}
             <div className="ck-summary-rows">
               <div className="ck-summary-row">

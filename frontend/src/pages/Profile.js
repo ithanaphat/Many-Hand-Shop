@@ -115,7 +115,7 @@ function Profile({ isLoggedIn, onLogout }) {
     };
  
     loadProfile();
-  }, []);
+  }, [navigate]);
  
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
@@ -634,23 +634,24 @@ function Profile({ isLoggedIn, onLogout }) {
                   backgroundColor: '#a91e2c', 
                   color: 'white',
                   border: 'none',
-                  padding: '10px 16px',
+                  padding: '8px 12px',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontWeight: 'bold',
-                  fontSize: '14px',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  fontSize: '12px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  whiteSpace: 'nowrap'
                 }}
               >
-                ลบบัญชี (Delete Account)
+                ลบบัญชี
               </button>
 
               {/* กลุ่มปุ่ม Cancel และ Save ฝั่งขวา */}
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button className="profile-btn-cancel" onClick={closeEdit}>
+              <div style={{ display: 'flex', gap: '10px', flex: 1, marginLeft: '10px' }}>
+                <button className="profile-btn-cancel" onClick={closeEdit} style={{ flex: 1 }}>
                   Cancel
                 </button>
-                <button className="profile-btn-save" onClick={saveEdit} disabled={isSaving}>
+                <button className="profile-btn-save" onClick={saveEdit} disabled={isSaving} style={{ flex: 1 }}>
                   {isSaving ? 'Saving...' : 'Save'}
                 </button>
               </div>

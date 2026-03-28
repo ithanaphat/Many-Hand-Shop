@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { User } = require("../models/user.js")
+const { User, Product } = require("../models/user.js")
 
 // GET user profile by ID
 router.get("/:id", async (req, res) => {
@@ -74,6 +74,9 @@ router.delete('/:id', async (req, res) => {
     if (!deletedUser) {
       return res.status(404).json({ message: 'ไม่พบผู้ใช้งานนี้ในระบบ' });
     }
+
+    // ลบสินค้าทั้งหมดของผู้ขายคนนี้
+    await Product.deleteMany({ seller: userId });
  
     // ส่งข้อความกลับไปที่ Frontend ว่าลบสำเร็จ
     res.status(200).json({ message: 'ลบบัญชีผู้ใช้สำเร็จ' });
