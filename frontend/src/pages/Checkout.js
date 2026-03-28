@@ -62,6 +62,8 @@ function Checkout({ isLoggedIn, onLogout }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [isProfileAddressApplied, setIsProfileAddressApplied] = useState(false);
+  const [previousAddress, setPreviousAddress] = useState(null);
  
   /* ── helpers ── */
   const handleAddress = (e) => {
@@ -113,6 +115,84 @@ function Checkout({ isLoggedIn, onLogout }) {
       setPromoMsg('✗ Invalid promo code');
     }
   };
+
+  const loadAddressFromProfile = () => {
+    if (isProfileAddressApplied && previousAddress) {
+      setAddress(previousAddress);
+      setPreviousAddress(null);
+      setIsProfileAddressApplied(false);
+      return;
+    }
+
+    const fullName = localStorage.getItem('mhs_user_name') || '';
+    const phone = localStorage.getItem('mhs_user_phone') || '';
+    const savedAddress = localStorage.getItem('mhs_user_address') || '';
+
+    // Parse address format: "houseNumber, subDistrict, district, province, postalCode"
+    const parts = savedAddress.split(',').map(p => p.trim());
+
+    setPreviousAddress({ ...address });
+
+    setAddress({
+      fullName,
+      phone,
+      houseNumber: parts[0] || '',
+      subDistrict: parts[1] || '',
+      district: parts[2] || '',
+      province: parts[3] || '',
+      postalCode: parts[4] || '',
+    });
+    setIsProfileAddressApplied(true);
+  };
+
+  const syncCheckoutAddressToProfileIfMissing = async (userId) => {
+    const checkoutAddress = [
+      address.houseNumber,
+      address.subDistrict,
+      address.district,
+      address.province,
+      address.postalCode,
+    ]
+      .map((part) => String(part || '').trim())
+      .filter(Boolean)
+      .join(', ');
+
+    const currentProfilePhone = (localStorage.getItem('mhs_user_phone') || '').trim();
+    const currentProfileAddress = (localStorage.getItem('mhs_user_address') || '').trim();
+
+    const patchPayload = {
+      ...(currentProfilePhone ? {} : { phone: String(address.phone || '').trim() }),
+      ...(currentProfileAddress ? {} : { address: checkoutAddress }),
+    };
+
+    if (
+      (!patchPayload.phone || !patchPayload.phone.length) &&
+      (!patchPayload.address || !patchPayload.address.length)
+    ) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/user/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patchPayload),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) return;
+
+      if (typeof data.phone === 'string' && data.phone.trim()) {
+        localStorage.setItem('mhs_user_phone', data.phone);
+      }
+      if (typeof data.address === 'string' && data.address.trim()) {
+        localStorage.setItem('mhs_user_address', data.address);
+      }
+    } catch (error) {
+      // Do not block checkout if profile sync fails.
+      console.error('Profile sync failed:', error);
+    }
+  };
  
   const subtotalBase = orderItems.reduce((sum, i) => sum + Number(i.price) * i.quantity, 0);
   const subtotal  = subtotalBase;
@@ -139,6 +219,8 @@ function Checkout({ isLoggedIn, onLogout }) {
     setSubmitError('');
  
     try {
+      await syncCheckoutAddressToProfileIfMissing(userId);
+
       const response = await fetch('/api/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -209,6 +291,18 @@ function Checkout({ isLoggedIn, onLogout }) {
             <h3 className="ck-card-title">
               <i className="bx bx-map-pin"></i> Shipping Address
             </h3>
+
+            <button
+              type="button"
+              className="ck-load-profile-chip"
+              onClick={loadAddressFromProfile}
+              aria-pressed={isProfileAddressApplied}
+            >
+              <span className={`ck-load-profile-circle ${isProfileAddressApplied ? 'active' : ''}`}>
+                <i className="bx bx-check"></i>
+              </span>
+              <span>{isProfileAddressApplied ? 'Restore Previous Address' : 'Use Profile Address'}</span>
+            </button>
  
             <div className="ck-form-row-group">
               <div className="ck-form-row">
@@ -393,3 +487,5 @@ function Checkout({ isLoggedIn, onLogout }) {
 }
  
 export default Checkout;
+
+

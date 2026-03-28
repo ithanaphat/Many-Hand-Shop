@@ -102,6 +102,64 @@
   box-shadow: 0 0 0 3px rgba(102, 108, 73, 0.1);
 }
 
+.ck-load-profile-chip {
+  width: fit-content;
+  margin-bottom: 16px;
+  border: none;
+  background: transparent;
+  color: #556046;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+}
+
+.ck-load-profile-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid #ccd6bb;
+  background: #f1f4ec;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.ck-load-profile-circle i {
+  font-size: 14px;
+  color: #556046;
+}
+
+.ck-load-profile-circle.active {
+  background: #6d7b57;
+  border-color: #6d7b57;
+}
+
+.ck-load-profile-circle.active i {
+  color: #ffffff;
+}
+
+.ck-load-profile-chip:hover .ck-load-profile-circle {
+  background: #e8efdd;
+  border-color: #b9c8a3;
+  transform: scale(1.05);
+}
+
+.ck-load-profile-chip:active .ck-load-profile-circle {
+  transform: scale(0.96);
+}
+
+.ck-load-profile-chip:focus-visible {
+  outline: 2px solid #889870;
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
 /* ===== Right Column — Order Summary ===== */
 .checkout-right {
   position: sticky;
@@ -360,3 +418,6 @@
 .ck-success-btn:hover {
   background: #556046;
 }
+
+
+
