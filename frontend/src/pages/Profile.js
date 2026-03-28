@@ -20,10 +20,37 @@ function Profile({ isLoggedIn, onLogout }) {
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [editForm, setEditForm] = useState(profile);
+  const [editForm, setEditForm] = useState({
+    ...profile,
+    houseNumber: '',
+    subDistrict: '',
+    district: '',
+    province: '',
+    postalCode: '',
+  });
   const [sellerProducts, setSellerProducts] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+
+  // Helper function to split address string into components
+  const parseAddress = (addressStr) => {
+    if (!addressStr) return { houseNumber: '', subDistrict: '', district: '', province: '', postalCode: '' };
+    
+    // Try to parse address in format: "houseNumber, subDistrict, district, province, postalCode"
+    const parts = addressStr.split(',').map(p => p.trim());
+    return {
+      houseNumber: parts[0] || '',
+      subDistrict: parts[1] || '',
+      district: parts[2] || '',
+      province: parts[3] || '',
+      postalCode: parts[4] || ''
+    };
+  };
+
+  // Helper function to combine address components
+  const combineAddress = (houseNumber, subDistrict, district, province, postalCode) => {
+    return [houseNumber, subDistrict, district, province, postalCode].filter(Boolean).join(', ');
+  };
 
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
@@ -74,7 +101,11 @@ function Profile({ isLoggedIn, onLogout }) {
   const ratingValue = Math.round(profile.rating);
 
   const openEdit = () => {
-    setEditForm(profile);
+    const addressParts = parseAddress(profile.address);
+    setEditForm({
+      ...profile,
+      ...addressParts
+    });
     setIsEditOpen(true);
   };
 
@@ -158,11 +189,19 @@ function Profile({ isLoggedIn, onLogout }) {
 
   const saveEdit = async () => {
     const userId = localStorage.getItem('mhs_user_id');
+    const combinedAddress = combineAddress(
+      editForm.houseNumber,
+      editForm.subDistrict,
+      editForm.district,
+      editForm.province,
+      editForm.postalCode
+    );
+
     const payload = {
       username: editForm.username?.trim(),
       email: editForm.email?.trim(),
       phone: editForm.phone?.trim(),
-      address: editForm.address?.trim(),
+      address: combinedAddress,
     };
 
     if (!payload.username || !payload.email) {
@@ -194,7 +233,10 @@ function Profile({ isLoggedIn, onLogout }) {
           rating: data.rating || profile.rating,
         };
         setProfile(updatedProfile);
-        setEditForm(updatedProfile);
+        setEditForm({
+          ...updatedProfile,
+          ...parseAddress(updatedProfile.address)
+        });
         localStorage.setItem('mhs_user_name', updatedProfile.username);
         localStorage.setItem('mhs_user_email', updatedProfile.email);
         localStorage.setItem('mhs_user_phone', updatedProfile.phone);
@@ -394,16 +436,71 @@ function Profile({ isLoggedIn, onLogout }) {
                 />
               </div>
 
+              {/* House Number / Address Detail */}
               <div className="profile-form-row">
-                <label>Address</label>
-                <textarea
-                  name="address"
-                  value={editForm.address}
+                <label>เลขที่/ที่อยู่ (House Number / Address)</label>
+                <input
+                  type="text"
+                  name="houseNumber"
+                  value={editForm.houseNumber}
                   onChange={handleEditChange}
                   className="profile-input"
-                  placeholder="Your address"
-                  rows="3"
+                  placeholder="เช่น 45/6 ร้านทองค้าขาย"
                 />
+              </div>
+
+              {/* Address Fields - Row 1 */}
+              <div className="profile-form-group-2col">
+                <div className="profile-form-row">
+                  <label>ตำบล/แขวง (Sub-District)</label>
+                  <input
+                    type="text"
+                    name="subDistrict"
+                    value={editForm.subDistrict}
+                    onChange={handleEditChange}
+                    className="profile-input"
+                    placeholder="ตำบล/แขวง"
+                  />
+                </div>
+
+                <div className="profile-form-row">
+                  <label>อำเภอ/เขต (District)</label>
+                  <input
+                    type="text"
+                    name="district"
+                    value={editForm.district}
+                    onChange={handleEditChange}
+                    className="profile-input"
+                    placeholder="อำเภอ/เขต"
+                  />
+                </div>
+              </div>
+
+              {/* Address Fields - Row 2 */}
+              <div className="profile-form-group-2col">
+                <div className="profile-form-row">
+                  <label>จังหวัด (Province)</label>
+                  <input
+                    type="text"
+                    name="province"
+                    value={editForm.province}
+                    onChange={handleEditChange}
+                    className="profile-input"
+                    placeholder="จังหวัด"
+                  />
+                </div>
+
+                <div className="profile-form-row">
+                  <label>รหัสไปรษณีย์ (Postal Code)</label>
+                  <input
+                    type="text"
+                    name="postalCode"
+                    value={editForm.postalCode}
+                    onChange={handleEditChange}
+                    className="profile-input"
+                    placeholder="รหัสไปรษณีย์"
+                  />
+                </div>
               </div>
             </div>
 

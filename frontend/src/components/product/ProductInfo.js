@@ -43,6 +43,14 @@ const ProductInfo = ({ product }) => {
   const [cartMsg, setCartMsg] = React.useState('');
  
   const handleAddToCart = () => {
+    // ตรวจสอบว่า login แล้วหรือยัง
+    const userId = localStorage.getItem('mhs_user_id');
+    if (!userId) {
+      alert('Please sign in to add items to cart');
+      navigate('/login');
+      return;
+    }
+
     const maxStock = stock ?? Infinity;
     const cart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
     const existing = cart.find(i => i.id === (displayProduct._id || displayProduct.id));

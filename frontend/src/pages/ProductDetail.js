@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/layout/Header";
 import ProductGallery from "../components/product/ProductGallery";
 import ProductInfo from "../components/product/ProductInfo";
@@ -9,9 +9,18 @@ import "../components/product/ProductDetail.css";
 const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
   const { productId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(location.state?.product || null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const handleSignIn = () => {
+    navigate('/login');
+  };
+
+  const handleRegister = () => {
+    navigate('/register');
+  };
 
   useEffect(() => {
     if (!productId) return;
@@ -44,7 +53,7 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
 
   return (
     <>
-      <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
+      <Header isLoggedIn={isLoggedIn} onSignIn={handleSignIn} onRegister={handleRegister} onLogout={onLogout} />
       <div className="product-detail-container">
         <div className="product-detail-card">
           {loading && <div className="loading">Loading product...</div>}
