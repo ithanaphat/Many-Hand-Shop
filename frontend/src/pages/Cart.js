@@ -28,6 +28,39 @@ function Cart({ isLoggedIn, onLogout }) {
     localStorage.setItem(cartStorageKey, JSON.stringify(toSave));
   }, [items, cartStorageKey]);
 
+  // Sync cart with product catalog: remove items that were deleted.
+  useEffect(() => {
+    let cancelled = false;
+
+    const syncCartWithProducts = async () => {
+      try {
+        const response = await fetch('/api/product');
+        if (!response.ok) return;
+
+        const products = await response.json();
+        const availableIds = new Set(
+          (Array.isArray(products) ? products : []).map((p) => String(p._id || p.id))
+        );
+
+        if (cancelled) return;
+        setItems((prev) => {
+          const next = prev.filter((item) => availableIds.has(String(item.id || item._id)));
+          return next.length === prev.length ? prev : next;
+        });
+      } catch (error) {
+        // Keep current cart as-is if sync fails.
+      }
+    };
+
+    syncCartWithProducts();
+    const intervalId = setInterval(syncCartWithProducts, 10000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, []);
+
   const updateQuantity = (id, amount) => {
     setItems(prev =>
       prev.map(item => {
@@ -59,11 +92,36 @@ function Cart({ isLoggedIn, onLogout }) {
   const selectedItems = items.filter(item => item.selected);
   const total = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (selectedItems.length === 0) {
       alert('Please select at least 1 item.');
       return;
     }
+
+    try {
+      const response = await fetch('/api/product');
+      if (response.ok) {
+        const products = await response.json();
+        const availableIds = new Set(
+          (Array.isArray(products) ? products : []).map((p) => String(p._id || p.id))
+        );
+
+        const missingSelectedIds = selectedItems
+          .filter((item) => !availableIds.has(String(item.id || item._id)))
+          .map((item) => String(item.id || item._id));
+
+        if (missingSelectedIds.length > 0) {
+          setItems((prev) =>
+            prev.filter((item) => !missingSelectedIds.includes(String(item.id || item._id)))
+          );
+          alert('Some products were removed and have been deleted from your cart.');
+          return;
+        }
+      }
+    } catch (error) {
+      // If validation fails due to network, continue to checkout as fallback.
+    }
+
     navigate('/checkout', { state: { cartItems: selectedItems, total } });
   };
 
