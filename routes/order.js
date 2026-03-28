@@ -80,6 +80,12 @@ router.post("/", async (req, res) => {
                 return res.status(404).json({ message: "Product not found" })
             }
 
+            if (String(product.seller._id) === String(buyer)) {
+                return res.status(400).json({
+                    message: `You cannot buy your own product: ${product.name}`
+                })
+            }   
+
             if (!Number.isInteger(quantity) || quantity < 1) {
                 return res.status(400).json({ message: "Invalid quantity" })
             }

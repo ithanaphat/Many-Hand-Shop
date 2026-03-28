@@ -20,7 +20,7 @@ function Login({ onLoginSuccess }) {
       });
 
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
+      if (!response.ok){
         alert(data.message || 'Sign in failed');
         return;
       }
