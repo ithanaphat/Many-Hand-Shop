@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
@@ -22,6 +22,13 @@ function Home({ isLoggedIn, onLogout }) {
   const [products, setProducts] = useState([]);
   const [popularProducts, setPopularProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const catalogRef = useRef(null);
+
+  const scrollCatalog = (dir) => {
+    if (catalogRef.current) {
+      catalogRef.current.scrollBy({ left: dir * 260, behavior: 'smooth' });
+    }
+  };
   const [loading, setLoading] = useState(true);
 
   const handleCatalogClick = (categoryName) => {
@@ -130,17 +137,21 @@ function Home({ isLoggedIn, onLogout }) {
         {/* แถบหมวดหมู่ */}
         <div className="catalog-box">
           <h2 className="catalog-title">catalog</h2>
-          <div className="catalog-items">
-            {categories.map((cat) => (
-              <div
-                key={cat.name}
-                className="catalog-item"
-                onClick={() => handleCatalogClick(cat.name)}
-              >
-                <div className="catalog-icon">{categoryIcons[cat.name.toLowerCase()] || '🏷️'}</div>
-                <div className="catalog-name">{(cat.displayName || cat.name).toUpperCase()}</div>
-              </div>
-            ))}
+          <div className="catalog-scroll-wrapper">
+            <button className="catalog-arrow catalog-arrow-left" onClick={() => scrollCatalog(-1)} aria-label="Scroll left">&#8249;</button>
+            <div className="catalog-items" ref={catalogRef}>
+              {categories.map((cat) => (
+                <div
+                  key={cat.name}
+                  className="catalog-item"
+                  onClick={() => handleCatalogClick(cat.name)}
+                >
+                  <div className="catalog-icon">{categoryIcons[cat.name.toLowerCase()] || '🏷️'}</div>
+                  <div className="catalog-name">{(cat.displayName || cat.name).toUpperCase()}</div>
+                </div>
+              ))}
+            </div>
+            <button className="catalog-arrow catalog-arrow-right" onClick={() => scrollCatalog(1)} aria-label="Scroll right">&#8250;</button>
           </div>
         </div>
 

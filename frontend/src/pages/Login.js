@@ -62,6 +62,11 @@ function Login({ onLoginSuccess }) {
               Password
               <input type="password" name="password" required />
             </label>
+            <div style={{ textAlign: 'right', marginBottom: '12px' }}>
+              <button type="button" className="link-button" style={{ fontSize: '13px', color: '#888' }} onClick={() => navigate('/forgot-password')}>
+                Forgot Password?
+              </button>
+            </div>
             <button type="submit" className="auth-submit">Login</button>
           </form>
           <p className="alt-action">

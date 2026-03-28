@@ -16,8 +16,13 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:3000")
 app.use(cors({
     origin: (origin, callback) => {
         // allow server-to-server / curl with no origin header
-        if (!origin || allowedOrigins.includes(origin)) return callback(null, true)
-        callback(new Error("Not allowed by CORS"))
+        if (!origin) return callback(null, true)
+        // in development allow any localhost port
+        if (process.env.NODE_ENV !== "production" && /^http:\/\/localhost(:\d+)?$/.test(origin)) {
+            return callback(null, true)
+        }
+        if (allowedOrigins.includes(origin)) return callback(null, true)
+        callback(null, false)
     },
     credentials: true,
 }))
@@ -55,7 +60,7 @@ app.use(router)
 
 // ── Serve React build (production / built frontend) ───
 app.use(express.static(path.join(__dirname, "frontend", "build")))
-app.get("*", (req, res) => {
+app.get("/*splat", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "build", "index.html"))
 })
 
