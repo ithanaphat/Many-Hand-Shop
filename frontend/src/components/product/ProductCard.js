@@ -30,6 +30,16 @@ function ProductCard(props) {
   // Dynamic font size based on price length
   const priceStr = '฿' + Number(props.itemPrice).toLocaleString();
   const priceFontSize = priceStr.length > 12 ? '0.78rem' : priceStr.length > 9 ? '0.95rem' : '1.1rem';
+
+  const formatSellerName = (name) => {
+    if (!name) return '';
+    const firstName = name.split(' ')[0]; // ตัดเว้นวรรค เอาแค่คำแรก
+    if (firstName.length > 12) {
+      return firstName.slice(0, 12) + '...'; // ถ้าเกิน 12 ตัวอักษร ให้ตัดแล้วใส่ ...
+    }
+    return firstName;
+  };
+  const displaySellerName = formatSellerName(props.sellerName);
  
   // Seller rating stars
   const rating = Number(props.sellerRating) || 0;
@@ -57,8 +67,9 @@ function ProductCard(props) {
         className="seller-name"
         onClick={handleSellerClick}
         style={{ cursor: props.sellerId ? 'pointer' : 'default' }}
+        title={props.sellerName} /* ใส่ title ไว้เผื่อเอาเมาส์ชี้แล้วอยากดูชื่อเต็ม */
       >
-        {props.sellerName}
+        {displaySellerName} {/* เปลี่ยนจาก props.sellerName เป็นตัวที่เราตัดคำแล้ว */}
       </span>
  
       <div className="product-image-box">
