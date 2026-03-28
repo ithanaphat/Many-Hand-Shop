@@ -16,6 +16,7 @@ router.get("/:id", async (req, res) => {
             phone: user.phone || "",
             address: user.address || "",
             images: user.images || [],
+            backgroundImage: user.backgroundImage || "",
             rating: user.rating || 0,
             ratingCount: user.ratingCount || 0
         })
@@ -27,7 +28,7 @@ router.get("/:id", async (req, res) => {
 
 // UPDATE user profile
 router.patch("/:id", async (req, res) => {
-    const { username, email, phone, address, images } = req.body
+    const { username, email, phone, address, images, backgroundImage } = req.body
 
     try {
         const updatedUser = await User.findByIdAndUpdate(
@@ -38,6 +39,7 @@ router.patch("/:id", async (req, res) => {
                 ...(phone !== undefined ? { phone } : {}),
                 ...(address !== undefined ? { address } : {}),
                 ...(images !== undefined ? { images } : {}),
+                ...(backgroundImage !== undefined ? { backgroundImage } : {}),
             },
             { new: true, runValidators: true }
         ).select("-password")
@@ -53,6 +55,7 @@ router.patch("/:id", async (req, res) => {
             phone: updatedUser.phone || "",
             address: updatedUser.address || "",
             images: updatedUser.images || [],
+            backgroundImage: updatedUser.backgroundImage || "",
             rating: updatedUser.rating || 0,
             ratingCount: updatedUser.ratingCount || 0
         })

@@ -19,7 +19,7 @@ function Profile({ isLoggedIn, onLogout }) {
       day: 'numeric'
     });
   };
-
+ 
   const [profile, setProfile] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -37,10 +37,12 @@ function Profile({ isLoggedIn, onLogout }) {
   const [sellerProducts, setSellerProducts] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [coverFile, setCoverFile] = useState(null);
+  const [previewCover, setPreviewCover] = useState(null);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [ratingDetails, setRatingDetails] = useState([]);
   const [isLoadingRatings, setIsLoadingRatings] = useState(false);
-
+ 
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
     if (!userId) {
@@ -50,7 +52,7 @@ function Profile({ isLoggedIn, onLogout }) {
       navigate('/login');
     }
   }, [navigate, onLogout]);
-
+ 
   useEffect(() => {
     if (!profile) return;
     const addressParts = parseAddress(profile.address);
@@ -59,7 +61,7 @@ function Profile({ isLoggedIn, onLogout }) {
       ...addressParts,
     });
   }, [profile]);
-
+ 
  
   // Helper function to split address string into components
   const parseAddress = (addressStr) => {
@@ -84,7 +86,7 @@ function Profile({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
     if (!userId) return;
-
+ 
     if (!userId) {
       navigate('/login');
       return;
@@ -95,7 +97,7 @@ function Profile({ isLoggedIn, onLogout }) {
         const response = await fetch(`/api/user/${userId}`);
         if (!response.ok) {
           localStorage.clear();  
-          navigate('/login');       
+          navigate('/login');      
           return;
         }
         const data = await response.json();
@@ -105,6 +107,7 @@ function Profile({ isLoggedIn, onLogout }) {
           phone: data.phone || '',
           address: data.address || '',
           images: data.images || [],
+          coverImage: data.coverImage || '',
           rating: data.rating || 0,
           ratingCount: data.ratingCount || 0
         });
@@ -138,14 +141,14 @@ function Profile({ isLoggedIn, onLogout }) {
   if (!profile) return <div>Loading...</div>;
  
   const ratingValue = Math.round(profile.rating);
-
+ 
   const openRatingDetails = async () => {
     const userId = localStorage.getItem('mhs_user_id');
     if (!userId) return;
-
+ 
     setIsRatingModalOpen(true);
     setIsLoadingRatings(true);
-
+ 
     try {
       const response = await fetch(`/api/order/seller/${userId}/ratings`);
       const data = await response.json().catch(() => ({}));
@@ -154,7 +157,7 @@ function Profile({ isLoggedIn, onLogout }) {
         setRatingDetails([]);
         return;
       }
-
+ 
       setRatingDetails(Array.isArray(data.ratings) ? data.ratings : []);
     } catch (error) {
       alert('Cannot connect to server');
@@ -163,11 +166,11 @@ function Profile({ isLoggedIn, onLogout }) {
       setIsLoadingRatings(false);
     }
   };
-
+ 
   const closeRatingModal = () => {
     setIsRatingModalOpen(false);
   };
-
+ 
  
   const openEdit = () => {
     const addressParts = parseAddress(profile.address);
@@ -213,6 +216,68 @@ function Profile({ isLoggedIn, onLogout }) {
         setPreviewImage(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+ 
+  const handleCoverImageChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      setCoverFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewCover(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+ 
+  const uploadCoverImage = async () => {
+    if (!coverFile) {
+      alert('Please select an image');
+      return;
+    }
+ 
+    const userId = localStorage.getItem('mhs_user_id');
+    const formData = new FormData();
+    formData.append('image', coverFile);
+ 
+    try {
+      const uploadResponse = await fetch('/api/product/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+ 
+      const uploadData = await uploadResponse.json().catch(() => ({}));
+      if (!uploadResponse.ok || !uploadData.url) {
+        alert(uploadData.message || 'Upload image failed');
+        return;
+      }
+ 
+      const patchResponse = await fetch(`/api/user/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          coverImage: uploadData.url
+        }),
+      });
+ 
+      const patchData = await patchResponse.json().catch(() => ({}));
+      if (!patchResponse.ok) {
+        alert(patchData.message || 'Update cover failed');
+        return;
+      }
+ 
+      const updatedProfile = {
+        ...profile,
+        coverImage: uploadData.url
+      };
+      setProfile(updatedProfile);
+      setCoverFile(null);
+      setPreviewCover(null);
+      alert('Cover image updated successfully!');
+    } catch (error) {
+      alert('Cannot connect to server');
+      console.error(error);
     }
   };
  
@@ -331,7 +396,7 @@ function Profile({ isLoggedIn, onLogout }) {
       setIsSaving(false);
     }
   };
-
+ 
   const handleDeleteAccount = async () => {
     // 1. เด้งหน้าต่างถามเพื่อยืนยันการลบ
     const isConfirmed = window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีผู้ใช้นี้?\nข้อมูลทั้งหมดจะถูกลบและไม่สามารถกู้คืนได้");
@@ -367,7 +432,21 @@ function Profile({ isLoggedIn, onLogout }) {
       <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
  
       {/* 1. Purple Banner Area */}
-      <div className="banner-container">
+      <div className="banner-container" style={{ backgroundImage: `url('${previewCover || profile.coverImage || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}')`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+        <button
+          type="button"
+          onClick={() => document.getElementById('cover-input').click()}
+          style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(255,255,255,0.9)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+        >
+          <i className='bx bxs-camera' style={{ fontSize: '24px', color: '#333' }}></i>
+        </button>
+        <input
+          id="cover-input"
+          type="file"
+          accept="image/*"
+          onChange={handleCoverImageChange}
+          style={{ display: 'none' }}
+        />
         <div className="avatar-wrapper">
           <div
             className="avatar-overlay"
@@ -460,6 +539,49 @@ function Profile({ isLoggedIn, onLogout }) {
           </div>
         </div>
       </div>
+ 
+      {/* Cover Preview Modal */}
+      {previewCover && (
+        <div className="image-preview-backdrop" onClick={() => {
+          setCoverFile(null);
+          setPreviewCover(null);
+        }}>
+          <div className="image-preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="image-preview-content">
+              <img src={previewCover} alt="cover-preview" className="image-preview-large" />
+            </div>
+           
+            <div className="image-preview-actions">
+              <button
+                className="image-btn-upload"
+                onClick={uploadCoverImage}
+              >
+                <i className='bx bx-check' style={{ marginRight: '6px' }}></i>
+                Confirm
+              </button>
+              <button
+                className="image-btn-change"
+                onClick={() => {
+                  document.getElementById('cover-input').click();
+                }}
+              >
+                <i className='bx bx-edit' style={{ marginRight: '6px' }}></i>
+                Change Photo
+              </button>
+              <button
+                className="image-btn-cancel"
+                onClick={() => {
+                  setCoverFile(null);
+                  setPreviewCover(null);
+                }}
+              >
+                <i className='bx bx-x' style={{ marginRight: '6px' }}></i>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
  
       {/* Image Preview Modal */}
       {previewImage && (
@@ -625,13 +747,13 @@ function Profile({ isLoggedIn, onLogout }) {
             </div>
  
             <div className="profile-modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '16px 20px' }}>
-              
+             
               {/* ปุ่ม Delete Account ฝั่งซ้าย */}
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleDeleteAccount}
                 style={{
-                  backgroundColor: '#a91e2c', 
+                  backgroundColor: '#a91e2c',
                   color: 'white',
                   border: 'none',
                   padding: '8px 12px',
@@ -645,7 +767,7 @@ function Profile({ isLoggedIn, onLogout }) {
               >
                 ลบบัญชี
               </button>
-
+ 
               {/* กลุ่มปุ่ม Cancel และ Save ฝั่งขวา */}
               <div style={{ display: 'flex', gap: '10px', flex: 1, marginLeft: '10px' }}>
                 <button className="profile-btn-cancel" onClick={closeEdit} style={{ flex: 1 }}>
@@ -655,12 +777,12 @@ function Profile({ isLoggedIn, onLogout }) {
                   {isSaving ? 'Saving...' : 'Save'}
                 </button>
               </div>
-              
+             
             </div>
           </div>
         </div>
       )}
-
+ 
       {isRatingModalOpen && (
         <div className="profile-modal-backdrop" onClick={closeRatingModal}>
           <div className="profile-modal rating-modal" onClick={(e) => e.stopPropagation()}>
@@ -670,7 +792,7 @@ function Profile({ isLoggedIn, onLogout }) {
                 <i className='bx bx-x'></i>
               </button>
             </div>
-
+ 
             <div className="profile-modal-body rating-modal-body">
               {isLoadingRatings ? (
                 <p className="rating-empty">กำลังโหลดข้อมูล...</p>
@@ -684,7 +806,7 @@ function Profile({ isLoggedIn, onLogout }) {
                     const productImage = Array.isArray(entry.product?.images) && entry.product.images[0]
                       ? entry.product.images[0]
                       : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200';
-
+ 
                     return (
                       <div className="rating-card" key={entry.orderItemId || `${entry.orderId}-${productName}`}>
                         <img className="rating-card-image" src={productImage} alt={productName} />

@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
     type: [String],
     required: false, // ไม่บังคับ เพราะตอน register ยังไม่มีรูป
     },
+    backgroundImage: {
+    type: String,
+    required: false, // ไม่บังคับ background image ของ profile
+    },
     address : {
         type : String
     },
