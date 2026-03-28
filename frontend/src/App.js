@@ -14,6 +14,7 @@ import SellerBoard from './pages/SellerBoard';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import OrderHistory from './pages/OrderHistory';
+import ForgotPassword from './pages/ForgotPassword';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -74,6 +75,7 @@ function App() {
           path="/register"
           element={isLoggedIn ? <Navigate to="/" replace /> : <Register />}
         />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Protected routes — redirect to /login if not logged in */}
         <Route
