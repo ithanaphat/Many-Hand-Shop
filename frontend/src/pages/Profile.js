@@ -13,7 +13,7 @@ function Profile({ isLoggedIn, onLogout }) {
     if (!value) return '-';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '-';
-    return date.toLocaleDateString('th-TH', {
+    return date.toLocaleDateString('en-GB', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -400,7 +400,7 @@ function Profile({ isLoggedIn, onLogout }) {
  
   const handleDeleteAccount = async () => {
     // 1. เด้งหน้าต่างถามเพื่อยืนยันการลบ
-    const isConfirmed = window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีผู้ใช้นี้?\nข้อมูลทั้งหมดจะถูกลบและไม่สามารถกู้คืนได้");
+    const isConfirmed = window.confirm('Are you sure you want to delete this account?\nAll data will be permanently removed and cannot be restored.');
    
     // 2. ถ้าผู้ใช้กด 'Cancel' (ยกเลิก) ให้หยุดการทำงานทันที
     if (!isConfirmed) {
@@ -415,12 +415,12 @@ function Profile({ isLoggedIn, onLogout }) {
       });
  
       if (response.ok) {
-        alert('ลบบัญชีผู้ใช้สำเร็จ');
+        alert('Account deleted successfully');
         onLogout(); // ทำการล็อกเอาท์
         navigate('/'); // เด้งกลับไปหน้าแรก
       } else {
         const data = await response.json().catch(() => ({}));
-        alert(data.message || 'ไม่สามารถลบบัญชีได้');
+        alert(data.message || 'Unable to delete account');
       }
     } catch (error) {
       alert('Cannot connect to server');
@@ -766,7 +766,7 @@ function Profile({ isLoggedIn, onLogout }) {
                   whiteSpace: 'nowrap'
                 }}
               >
-                ลบบัญชี
+                Delete Account
               </button>
  
               {/* กลุ่มปุ่ม Cancel และ Save ฝั่งขวา */}
@@ -788,7 +788,7 @@ function Profile({ isLoggedIn, onLogout }) {
         <div className="profile-modal-backdrop" onClick={closeRatingModal}>
           <div className="profile-modal rating-modal" onClick={(e) => e.stopPropagation()}>
             <div className="profile-modal-header">
-              <h3>รายละเอียดเรตติ้ง ({ratingDetails.length})</h3>
+              <h3>Rating Details ({ratingDetails.length})</h3>
               <button className="profile-modal-close" onClick={closeRatingModal}>
                 <i className='bx bx-x'></i>
               </button>
@@ -796,9 +796,9 @@ function Profile({ isLoggedIn, onLogout }) {
  
             <div className="profile-modal-body rating-modal-body">
               {isLoadingRatings ? (
-                <p className="rating-empty">กำลังโหลดข้อมูล...</p>
+                <p className="rating-empty">Loading ratings...</p>
               ) : ratingDetails.length === 0 ? (
-                <p className="rating-empty">ยังไม่มีคนให้คะแนน</p>
+                <p className="rating-empty">No ratings yet</p>
               ) : (
                 <div className="rating-list">
                   {ratingDetails.map((entry) => {
@@ -812,8 +812,8 @@ function Profile({ isLoggedIn, onLogout }) {
                       <div className="rating-card" key={entry.orderItemId || `${entry.orderId}-${productName}`}>
                         <img className="rating-card-image" src={productImage} alt={productName} />
                         <div className="rating-card-content">
-                          <p className="rating-card-line"><strong>ผู้ให้คะแนน:</strong> {reviewerName}</p>
-                          <p className="rating-card-line"><strong>สินค้า:</strong> {productName}</p>
+                          <p className="rating-card-line"><strong>Reviewer:</strong> {reviewerName}</p>
+                          <p className="rating-card-line"><strong>Product:</strong> {productName}</p>
                           <p className="rating-card-line rating-stars-line" aria-label={`Rating ${entry.rating} out of ${maxRating}`}>
                             {Array.from({ length: maxRating }).map((_, index) => (
                               <span key={`${entry.orderItemId || entry.orderId}-${index}`} className={index < Number(entry.rating || 0) ? 'star-filled' : 'star-empty'}>
@@ -822,7 +822,7 @@ function Profile({ isLoggedIn, onLogout }) {
                             ))}
                             <span className="rating-number-inline">{Number(entry.rating || 0)}/{maxRating}</span>
                           </p>
-                          <p className="rating-card-line"><strong>วันที่:</strong> {formatRatingDate(entry.ratedAt)}</p>
+                          <p className="rating-card-line"><strong>Date:</strong> {formatRatingDate(entry.ratedAt)}</p>
                         </div>
                       </div>
                     );

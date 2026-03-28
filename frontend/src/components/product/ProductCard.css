@@ -6,20 +6,6 @@
   font-family: 'Montserrat', sans-serif;
 }
  
-.card-popular-badge {
-  position: absolute;
-  top: -16px;
-  right: 0;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: #f5b301;
-  color: #2d2d2d;
-  font-size: 11px;
-  font-weight: 700;
-  z-index: 3;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-}
- 
 /* ตั้งค่ารูปโปรไฟล์ให้ลอยทับมุมซ้ายบน */
 .profile-pic {
   position: absolute;
@@ -156,29 +142,4 @@
   background: #ffebee;
   color: #c62828;
   border: 1px solid #ef9a9a;
-}
- 
-/* Styles for popular product cards in popular section */
-.product-card.popular-item .item-name {
-  color: #ffffff;
-}
- 
-.product-card.popular-item .item-price {
-  color: #ffffff;
-}
- 
-.product-card.popular-item .seller-name {
-  color: #ffffff;
-}
- 
-.product-card.popular-item .card-rating-row {
-  color: #ffffff;
-}
- 
-.product-card.popular-item .card-rating-value {
-  color: #ffffff;
-}
- 
-.product-card.popular-item .card-popular-badge {
-  color: #ffffff;
 }

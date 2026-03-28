@@ -20,7 +20,6 @@ const categoryIcons = {
 function Home({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [popularProducts, setPopularProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const catalogRef = useRef(null);
 
@@ -58,28 +57,16 @@ function Home({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const [productsResponse, popularResponse] = await Promise.all([
-          fetch('/api/product'),
-          fetch('/api/product/popular?limit=4'),
-        ]);
+        const productsResponse = await fetch('/api/product');
 
         if (productsResponse.ok) {
           const data = await productsResponse.json();
           setProducts(data);
-
-          if (popularResponse.ok) {
-            const popularData = await popularResponse.json();
-            setPopularProducts(Array.isArray(popularData) ? popularData : data.slice(0, 4));
-          } else {
-            setPopularProducts(data.slice(0, 4));
-          }
         } else {
           setProducts([]);
-          setPopularProducts([]);
         }
       } catch (err) {
         setProducts([]);
-        setPopularProducts([]);
       } finally {
         setLoading(false);
       }
@@ -104,37 +91,8 @@ function Home({ isLoggedIn, onLogout }) {
         onSignIn={() => navigate('/login')}
         onRegister={() => navigate('/register')}
       />
-      
-      {/* 1. Popular Section (พื้นหลังสีเขียว) */}
-      <section className="popular-section">
-        <div className="container">
-          <div className="popular-badge">
-            <span className="star-icon">✪</span> POPULAR
-          </div>
-          <div className="product-grid">
-            {popularProducts.map((product) => (
-              <ProductCard 
-                key={`pop-${product._id}`}
-                id={product._id}
-                sellerId={product.seller?._id}
-                sellerName={product.seller?.username || product.sellerName || 'Seller'}
-                sellerImage={product.seller?.images?.[0] || product.sellerImage || 'https://i.pravatar.cc/150?u=default'}
-                productImage={product.images?.[0]}
-                itemName={product.name}
-                itemPrice={product.price}
-                stock={product.stock}
-                sellerRating={product.seller?.rating || product.sellerRating || 0}
-                popularSoldCount={Number(product.totalSold || 0)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* 2. Catalog และ Main Grid */}
       <main className="main-content container">
-        
-        {/* แถบหมวดหมู่ */}
         <div className="catalog-box">
           <h2 className="catalog-title">catalog</h2>
           <div className="catalog-scroll-wrapper">
@@ -155,7 +113,6 @@ function Home({ isLoggedIn, onLogout }) {
           </div>
         </div>
 
-        {/* รายการสินค้าทั้งหมด */}
         <div className="product-grid main-grid">
           {loading ? (
             <p>Loading products...</p>
@@ -177,7 +134,6 @@ function Home({ isLoggedIn, onLogout }) {
           )}
         </div>
 
-        {/* ปุ่ม Show More */}
         <div className="show-more-container">
           <button 
             className="show-more-btn"
