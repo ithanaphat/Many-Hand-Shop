@@ -420,11 +420,11 @@ function SellerBoard({ isLoggedIn, onLogout }) {
  
       {/* ===== Edit Modal ===== */}
       {editProduct && (
-        <div className="sb-modal-backdrop" onClick={closeEdit}>
+        <div className="sb-modal-backdrop">
           <div className="sb-modal" onClick={(e) => e.stopPropagation()}>
             <div className="sb-modal-header">
               <h3>Edit Product</h3>
-              <button className="sb-modal-close" onClick={closeEdit}>
+              <button className="sb-modal-close" type="button" onClick={closeEdit}>
                 <i className="bx bx-x"></i>
               </button>
             </div>
@@ -700,11 +700,11 @@ function SellerBoard({ isLoggedIn, onLogout }) {
  
       {/* ===== Add Modal ===== */}
       {showAddModal && (
-        <div className="sb-modal-backdrop" onClick={closeAdd}>
+        <div className="sb-modal-backdrop">
           <div className="sb-modal" onClick={(e) => e.stopPropagation()}>
             <div className="sb-modal-header">
               <h3>Add Product</h3>
-              <button className="sb-modal-close" onClick={closeAdd}>
+              <button className="sb-modal-close" type="button" onClick={closeAdd}>
                 <i className="bx bx-x"></i>
               </button>
             </div>
@@ -831,11 +831,11 @@ function SellerBoard({ isLoggedIn, onLogout }) {
  
       {/* ===== Delete Confirm ===== */}
       {deleteId !== null && (
-        <div className="sb-modal-backdrop" onClick={cancelDelete}>
+        <div className="sb-modal-backdrop">
           <div className="sb-modal sb-modal-sm" onClick={(e) => e.stopPropagation()}>
             <div className="sb-modal-header">
               <h3>Delete Product</h3>
-              <button className="sb-modal-close" onClick={cancelDelete}>
+              <button className="sb-modal-close" type="button" onClick={cancelDelete}>
                 <i className="bx bx-x"></i>
               </button>
             </div>

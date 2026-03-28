@@ -144,6 +144,13 @@ router.post("/", async (req, res) => {
             return res.status(404).json({ message: "Buyer not found" })
         }
 
+        const normalizedPhone = String(shippingInfo.phone || "").trim()
+        if (!normalizedPhone.startsWith("0")) {
+            return res.status(400).json({
+                message: "Purchase cannot be completed. Phone number must start with 0.",
+            })
+        }
+
         const normalizedItems = []
 
         for (const item of items) {
@@ -200,7 +207,7 @@ router.post("/", async (req, res) => {
             items: normalizedItems,
             shippingInfo: {
                 name: String(shippingInfo.name || "").trim(),
-                phone: String(shippingInfo.phone || "").trim(),
+                phone: normalizedPhone,
                 address: String(shippingInfo.address || "").trim(),
             },
             shippingFee: normalizedShippingFee,
