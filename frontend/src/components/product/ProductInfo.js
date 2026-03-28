@@ -165,7 +165,7 @@ const ProductInfo = ({ product }) => {
         <img src={sellerImage} alt="Seller" className="seller-avatar" />
         <div>
           <p className="seller-name">{sellerName}</p>
-          <p className="seller-status">Verified Seller</p>
+          <p className="seller-status">{sellerName}</p>
         </div>
       </div>
     </div>

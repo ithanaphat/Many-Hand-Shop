@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap');
+
 /* Loading and Error States */
 .loading {
   text-align: center;
@@ -277,8 +279,8 @@
 .seller-info {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
+  gap: 16px;
+  padding: 20px 24px;
   background: #f6f7f4;
   border-radius: 12px;
   border: 1px solid #e6eadf;
@@ -286,22 +288,26 @@
 }
 
 .seller-avatar {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .seller-info .seller-name {
-  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
   color: #333;
   margin: 0;
 }
 
 .seller-info .seller-status {
-  font-size: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
   color: #666;
-  margin: 3px 0 0 0;
+  margin: 4px 0 0 0;
 }
 
 .seller-info div {
