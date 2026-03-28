@@ -250,7 +250,18 @@ function SellerBoard({ isLoggedIn, onLogout }) {
  
   const handleAddImageChange = (e) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
-    setAddForm((prev) => ({ ...prev, imageFiles: files }));
+
+    const totalImages = addForm.imageFiles.length + files.length;
+    
+    if (totalImages > 5) {
+      alert(`Total images cannot exceed 5. Current: ${addForm.imageFiles.length}`);
+      return;
+    }
+
+    setAddForm((prev) => ({ 
+      ...prev, 
+      imageFiles: [...prev.imageFiles, ...files] 
+    }));
   };
  
   const saveAdd = async () => {
