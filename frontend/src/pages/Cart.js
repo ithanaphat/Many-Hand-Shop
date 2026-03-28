@@ -6,17 +6,27 @@ import Footer from "../components/layout/Footer";
 
 function Cart({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
+  const userId = localStorage.getItem('mhs_user_id');
+  const cartStorageKey = userId ? `mhs_cart_${userId}` : 'mhs_cart_guest';
   // โหลดจาก localStorage ตั้งแต่ต้น ไม่ต้องรอ useEffect
   const [items, setItems] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+    let saved = JSON.parse(localStorage.getItem(cartStorageKey) || '[]');
+    if (saved.length === 0) {
+      const legacyCart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+      if (legacyCart.length > 0) {
+        saved = legacyCart;
+        localStorage.setItem(cartStorageKey, JSON.stringify(legacyCart));
+        localStorage.removeItem('mhs_cart');
+      }
+    }
     return saved.map(item => ({ ...item, selected: true }));
   });
 
   // บันทึกลง localStorage ทุกครั้งที่ items เปลี่ยน
   useEffect(() => {
     const toSave = items.map(({ selected, ...rest }) => rest);
-    localStorage.setItem('mhs_cart', JSON.stringify(toSave));
-  }, [items]);
+    localStorage.setItem(cartStorageKey, JSON.stringify(toSave));
+  }, [items, cartStorageKey]);
 
   const updateQuantity = (id, amount) => {
     setItems(prev =>

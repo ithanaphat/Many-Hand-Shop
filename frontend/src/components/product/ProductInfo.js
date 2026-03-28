@@ -6,6 +6,7 @@ import "./ProductDetail.css";
 const ProductInfo = ({ product }) => {
   const navigate = useNavigate();
   const [qty, setQty] = React.useState(1);
+  const getCartStorageKey = (userId) => `mhs_cart_${userId}`;
   const displayProduct = product || {
     name: "Product Name",
     sellerName: "Unknown Seller",
@@ -61,8 +62,18 @@ const ProductInfo = ({ product }) => {
       return;
     }
 
+    const cartStorageKey = getCartStorageKey(userId);
+
     const maxStock = stock ?? Infinity;
-    const cart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+    let cart = JSON.parse(localStorage.getItem(cartStorageKey) || '[]');
+    if (cart.length === 0) {
+      const legacyCart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+      if (legacyCart.length > 0) {
+        cart = legacyCart;
+        localStorage.setItem(cartStorageKey, JSON.stringify(legacyCart));
+        localStorage.removeItem('mhs_cart');
+      }
+    }
     const existing = cart.find(i => i.id === (displayProduct._id || displayProduct.id));
     if (existing) {
       const newQty = existing.quantity + qty;
@@ -85,7 +96,7 @@ const ProductInfo = ({ product }) => {
         stock: maxStock === Infinity ? null : maxStock,
       });
     }
-    localStorage.setItem('mhs_cart', JSON.stringify(cart));
+    localStorage.setItem(cartStorageKey, JSON.stringify(cart));
     setCartMsg('Added to cart ✓');
     setTimeout(() => setCartMsg(''), 2000);
   };

@@ -214,6 +214,8 @@ function Checkout({ isLoggedIn, onLogout }) {
       navigate('/login');
       return;
     }
+
+    const cartStorageKey = `mhs_cart_${userId}`;
  
     setIsSubmitting(true);
     setSubmitError('');
@@ -253,9 +255,9 @@ function Checkout({ isLoggedIn, onLogout }) {
  
       if (isCartMode) {
         const purchasedIds = new Set(orderItems.map((item) => String(item.id)));
-        const savedCart = JSON.parse(localStorage.getItem('mhs_cart') || '[]');
+        const savedCart = JSON.parse(localStorage.getItem(cartStorageKey) || '[]');
         const nextCart = savedCart.filter((item) => !purchasedIds.has(String(item.id || item._id)));
-        localStorage.setItem('mhs_cart', JSON.stringify(nextCart));
+        localStorage.setItem(cartStorageKey, JSON.stringify(nextCart));
       }
  
       setShowSuccess(true);
