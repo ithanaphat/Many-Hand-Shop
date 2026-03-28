@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
 import ProductGallery from "../components/product/ProductGallery";
 import ProductInfo from "../components/product/ProductInfo";
 import RelatedProducts from "../components/product/RelatedProducts";
@@ -67,9 +68,7 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
         </div>
         <RelatedProducts key={productId} />
       </div>
-      <footer className="footer-simple">
-        <p>&copy; 2026 Many Hand Shop. All rights reserved.</p>
-      </footer>
+      <Footer />
     </>
   );
 };
