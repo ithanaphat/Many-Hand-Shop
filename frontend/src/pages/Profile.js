@@ -20,20 +20,14 @@ function Profile({ isLoggedIn, onLogout }) {
     });
   };
 
-  const [profile, setProfile] = useState({
-    username: localStorage.getItem('mhs_user_name') || 'Name',
-    email: localStorage.getItem('mhs_user_email') || 'email@example.com',
-    phone: localStorage.getItem('mhs_user_phone') || '',
-    address: localStorage.getItem('mhs_user_address') || '',
-    images: JSON.parse(localStorage.getItem('mhs_user_images') || '[]'),
-    rating: parseFloat(localStorage.getItem('mhs_user_rating')) || 0,
-    ratingCount: parseInt(localStorage.getItem('mhs_user_rating_count') || '0', 10) || 0
-  });
- 
+  const [profile, setProfile] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editForm, setEditForm] = useState({
-    ...profile,
+    username: '',
+    email: '',
+    phone: '',
+    address: '',
     houseNumber: '',
     subDistrict: '',
     district: '',
@@ -46,6 +40,25 @@ function Profile({ isLoggedIn, onLogout }) {
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [ratingDetails, setRatingDetails] = useState([]);
   const [isLoadingRatings, setIsLoadingRatings] = useState(false);
+
+  useEffect(() => {
+    const userId = localStorage.getItem('mhs_user_id');
+    if (!userId) {
+      if (typeof onLogout === 'function') {
+        onLogout();
+      }
+      navigate('/login');
+    }
+  }, [navigate, onLogout]);
+
+  useEffect(() => {
+    if (!profile) return;
+    const addressParts = parseAddress(profile.address);
+    setEditForm({
+      ...profile,
+      ...addressParts,
+    });
+  }, [profile]);
 
  
   // Helper function to split address string into components
@@ -71,12 +84,18 @@ function Profile({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const userId = localStorage.getItem('mhs_user_id');
     if (!userId) return;
+
+    if (!userId) {
+      navigate('/login');
+      return;
+    }
  
     const loadProfile = async () => {
       try {
         const response = await fetch(`/api/user/${userId}`);
         if (!response.ok) {
-          console.error('Failed to load profile:', response.status);
+          localStorage.clear();  
+          navigate('/login');       
           return;
         }
         const data = await response.json();
@@ -115,6 +134,8 @@ function Profile({ isLoggedIn, onLogout }) {
  
     loadSellerProducts();
   }, []);
+ 
+  if (!profile) return <div>Loading...</div>;
  
   const ratingValue = Math.round(profile.rating);
 
