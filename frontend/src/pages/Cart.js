@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 import "./Cart.css";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
@@ -34,7 +35,7 @@ function Cart({ isLoggedIn, onLogout }) {
 
     const syncCartWithProducts = async () => {
       try {
-        const response = await fetch('/api/product');
+        const response = await fetch(`${API_BASE_URL}/api/product`);
         if (!response.ok) return;
 
         const products = await response.json();
@@ -99,7 +100,7 @@ function Cart({ isLoggedIn, onLogout }) {
     }
 
     try {
-      const response = await fetch('/api/product');
+      const response = await fetch(`${API_BASE_URL}/api/product`);
       if (response.ok) {
         const products = await response.json();
         const availableIds = new Set(

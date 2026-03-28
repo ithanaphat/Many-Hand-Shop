@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import './OrderHistory.css';
@@ -25,7 +26,7 @@ function OrderHistory({ isLoggedIn, onLogout }) {
       try {
         setLoading(true);
         setError('');
-        const response = await fetch(`/api/order/buyer/${userId}`);
+        const response = await fetch(`${API_BASE_URL}/api/order/buyer/${userId}`);
         const data = await response.json().catch(() => ([]));
 
         if (!response.ok) {
@@ -86,7 +87,7 @@ function OrderHistory({ isLoggedIn, onLogout }) {
 
     try {
       setSubmittingItemId(item._id);
-      const response = await fetch(`/api/order/${orderId}/items/${item._id}/rate`, {
+      const response = await fetch(`${API_BASE_URL}/api/order/${orderId}/items/${item._id}/rate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

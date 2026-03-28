@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
+import { API_BASE_URL } from '../config';
 
 function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ function Login({ onLoginSuccess }) {
     const password = formData.get('password');
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: identifier, password }),

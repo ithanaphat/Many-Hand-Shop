@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { API_BASE_URL } from '../../config';
 
 function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
 
   // ดึงสินค้าทั้งหมดครั้งเดียวตอน mount
   useEffect(() => {
-    fetch('/api/product')
+    fetch(`${API_BASE_URL}/api/product`)
       .then((r) => r.json())
       .then((data) => setAllProducts(Array.isArray(data) ? data : []))
       .catch(() => {});

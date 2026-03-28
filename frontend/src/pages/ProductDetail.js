@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import ProductGallery from "../components/product/ProductGallery";
@@ -34,7 +35,7 @@ const ProductDetail = ({ isLoggedIn = false, onLogout }) => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/product/${productId}`);
+        const response = await fetch(`${API_BASE_URL}/api/product/${productId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch product");
         }
