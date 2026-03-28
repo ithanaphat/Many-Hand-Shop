@@ -28,7 +28,7 @@ function ProductCard(props) {
   };
  
   // Dynamic font size based on price length
-  const priceStr = Number(props.itemPrice).toLocaleString() + '$';
+  const priceStr = '฿' + Number(props.itemPrice).toLocaleString();
   const priceFontSize = priceStr.length > 12 ? '0.78rem' : priceStr.length > 9 ? '0.95rem' : '1.1rem';
  
   // Seller rating stars
@@ -71,7 +71,7 @@ function ProductCard(props) {
  
       <div className="product-details">
         <span className="item-name">{props.itemName}</span>
-        <span className="item-price" style={{ fontSize: priceFontSize }}>{Number(props.itemPrice).toLocaleString()}$</span>
+        <span className="item-price" style={{ fontSize: priceFontSize }}>฿{Number(props.itemPrice).toLocaleString()}</span>
       </div>
  
       <div className="card-rating-row">

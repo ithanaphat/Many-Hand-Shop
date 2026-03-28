@@ -203,7 +203,7 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
                     </svg>
                   </span>
                   <span className="suggestion-name">{p.name}</span>
-                  <span className="suggestion-price">{p.price}$</span>
+                  <span className="suggestion-price">฿{p.price}</span>
                 </li>
               ))}
             </ul>
