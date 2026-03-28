@@ -103,18 +103,59 @@
   border-radius: 2px;
 }
 
+.catalog-scroll-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.catalog-arrow {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--brand-dark);
+  background: #fff;
+  color: var(--brand-dark);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  padding: 0;
+}
+
+.catalog-arrow:hover {
+  background: var(--brand-dark);
+  color: #fff;
+}
+
 .catalog-items {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
-  gap: clamp(10px, 1.6vw, 20px);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: clamp(10px, 1.6vw, 16px);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 8px;
   position: relative;
   z-index: 1;
+  /* hide scrollbar but keep scroll */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.catalog-items::-webkit-scrollbar {
+  display: none;
 }
 
 .catalog-item {
   text-align: center;
   cursor: pointer;
-  padding: clamp(16px, 2.6vw, 26px) clamp(8px, 1.4vw, 14px);
+  padding: clamp(16px, 2.6vw, 26px) clamp(12px, 1.6vw, 18px);
   background: #ffffff;
   border-radius: 14px;
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
@@ -122,6 +163,7 @@
   border: 2px solid transparent;
   position: relative;
   min-height: 128px;
+  flex: 0 0 clamp(100px, 12vw, 130px);
 }
 
 .catalog-item::before {
