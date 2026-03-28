@@ -12,7 +12,12 @@ router.post("/", async (req,res)=>{
     }
 
     try {
-        const user = await User.findOne({username : username}).select("+password")
+        const user = await User.findOne({
+            $or: [
+                { username: username },
+                { email: username }
+            ]
+        }).select("+password")
 
         if (!user){
             return res.status(404).json({ message: "User not found" })

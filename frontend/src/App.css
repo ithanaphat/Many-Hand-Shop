@@ -512,23 +512,6 @@ html, body, .App {
   line-height: 1.5;
 }
 
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 18px;
-  margin-bottom: 10px;
-}
-
-.footer-links a {
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.footer-links a:hover {
-  text-decoration: underline;
-}
-
 .footer-copyright {
   margin: 0;
 }

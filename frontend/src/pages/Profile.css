@@ -552,3 +552,18 @@
 .image-btn-cancel:active {
   transform: translateY(0);
 }
+
+/* Two-column form group layout */
+.profile-form-group-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Responsive: Stack on mobile */
+@media (max-width: 600px) {
+  .profile-form-group-2col {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}

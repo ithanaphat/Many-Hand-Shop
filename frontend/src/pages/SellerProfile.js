@@ -15,6 +15,14 @@ function SellerProfile({ isLoggedIn, onLogout }) {
   const [sellerProducts, setSellerProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const handleSignIn = () => {
+    navigate('/login');
+  };
+
+  const handleRegister = () => {
+    navigate('/register');
+  };
+
   useEffect(() => {
     if (!sellerId) return;
 
@@ -54,7 +62,7 @@ function SellerProfile({ isLoggedIn, onLogout }) {
   if (loading) {
     return (
       <div className="profile-page">
-        <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
+        <Header isLoggedIn={isLoggedIn} onSignIn={handleSignIn} onRegister={handleRegister} onLogout={onLogout} />
         <p style={{ textAlign: 'center', marginTop: 120, color: '#999' }}>Loading seller profile...</p>
       </div>
     );
@@ -63,7 +71,7 @@ function SellerProfile({ isLoggedIn, onLogout }) {
   if (!seller) {
     return (
       <div className="profile-page">
-        <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
+        <Header isLoggedIn={isLoggedIn} onSignIn={handleSignIn} onRegister={handleRegister} onLogout={onLogout} />
         <p style={{ textAlign: 'center', marginTop: 120, color: '#999' }}>Seller not found.</p>
       </div>
     );
@@ -74,9 +82,18 @@ function SellerProfile({ isLoggedIn, onLogout }) {
     ? seller.images[0]
     : `https://i.pravatar.cc/150?u=${seller.username}`;
 
+  // Helper function to extract province from address string
+  const getProvince = (addressStr) => {
+    if (!addressStr) return '';
+    const parts = addressStr.split(',').map(p => p.trim());
+    // Format: "houseNumber, subDistrict, district, province, postalCode"
+    // Province is at index 3
+    return parts[3] || '';
+  };
+
   return (
     <div className="profile-page">
-      <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
+      <Header isLoggedIn={isLoggedIn} onSignIn={handleSignIn} onRegister={handleRegister} onLogout={onLogout} />
 
       {/* Banner */}
       <div className="banner-container">
@@ -114,9 +131,10 @@ function SellerProfile({ isLoggedIn, onLogout }) {
           {/* Information */}
           <div className="info-section section-card">
             <h3 className="section-header">Information</h3>
+            {seller.email && <InfoItem icon="📧" text={seller.email} />}
             {seller.phone && <InfoItem icon="📞" text={seller.phone} />}
-            {seller.address && <InfoItem icon="📍" text={seller.address} />}
-            {!seller.phone && !seller.address && (
+            {seller.address && <InfoItem icon="📍" text={getProvince(seller.address)} />}
+            {!seller.email && !seller.phone && !seller.address && (
               <p style={{ color: '#bbb', fontSize: 14 }}>No contact info available</p>
             )}
           </div>
