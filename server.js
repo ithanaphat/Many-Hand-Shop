@@ -43,10 +43,14 @@ app.use(express.urlencoded({ extended: true }))
 
 require("./config/db.js")
 
+// API routes ต้องไว้ก่อน static files
 app.use(router)
 
+// Serve static files from frontend build
 app.use(express.static(path.join(__dirname, "frontend", "build")))
-app.get("/*splat", (req, res) => {
+
+// Fallback route for React Router (ต้องไว้ท้ายสุด)
+app.get(/\/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "build", "index.html"))
 })
 
