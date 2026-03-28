@@ -6,7 +6,18 @@ const router = require("./routes/index.js")
 
 const app = express()
 
-app.use(cors({ credentials: true, origin: true }))
+// CORS Configuration for production
+const allowedOrigins = [
+    "http://localhost:3000", // Development
+    "http://localhost:9000", // Development
+    "https://manyhandshop.vercel.app", // Production Vercel
+    "https://many-hand-shop.onrender.com" // Production Render
+]
+
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' ? allowedOrigins : true,
+    credentials: true
+}))
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -20,6 +31,7 @@ app.get("/*splat", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "build", "index.html"))
 })
 
-app.listen(9000, () => {
-    console.log("Many-Hand-Shop server running on port 9000")
+const PORT = process.env.PORT || 9000
+app.listen(PORT, () => {
+    console.log(`Many-Hand-Shop server running on port ${PORT}`)
 })
