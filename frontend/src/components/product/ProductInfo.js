@@ -18,7 +18,7 @@ const ProductInfo = ({ product }) => {
   const productName = displayProduct.name || displayProduct.itemName;
   const productPrice = displayProduct.price || displayProduct.itemPrice;
   const sellerName = displayProduct.sellerName || displayProduct.seller?.username || "Unknown";
-  const sellerImage = displayProduct.sellerImage || "https://i.pravatar.cc/150?u=default";
+  const sellerImage = displayProduct.seller?.images?.[0] || displayProduct.sellerImage || `https://i.pravatar.cc/150?u=${sellerName}`;
   const sellerId = displayProduct.seller?._id || displayProduct.seller || null;
   const rating = Number(displayProduct.sellerRating ?? displayProduct.seller?.rating ?? 0);
   const maxRating = 5;

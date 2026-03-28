@@ -145,6 +145,14 @@ function SellerBoard({ isLoggedIn, onLogout }) {
  
   const saveEdit = async () => {
     if (!editProduct?.id) return;
+    
+    // Validate that at least one image exists
+    const totalImages = (form.images?.length || 0) + (form.newImageFiles?.length || 0);
+    if (totalImages === 0) {
+      alert('Product must have at least one image');
+      return;
+    }
+    
     try {
       let newImageUrls = [];
      
