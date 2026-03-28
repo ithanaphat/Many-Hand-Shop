@@ -118,7 +118,7 @@ router.get("/seller/:sellerId/ratings", async (req, res) => {
 router.post("/", async (req, res) => {
     const { buyer, items, shippingInfo, shippingFee, totalPrice, paymentMethod } = req.body
 
-    if (!Array.isArray(items) || items.length === 0 || !shippingInfo || !paymentMethod) {
+    if (!buyer || !Array.isArray(items) || items.length === 0 || !shippingInfo || !paymentMethod) {
         return res.status(400).json({ message: "Incomplete order payload" })
     }
 
