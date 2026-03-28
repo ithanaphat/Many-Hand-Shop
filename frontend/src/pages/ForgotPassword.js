@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import Header from '../components/layout/Header';
 
 function ForgotPassword() {
@@ -24,7 +25,7 @@ function ForgotPassword() {
     }
     setLoading(true);
     try {
-      const res = await fetch('/api/forgot-password', {
+      const res = await fetch(`${API_BASE_URL}/api/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password, confirmPassword }),

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import './Checkout.css';
 import 'boxicons/css/boxicons.min.css';
 import Header from '../components/layout/Header';
@@ -162,7 +163,7 @@ function Checkout({ isLoggedIn, onLogout }) {
     }
 
     try {
-      const response = await fetch(`/api/user/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/user/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(patchPayload),
@@ -212,7 +213,7 @@ function Checkout({ isLoggedIn, onLogout }) {
     try {
       await syncCheckoutAddressToProfileIfMissing(userId);
 
-      const response = await fetch('/api/order', {
+      const response = await fetch(`${API_BASE_URL}/api/order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

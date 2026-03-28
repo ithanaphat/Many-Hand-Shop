@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './SellerBoard.css';
 import 'boxicons/css/boxicons.min.css';
+import { API_BASE_URL } from '../config';
 import Header from '../components/layout/Header';
  
-const PRODUCT_API = '/api/product';
+const PRODUCT_API = `${API_BASE_URL}/api/product`;
  
 const STATUS_LABELS = {
   available: 'Available',

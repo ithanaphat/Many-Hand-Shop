@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "../../config";
 import ProductCard from "./ProductCard";
 import "./ProductDetail.css";
 
@@ -19,7 +20,7 @@ const RelatedProducts = () => {
     const fetchProducts = async () => {
       try {
         // ดึงข้อมูลจาก API เดียวกับหน้าหลักของคุณ
-        const response = await fetch("/api/product");
+        const response = await fetch(`${API_BASE_URL}/api/product`);
         
         if (!response.ok) {
           throw new Error(`API failed with status: ${response.status}`);

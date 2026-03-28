@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import ProductCard from '../components/product/ProductCard';
@@ -17,7 +18,7 @@ function Search({ isLoggedIn, onLogout }) {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/product');
+        const res = await fetch(`${API_BASE_URL}/api/product`);
         if (res.ok) {
           const data = await res.json();
           setAllProducts(data);

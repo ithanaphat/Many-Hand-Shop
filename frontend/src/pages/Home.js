@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import ProductCard from '../components/product/ProductCard';
+import { API_BASE_URL } from '../config';
 import './Home.css'; // นำเข้าไฟล์ CSS
 
 const categoryIcons = {
@@ -38,7 +39,7 @@ function Home({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('/api/product/categories');
+        const res = await fetch(`${API_BASE_URL}/api/product/categories`);
         if (res.ok) {
           const data = await res.json();
           // append 'All' entry at the end
@@ -57,7 +58,7 @@ function Home({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const productsResponse = await fetch('/api/product');
+        const productsResponse = await fetch(`${API_BASE_URL}/api/product`);
 
         if (productsResponse.ok) {
           const data = await productsResponse.json();

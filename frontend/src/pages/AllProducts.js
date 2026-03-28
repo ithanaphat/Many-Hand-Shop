@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import ProductCard from '../components/product/ProductCard';
+import { API_BASE_URL } from '../config';
 import './AllProducts.css';
 
 function AllProducts({ isLoggedIn, onLogout }) {
@@ -29,7 +30,7 @@ function AllProducts({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/product/categories');
+        const response = await fetch(`${API_BASE_URL}/api/product/categories`);
         if (response.ok) {
           const data = await response.json();
           setCategories(data);
@@ -45,7 +46,7 @@ function AllProducts({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('/api/product');
+        const response = await fetch(`${API_BASE_URL}/api/product`);
         if (response.ok) {
           const data = await response.json();
           setProducts(data);

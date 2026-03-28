@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import './Profile.css';
 import 'boxicons/css/boxicons.min.css';
 import Header from '../components/layout/Header';
@@ -94,7 +95,7 @@ function Profile({ isLoggedIn, onLogout }) {
  
     const loadProfile = async () => {
       try {
-        const response = await fetch(`/api/user/${userId}`);
+        const response = await fetch(`${API_BASE_URL}/api/user/${userId}`);
         if (!response.ok) {
           localStorage.clear();  
           navigate('/login');      
@@ -126,7 +127,7 @@ function Profile({ isLoggedIn, onLogout }) {
  
     const loadSellerProducts = async () => {
       try {
-        const response = await fetch(`/api/product?seller=${userId}`);
+        const response = await fetch(`${API_BASE_URL}/api/product?seller=${userId}`);
         if (!response.ok) return;
         const data = await response.json();
         setSellerProducts(Array.isArray(data) ? data : []);
@@ -150,7 +151,7 @@ function Profile({ isLoggedIn, onLogout }) {
     setIsLoadingRatings(true);
  
     try {
-      const response = await fetch(`/api/order/seller/${userId}/ratings`);
+      const response = await fetch(`${API_BASE_URL}/api/order/seller/${userId}/ratings`);
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         alert(data.message || 'Failed to load rating details');
@@ -240,20 +241,20 @@ function Profile({ isLoggedIn, onLogout }) {
     const userId = localStorage.getItem('mhs_user_id');
     const formData = new FormData();
     formData.append('image', coverFile);
- 
+
     try {
-      const uploadResponse = await fetch('/api/product/upload-image', {
+      const uploadResponse = await fetch(`${API_BASE_URL}/api/product/upload-image`, {
         method: 'POST',
         body: formData,
       });
- 
+
       const uploadData = await uploadResponse.json().catch(() => ({}));
       if (!uploadResponse.ok || !uploadData.url) {
         alert(uploadData.message || 'Upload image failed');
         return;
       }
- 
-      const patchResponse = await fetch(`/api/user/${userId}`, {
+
+      const patchResponse = await fetch(`${API_BASE_URL}/api/user/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -290,20 +291,20 @@ function Profile({ isLoggedIn, onLogout }) {
     const userId = localStorage.getItem('mhs_user_id');
     const formData = new FormData();
     formData.append('image', imageFile);
- 
+
     try {
-      const uploadResponse = await fetch('/api/product/upload-image', {
+      const uploadResponse = await fetch(`${API_BASE_URL}/api/product/upload-image`, {
         method: 'POST',
         body: formData,
       });
- 
+
       const uploadData = await uploadResponse.json().catch(() => ({}));
       if (!uploadResponse.ok || !uploadData.url) {
         alert(uploadData.message || 'Upload image failed');
         return;
       }
- 
-      const patchResponse = await fetch(`/api/user/${userId}`, {
+
+      const patchResponse = await fetch(`${API_BASE_URL}/api/user/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -357,7 +358,7 @@ function Profile({ isLoggedIn, onLogout }) {
     setIsSaving(true);
     try {
       if (userId) {
-        const response = await fetch(`/api/user/${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/user/${userId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -410,7 +411,7 @@ function Profile({ isLoggedIn, onLogout }) {
     // 3. ถ้าผู้ใช้กด 'OK' ให้ดำเนินการเรียก API เพื่อลบข้อมูล
     const userId = localStorage.getItem('mhs_user_id');
     try {
-      const response = await fetch(`/api/user/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/user/${userId}`, {
         method: 'DELETE',
       });
  

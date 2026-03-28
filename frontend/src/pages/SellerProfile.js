@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import './Profile.css';
 import 'boxicons/css/boxicons.min.css';
 import Header from '../components/layout/Header';
@@ -42,8 +43,8 @@ function SellerProfile({ isLoggedIn, onLogout }) {
     const loadSeller = async () => {
       try {
         const [userRes, productsRes] = await Promise.all([
-          fetch(`/api/user/${sellerId}`),
-          fetch(`/api/product?seller=${sellerId}`),
+          fetch(`${API_BASE_URL}/api/user/${sellerId}`),
+          fetch(`${API_BASE_URL}/api/product?seller=${sellerId}`),
         ]);
  
         if (userRes.ok) {
