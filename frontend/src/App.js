@@ -53,64 +53,47 @@ function App() {
     <Router>
       <ScrollToTop />
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<Home isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
-        <Route path="/home" element={<Home isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
         <Route path="/products" element={<AllProducts isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
-        <Route path="/all-products" element={<AllProducts isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
-        <Route
-          path="/home-user"
-          element={
-            isLoggedIn ? <Home isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
-          }
-        />
+        <Route path="/product/:productId" element={<ProductDetail isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
+        <Route path="/seller/:sellerId" element={<SellerProfile isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
+        <Route path="/search" element={<Search isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
+
+        {/* Auth routes — redirect to / if already logged in */}
         <Route
           path="/login"
-          element={
-            isLoggedIn ? <Navigate to="/home-user" replace /> : <Login onLoginSuccess={handleLoginSuccess} />
-          }
+          element={isLoggedIn ? <Navigate to="/" replace /> : <Login onLoginSuccess={handleLoginSuccess} />}
         />
         <Route
           path="/register"
-          element={
-            isLoggedIn ? <Navigate to="/home-user" replace /> : <Register />
-          }
+          element={isLoggedIn ? <Navigate to="/" replace /> : <Register />}
         />
-        <Route path="/product/:productId" element={<ProductDetail isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
-        <Route path="/seller/:sellerId" element={<SellerProfile isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
+
+        {/* Protected routes — redirect to /login if not logged in */}
         <Route
           path="/profile"
-          element={
-            isLoggedIn ? <Profile isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
-          }
+          element={isLoggedIn ? <Profile isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
         />
         <Route
           path="/seller-board"
-          element={
-            isLoggedIn ? <SellerBoard isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/home" replace />
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            isLoggedIn ? <Checkout isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />
-          }
+          element={isLoggedIn ? <SellerBoard isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
         />
         <Route
           path="/cart"
-          element={
-            isLoggedIn ? <Cart isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />
-          }
+          element={isLoggedIn ? <Cart isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/checkout"
+          element={isLoggedIn ? <Checkout isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
         />
         <Route
           path="/orders"
-          element={
-            isLoggedIn ? <OrderHistory isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />
-          }
+          element={isLoggedIn ? <OrderHistory isLoggedIn={true} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
         />
-        <Route
-          path="/search"
-          element={<Search isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
-        />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
