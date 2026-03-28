@@ -205,6 +205,13 @@ function Checkout({ isLoggedIn, onLogout }) {
       return;
     }
 
+    const phoneNumber = String(address.phone || '').trim();
+    if (!phoneNumber.startsWith('0')) {
+      const message = 'Purchase cannot be completed. Phone number must start with 0.';
+      setSubmitError(message);
+      return;
+    }
+
     const cartStorageKey = `mhs_cart_${userId}`;
  
     setIsSubmitting(true);
