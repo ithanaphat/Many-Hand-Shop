@@ -114,32 +114,24 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
     };
   }, [isProfileMenuOpen]);
 
-  const handleHomeClick = () => {
+  const goTo = (path) => {
     setIsProfileMenuOpen(false);
-    navigate('/home-user');
+    if (location.pathname !== path) {
+      navigate(path);
+    }
   };
 
-  const handleSellerBoardClick = () => {
-    setIsProfileMenuOpen(false);
-    navigate('/seller-board');
-  };
-
-  const handleProfileClick = () => {
-    setIsProfileMenuOpen(false);
-    navigate('/profile');
-  };
-
-  const handleOrdersClick = () => {
-    setIsProfileMenuOpen(false);
-    navigate('/orders');
-  };
+  const handleHomeClick = () => goTo('/');
+  const handleSellerBoardClick = () => goTo('/seller-board');
+  const handleProfileClick = () => goTo('/profile');
+  const handleOrdersClick = () => goTo('/orders');
 
   const handleLogoutClick = () => {
     setIsProfileMenuOpen(false);
-    navigate('/home', { replace: true });
     if (onLogout) {
       onLogout();
     }
+    navigate('/', { replace: true });
   };
 
   return (
@@ -148,7 +140,7 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
         <button
           className="brand-button"
           aria-label="Home"
-          onClick={() => navigate(isLoggedIn ? '/home-user' : '/')}
+          onClick={() => goTo('/')}
         >
           <img
             src={logoSrc}
@@ -236,7 +228,7 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
               </div>
             )}
           </div>
-          <button className="icon-circle-btn cart-icon-btn" aria-label="Cart" title="Cart" onClick={() => navigate('/cart')}>
+          <button className="icon-circle-btn cart-icon-btn" aria-label="Cart" title="Cart" onClick={() => goTo('/cart')}>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="nav-icon-svg">
               <path d="M3 5H5L7 15H17L19 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <circle cx="9" cy="19" r="1.5" fill="currentColor" />
