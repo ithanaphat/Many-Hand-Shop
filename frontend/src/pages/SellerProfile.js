@@ -10,10 +10,23 @@ function SellerProfile({ isLoggedIn, onLogout }) {
   const { sellerId } = useParams();
   const navigate = useNavigate();
   const maxRating = 5;
+  const formatRatingDate = (value) => {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
   const [seller, setSeller] = useState(null);
   const [sellerProducts, setSellerProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [ratingDetails, setRatingDetails] = useState([]);
+  const [isLoadingRatings, setIsLoadingRatings] = useState(false);
 
   const handleSignIn = () => {
     navigate('/login');
@@ -42,6 +55,7 @@ function SellerProfile({ isLoggedIn, onLogout }) {
             address: data.address || '',
             images: data.images || [],
             rating: data.rating || 0,
+            ratingCount: data.ratingCount || 0,
           });
         }
 
@@ -91,6 +105,33 @@ function SellerProfile({ isLoggedIn, onLogout }) {
     return parts[3] || '';
   };
 
+  const openRatingDetails = async () => {
+    if (!sellerId) return;
+
+    setIsRatingModalOpen(true);
+    setIsLoadingRatings(true);
+
+    try {
+      const response = await fetch(`/api/order/seller/${sellerId}/ratings`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        alert(data.message || 'Failed to load rating details');
+        setRatingDetails([]);
+        return;
+      }
+      setRatingDetails(Array.isArray(data.ratings) ? data.ratings : []);
+    } catch (error) {
+      alert('Cannot connect to server');
+      setRatingDetails([]);
+    } finally {
+      setIsLoadingRatings(false);
+    }
+  };
+
+  const closeRatingModal = () => {
+    setIsRatingModalOpen(false);
+  };
+
   return (
     <div className="profile-page">
       <Header isLoggedIn={isLoggedIn} onSignIn={handleSignIn} onRegister={handleRegister} onLogout={onLogout} />
@@ -113,7 +154,11 @@ function SellerProfile({ isLoggedIn, onLogout }) {
             <p className="user-id">Seller</p>
           </div>
           <div className="profile-badges">
-            <span className="profile-badge rating-badge">
+            <button
+              type="button"
+              className="profile-badge rating-badge rating-badge-button"
+              onClick={openRatingDetails}
+            >
               <span className="rating-label">Rating</span>
               <span className="rating-stars" aria-label={`Rating ${ratingValue} out of ${maxRating}`}>
                 {Array.from({ length: maxRating }).map((_, index) => (
@@ -123,7 +168,7 @@ function SellerProfile({ isLoggedIn, onLogout }) {
                 ))}
               </span>
               <span className="rating-number">{ratingValue}/{maxRating}</span>
-            </span>
+            </button>
           </div>
         </div>
 
@@ -170,6 +215,56 @@ function SellerProfile({ isLoggedIn, onLogout }) {
           </div>
         </div>
       </div>
+
+      {isRatingModalOpen && (
+        <div className="profile-modal-backdrop" onClick={closeRatingModal}>
+          <div className="profile-modal rating-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="profile-modal-header">
+              <h3>รายละเอียดเรตติ้ง ({ratingDetails.length})</h3>
+              <button className="profile-modal-close" onClick={closeRatingModal}>
+                <i className='bx bx-x'></i>
+              </button>
+            </div>
+
+            <div className="profile-modal-body rating-modal-body">
+              {isLoadingRatings ? (
+                <p className="rating-empty">กำลังโหลดข้อมูล...</p>
+              ) : ratingDetails.length === 0 ? (
+                <p className="rating-empty">ยังไม่มีคนให้คะแนน</p>
+              ) : (
+                <div className="rating-list">
+                  {ratingDetails.map((entry) => {
+                    const reviewerName = entry.reviewer?.username || 'Unknown user';
+                    const productName = entry.product?.name || 'Unknown product';
+                    const productImage = Array.isArray(entry.product?.images) && entry.product.images[0]
+                      ? entry.product.images[0]
+                      : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200';
+
+                    return (
+                      <div className="rating-card" key={entry.orderItemId || `${entry.orderId}-${productName}`}>
+                        <img className="rating-card-image" src={productImage} alt={productName} />
+                        <div className="rating-card-content">
+                          <p className="rating-card-line"><strong>ผู้ให้คะแนน:</strong> {reviewerName}</p>
+                          <p className="rating-card-line"><strong>สินค้า:</strong> {productName}</p>
+                          <p className="rating-card-line rating-stars-line" aria-label={`Rating ${entry.rating} out of ${maxRating}`}>
+                            {Array.from({ length: maxRating }).map((_, index) => (
+                              <span key={`${entry.orderItemId || entry.orderId}-${index}`} className={index < Number(entry.rating || 0) ? 'star-filled' : 'star-empty'}>
+                                ★
+                              </span>
+                            ))}
+                            <span className="rating-number-inline">{Number(entry.rating || 0)}/{maxRating}</span>
+                          </p>
+                          <p className="rating-card-line"><strong>วันที่:</strong> {formatRatingDate(entry.ratedAt)}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

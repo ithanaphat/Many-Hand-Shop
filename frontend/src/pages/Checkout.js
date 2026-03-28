@@ -302,11 +302,7 @@ function Checkout({ isLoggedIn, onLogout }) {
             </div>
 
             {/* Promo */}
-            <div className="ck-promo-row">
-              <input className="ck-promo-input" placeholder="Promo code (MHS10)"
-                value={promoCode} onChange={(e) => setPromoCode(e.target.value)} />
-              <button type="button" className="ck-promo-btn" onClick={applyPromo}>Apply</button>
-            </div>
+            
             {promoMsg && (
               <p style={{ fontSize: 12, color: discount > 0 ? '#2e7d32' : '#c0392b', margin: '-8px 0 12px' }}>
                 {promoMsg}

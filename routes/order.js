@@ -56,6 +56,65 @@ router.get("/buyer/:buyerId", async (req, res) => {
     }
 })
 
+router.get("/seller/:sellerId/ratings", async (req, res) => {
+    try {
+        const orders = await Order.find({
+            "items.seller": req.params.sellerId,
+            "items.review.rating": { $exists: true },
+        })
+            .sort({ createdAt: -1 })
+            .populate("buyer", "username images")
+            .populate("items.product", "name images")
+
+        const ratingDetails = []
+
+        for (const order of orders) {
+            for (const item of order.items) {
+                if (
+                    String(item.seller) === String(req.params.sellerId) &&
+                    item.review?.rating
+                ) {
+                    ratingDetails.push({
+                        orderId: order._id,
+                        orderItemId: item._id,
+                        rating: item.review.rating,
+                        ratedAt: item.review.ratedAt,
+                        reviewer: order.buyer
+                            ? {
+                                _id: order.buyer._id,
+                                username: order.buyer.username,
+                                images: order.buyer.images || [],
+                            }
+                            : null,
+                        product: item.product
+                            ? {
+                                _id: item.product._id,
+                                name: item.product.name,
+                                images: item.product.images || [],
+                            }
+                            : null,
+                    })
+                }
+            }
+        }
+
+        ratingDetails.sort((a, b) => {
+            const aTime = a.ratedAt ? new Date(a.ratedAt).getTime() : 0
+            const bTime = b.ratedAt ? new Date(b.ratedAt).getTime() : 0
+            return bTime - aTime
+        })
+
+        res.json({
+            sellerId: req.params.sellerId,
+            total: ratingDetails.length,
+            ratings: ratingDetails,
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: "Error fetching seller ratings" })
+    }
+})
+
 router.post("/", async (req, res) => {
     const { buyer, items, shippingInfo, shippingFee, totalPrice, paymentMethod } = req.body
 
