@@ -20,7 +20,7 @@ function Register() {
     }
 
     if (password.length < 8) {
-      alert('รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัว');
+      alert('Password must be at least 8 characters long');
       return;
     }
 
