@@ -9,13 +9,25 @@ import ProductItem from '../components/product/ProductItem';
 function Profile({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
   const maxRating = 5;
+  const formatRatingDate = (value) => {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   const [profile, setProfile] = useState({
     username: localStorage.getItem('mhs_user_name') || 'Name',
     email: localStorage.getItem('mhs_user_email') || 'email@example.com',
     phone: localStorage.getItem('mhs_user_phone') || '',
     address: localStorage.getItem('mhs_user_address') || '',
     images: JSON.parse(localStorage.getItem('mhs_user_images') || '[]'),
-    rating: parseFloat(localStorage.getItem('mhs_user_rating')) || 0
+    rating: parseFloat(localStorage.getItem('mhs_user_rating')) || 0,
+    ratingCount: parseInt(localStorage.getItem('mhs_user_rating_count') || '0', 10) || 0
   });
  
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -31,6 +43,10 @@ function Profile({ isLoggedIn, onLogout }) {
   const [sellerProducts, setSellerProducts] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [ratingDetails, setRatingDetails] = useState([]);
+  const [isLoadingRatings, setIsLoadingRatings] = useState(false);
+
  
   // Helper function to split address string into components
   const parseAddress = (addressStr) => {
@@ -70,8 +86,10 @@ function Profile({ isLoggedIn, onLogout }) {
           phone: data.phone || '',
           address: data.address || '',
           images: data.images || [],
-          rating: data.rating || 0
+          rating: data.rating || 0,
+          ratingCount: data.ratingCount || 0
         });
+        localStorage.setItem('mhs_user_rating_count', String(data.ratingCount || 0));
       } catch (error) {
         console.error('Profile fetch error:', error);
       }
@@ -99,6 +117,36 @@ function Profile({ isLoggedIn, onLogout }) {
   }, []);
  
   const ratingValue = Math.round(profile.rating);
+
+  const openRatingDetails = async () => {
+    const userId = localStorage.getItem('mhs_user_id');
+    if (!userId) return;
+
+    setIsRatingModalOpen(true);
+    setIsLoadingRatings(true);
+
+    try {
+      const response = await fetch(`/api/order/seller/${userId}/ratings`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        alert(data.message || 'Failed to load rating details');
+        setRatingDetails([]);
+        return;
+      }
+
+      setRatingDetails(Array.isArray(data.ratings) ? data.ratings : []);
+    } catch (error) {
+      alert('Cannot connect to server');
+      setRatingDetails([]);
+    } finally {
+      setIsLoadingRatings(false);
+    }
+  };
+
+  const closeRatingModal = () => {
+    setIsRatingModalOpen(false);
+  };
+
  
   const openEdit = () => {
     const addressParts = parseAddress(profile.address);
@@ -242,6 +290,7 @@ function Profile({ isLoggedIn, onLogout }) {
           address: data.address || payload.address,
           images: data.images || profile.images,
           rating: data.rating || profile.rating,
+          ratingCount: data.ratingCount || profile.ratingCount,
         };
         setProfile(updatedProfile);
         setEditForm({
@@ -252,6 +301,7 @@ function Profile({ isLoggedIn, onLogout }) {
         localStorage.setItem('mhs_user_email', updatedProfile.email);
         localStorage.setItem('mhs_user_phone', updatedProfile.phone);
         localStorage.setItem('mhs_user_address', updatedProfile.address);
+        localStorage.setItem('mhs_user_rating_count', String(updatedProfile.ratingCount || 0));
         closeEdit();
       }
     } catch (error) {
@@ -294,7 +344,11 @@ function Profile({ isLoggedIn, onLogout }) {
             <p className="user-id">{profile.email}</p>
           </div>
           <div className="profile-badges">
-            <span className="profile-badge rating-badge">
+            <button
+              type="button"
+              className="profile-badge rating-badge rating-badge-button"
+              onClick={openRatingDetails}
+            >
               <span className="rating-label">Rating</span>
               <span className="rating-stars" aria-label={`Rating ${ratingValue} out of ${maxRating}`}>
                 {Array.from({ length: maxRating }).map((_, index) => (
@@ -304,7 +358,7 @@ function Profile({ isLoggedIn, onLogout }) {
                 ))}
               </span>
               <span className="rating-number">{ratingValue}/{maxRating}</span>
-            </span>
+            </button>
           </div>
         </div>
  
@@ -526,6 +580,56 @@ function Profile({ isLoggedIn, onLogout }) {
               <button className="profile-btn-save" onClick={saveEdit} disabled={isSaving}>
                 {isSaving ? 'Saving...' : 'Save'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isRatingModalOpen && (
+        <div className="profile-modal-backdrop" onClick={closeRatingModal}>
+          <div className="profile-modal rating-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="profile-modal-header">
+              <h3>รายละเอียดเรตติ้ง ({ratingDetails.length})</h3>
+              <button className="profile-modal-close" onClick={closeRatingModal}>
+                <i className='bx bx-x'></i>
+              </button>
+            </div>
+
+            <div className="profile-modal-body rating-modal-body">
+              {isLoadingRatings ? (
+                <p className="rating-empty">กำลังโหลดข้อมูล...</p>
+              ) : ratingDetails.length === 0 ? (
+                <p className="rating-empty">ยังไม่มีคนให้คะแนน</p>
+              ) : (
+                <div className="rating-list">
+                  {ratingDetails.map((entry) => {
+                    const reviewerName = entry.reviewer?.username || 'Unknown user';
+                    const productName = entry.product?.name || 'Unknown product';
+                    const productImage = Array.isArray(entry.product?.images) && entry.product.images[0]
+                      ? entry.product.images[0]
+                      : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200';
+
+                    return (
+                      <div className="rating-card" key={entry.orderItemId || `${entry.orderId}-${productName}`}>
+                        <img className="rating-card-image" src={productImage} alt={productName} />
+                        <div className="rating-card-content">
+                          <p className="rating-card-line"><strong>ผู้ให้คะแนน:</strong> {reviewerName}</p>
+                          <p className="rating-card-line"><strong>สินค้า:</strong> {productName}</p>
+                          <p className="rating-card-line rating-stars-line" aria-label={`Rating ${entry.rating} out of ${maxRating}`}>
+                            {Array.from({ length: maxRating }).map((_, index) => (
+                              <span key={`${entry.orderItemId || entry.orderId}-${index}`} className={index < Number(entry.rating || 0) ? 'star-filled' : 'star-empty'}>
+                                ★
+                              </span>
+                            ))}
+                            <span className="rating-number-inline">{Number(entry.rating || 0)}/{maxRating}</span>
+                          </p>
+                          <p className="rating-card-line"><strong>วันที่:</strong> {formatRatingDate(entry.ratedAt)}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
