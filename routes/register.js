@@ -12,14 +12,13 @@ router.post("/", async (req, res)=>{
         return res.status(400).json({message: "username, email and password are required"})
     }
 
-    const checkEmail = await User.findOne({email})  
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    if(checkEmail){
-        return res.status(400).json({message: "Email นี้ถูกใช้เเล้ว"})
-    }
-
     try{
+        const checkEmail = await User.findOne({email})
+        if(checkEmail){
+            return res.status(400).json({message: "Email นี้ถูกใช้เเล้ว"})
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10)
         await User.create({
             username,
             password : hashedPassword,
