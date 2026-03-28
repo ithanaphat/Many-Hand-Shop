@@ -41,8 +41,18 @@ const ProductInfo = ({ product }) => {
   };
  
   const [cartMsg, setCartMsg] = React.useState('');
+  
+  // Check if current user is the seller
+  const currentUserId = localStorage.getItem('mhs_user_id');
+  const isOwnProduct = currentUserId && sellerId && currentUserId === sellerId;
  
   const handleAddToCart = () => {
+    // ตรวจสอบว่าเป็นคนขายสินค้าของตัวเองหรือไม่
+    if (isOwnProduct) {
+      alert('You cannot buy your own product');
+      return;
+    }
+
     // ตรวจสอบว่า login แล้วหรือยัง
     const userId = localStorage.getItem('mhs_user_id');
     if (!userId) {
@@ -125,13 +135,13 @@ const ProductInfo = ({ product }) => {
         <button
           className="add"
           onClick={handleAddToCart}
-          disabled={stock === 0}
-          style={{ cursor: stock === 0 ? 'not-allowed' : 'pointer', opacity: stock === 0 ? 0.6 : 1 }}
+          disabled={stock === 0 || isOwnProduct}
+          style={{ cursor: (stock === 0 || isOwnProduct) ? 'not-allowed' : 'pointer', opacity: (stock === 0 || isOwnProduct) ? 0.6 : 1 }}
         >
-          {stock === 0 ? 'OUT OF STOCK' : (cartMsg || 'ADD TO CART')}
+          {isOwnProduct ? 'CANNOT BUY OWN PRODUCT' : (stock === 0 ? 'OUT OF STOCK' : (cartMsg || 'ADD TO CART'))}
         </button>
-        <button className="buy" onClick={handleBuyNow} disabled={stock === 0} style={{ cursor: stock === 0 ? 'not-allowed' : 'pointer', opacity: stock === 0 ? 0.6 : 1 }}>
-          BUY NOW
+        <button className="buy" onClick={handleBuyNow} disabled={stock === 0 || isOwnProduct} style={{ cursor: (stock === 0 || isOwnProduct) ? 'not-allowed' : 'pointer', opacity: (stock === 0 || isOwnProduct) ? 0.6 : 1 }}>
+          {isOwnProduct ? 'CANNOT BUY OWN PRODUCT' : 'BUY NOW'}
         </button>
       </div>
  
