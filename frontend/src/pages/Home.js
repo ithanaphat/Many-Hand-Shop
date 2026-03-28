@@ -5,19 +5,23 @@ import Footer from '../components/layout/Footer';
 import ProductCard from '../components/product/ProductCard';
 import './Home.css'; // นำเข้าไฟล์ CSS
 
-const categories = [
-  { name: 'SPORT', icon: '⚽' },
-  { name: 'FURNITURE', icon: '🛋️' },
-  { name: 'FASHION', icon: '👗' },
-  { name: 'BOOK', icon: '📖' },
-  { name: 'ELECTRONICS', icon: '💻' },
-  { name: 'ALL', icon: '📱' },
-];
+const categoryIcons = {
+  sport: '⚽',
+  furniture: '🛋️',
+  fashion: '👗',
+  book: '📖',
+  electronics: '💻',
+  beauty: '💄',
+  'baby & kids': '🍼',
+  'pet supplies': '🐾',
+  all: '🛍️',
+};
 
 function Home({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [popularProducts, setPopularProducts] = useState([]); // top items for the popular section
+  const [popularProducts, setPopularProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const handleCatalogClick = (categoryName) => {
@@ -26,20 +30,34 @@ function Home({ isLoggedIn, onLogout }) {
   };
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/product/categories');
+        if (res.ok) {
+          const data = await res.json();
+          // append 'All' entry at the end
+          setCategories([
+            ...data,
+            { name: 'all', displayName: 'All' },
+          ]);
+        }
+      } catch (err) {
+        // fallback: show nothing, user can still browse
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
     const fetchProducts = async () => {
-      console.log('⏱️ fetching products from backend');
       try {
         const [productsResponse, popularResponse] = await Promise.all([
-          fetch('http://localhost:9000/api/product'),
-          fetch('http://localhost:9000/api/product/popular?limit=4'),
+          fetch('/api/product'),
+          fetch('/api/product/popular?limit=4'),
         ]);
-
-        console.log('🗂️ products status', productsResponse.status);
-        console.log('🗂️ popular status', popularResponse.status);
 
         if (productsResponse.ok) {
           const data = await productsResponse.json();
-          console.log('✅ got products', data.length, 'items');
           setProducts(data);
 
           if (popularResponse.ok) {
@@ -49,31 +67,12 @@ function Home({ isLoggedIn, onLogout }) {
             setPopularProducts(data.slice(0, 4));
           }
         } else {
-          console.warn('⚠️ backend returned non-OK status', productsResponse.status);
-          // Fallback mock data
-          const mock = [
-            { _id: 1, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=1" },
-            { _id: 2, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=2" },
-            { _id: 3, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=3" },
-            { _id: 4, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=4" },
-          ];
-          setProducts(mock);
-          setPopularProducts(mock.slice(0, 4));
+          setProducts([]);
+          setPopularProducts([]);
         }
       } catch (err) {
-        console.error('Error fetching products:', err);
-        setProducts([
-          { _id: 1, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=1" },
-          { _id: 2, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=2" },
-          { _id: 3, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=3" },
-          { _id: 4, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=4" },
-        ]);
-        setPopularProducts([
-          { _id: 1, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=1" },
-          { _id: 2, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=2" },
-          { _id: 3, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=3" },
-          { _id: 4, name: "item name", price: "99", sellerName: "Name", sellerImage: "https://i.pravatar.cc/150?u=4" },
-        ]);
+        setProducts([]);
+        setPopularProducts([]);
       } finally {
         setLoading(false);
       }
@@ -138,8 +137,8 @@ function Home({ isLoggedIn, onLogout }) {
                 className="catalog-item"
                 onClick={() => handleCatalogClick(cat.name)}
               >
-                <div className="catalog-icon">{cat.icon}</div>
-                <div className="catalog-name">{cat.name}</div>
+                <div className="catalog-icon">{categoryIcons[cat.name.toLowerCase()] || '🏷️'}</div>
+                <div className="catalog-name">{(cat.displayName || cat.name).toUpperCase()}</div>
               </div>
             ))}
           </div>

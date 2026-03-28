@@ -13,7 +13,6 @@ import SellerProfile from './pages/SellerProfile';
 import SellerBoard from './pages/SellerBoard';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
-import Search from './pages/Search';
 import OrderHistory from './pages/OrderHistory';
 
 function ScrollToTop() {
@@ -24,6 +23,12 @@ function ScrollToTop() {
   }, [pathname]);
 
   return null;
+}
+
+// Redirect old /search?q=xxx URLs to /products?q=xxx
+function SearchRedirect() {
+  const location = useLocation();
+  return <Navigate to={`/products${location.search}`} replace />;
 }
 
 
@@ -58,7 +63,7 @@ function App() {
         <Route path="/products" element={<AllProducts isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
         <Route path="/product/:productId" element={<ProductDetail isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
         <Route path="/seller/:sellerId" element={<SellerProfile isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
-        <Route path="/search" element={<Search isLoggedIn={isLoggedIn} onLogout={handleLogout} />} />
+        <Route path="/search" element={<SearchRedirect />} />
 
         {/* Auth routes — redirect to / if already logged in */}
         <Route

@@ -25,7 +25,7 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
 
   // ดึงสินค้าทั้งหมดครั้งเดียวตอน mount
   useEffect(() => {
-    fetch('http://localhost:9000/api/product')
+    fetch('/api/product')
       .then((r) => r.json())
       .then((data) => setAllProducts(Array.isArray(data) ? data : []))
       .catch(() => {});
@@ -62,14 +62,14 @@ function Header({ isLoggedIn = false, onSignIn, onRegister, onLogout }) {
     const q = searchValue.trim();
     if (q) {
       setShowDropdown(false);
-      navigate(`/search?q=${encodeURIComponent(q)}`);
+      navigate(`/products?q=${encodeURIComponent(q)}`);
     }
   };
 
   const handleSuggestionClick = (name) => {
     setSearchValue(name);
     setShowDropdown(false);
-    navigate(`/search?q=${encodeURIComponent(name)}`);
+    navigate(`/products?q=${encodeURIComponent(name)}`);
   };
 
   // อัปเดต cart count จาก localStorage
