@@ -28,6 +28,10 @@ router.get("/:id", async (req, res) => {
 
 // UPDATE user profile
 router.patch("/:id", async (req, res) => {
+    if (String(req.user._id) !== String(req.params.id)) {
+        return res.status(403).json({ message: "You can only edit your own profile" })
+    }
+
     const { username, email, phone, address, images, backgroundImage } = req.body
 
     try {
@@ -67,6 +71,10 @@ router.patch("/:id", async (req, res) => {
 
 // DELETE: ลบบัญชีผู้ใช้งาน (Delete Profile)
 router.delete('/:id', async (req, res) => {
+  if (String(req.user._id) !== String(req.params.id)) {
+    return res.status(403).json({ message: "You can only delete your own account" })
+  }
+
   try {
     const userId = req.params.id;
  

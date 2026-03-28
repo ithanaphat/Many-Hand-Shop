@@ -116,9 +116,11 @@ router.get("/seller/:sellerId/ratings", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
-    const { buyer, items, shippingInfo, shippingFee, totalPrice, paymentMethod } = req.body
+    // buyer is taken from the authenticated token, not from the request body
+    const buyer = req.user._id
+    const { items, shippingInfo, shippingFee, totalPrice, paymentMethod } = req.body
 
-    if (!buyer || !Array.isArray(items) || items.length === 0 || !shippingInfo || !paymentMethod) {
+    if (!Array.isArray(items) || items.length === 0 || !shippingInfo || !paymentMethod) {
         return res.status(400).json({ message: "Incomplete order payload" })
     }
 
@@ -205,11 +207,13 @@ router.post("/", async (req, res) => {
 })
 
 router.post("/:orderId/items/:itemId/rate", async (req, res) => {
-    const { buyerId, rating } = req.body
+    // buyerId comes from the verified token, not the request body
+    const buyerId = req.user._id
+    const { rating } = req.body
     const numericRating = Number(rating)
 
-    if (!buyerId || !Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5) {
-        return res.status(400).json({ message: "buyerId and rating 1-5 are required" })
+    if (!Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5) {
+        return res.status(400).json({ message: "rating 1-5 is required" })
     }
 
     try {

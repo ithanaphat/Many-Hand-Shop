@@ -17,7 +17,7 @@ function Search({ isLoggedIn, onLogout }) {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const res = await fetch('http://localhost:9000/api/product');
+        const res = await fetch('/api/product');
         if (res.ok) {
           const data = await res.json();
           setAllProducts(data);
@@ -65,7 +65,7 @@ function Search({ isLoggedIn, onLogout }) {
               Try different keywords or browse all products
             </p>
             <button
-              onClick={() => navigate(isLoggedIn ? '/home-user' : '/home')}
+              onClick={() => navigate('/')}
               style={{
                 marginTop: '24px',
                 padding: '10px 24px',

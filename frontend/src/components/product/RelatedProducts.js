@@ -12,15 +12,14 @@ const RelatedProducts = () => {
     if (imagePath.startsWith("http") || imagePath.startsWith("data:image")) {
       return imagePath;
     }
-    const baseUrl = "http://localhost:9000";
-    return `${baseUrl}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
+    return `${window.location.origin}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
   };
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         // ดึงข้อมูลจาก API เดียวกับหน้าหลักของคุณ
-        const response = await fetch("http://localhost:9000/api/product");
+        const response = await fetch("/api/product");
         
         if (!response.ok) {
           throw new Error(`API failed with status: ${response.status}`);

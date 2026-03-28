@@ -32,6 +32,9 @@ function Login({ onLoginSuccess }) {
         localStorage.setItem('mhs_user_address', data.user.address || '');
         localStorage.setItem('mhs_user_images', JSON.stringify(data.user.images || []));
         localStorage.setItem('mhs_user_rating', data.user.rating || 0);
+        if (data.token) {
+          localStorage.setItem('mhs_token', data.token);
+        }
       }
     } catch (error) {
       alert('Cannot connect to server');
@@ -41,7 +44,7 @@ function Login({ onLoginSuccess }) {
     if (onLoginSuccess) {
       onLoginSuccess();
     }
-    navigate('/home-user');
+    navigate('/');
   };
 
   return (

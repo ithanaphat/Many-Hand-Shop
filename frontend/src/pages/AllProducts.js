@@ -14,9 +14,14 @@ function AllProducts({ isLoggedIn, onLogout }) {
   const [displayCount, setDisplayCount] = useState(12);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
+  // read both ?category= and ?q= from URL
+  const params = new URLSearchParams(location.search);
+  const searchQuery = (params.get('q') || '').toLowerCase().trim();
+  const isSearchMode = searchQuery.length > 0;
+
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const categoryFromQuery = (params.get('category') || 'all').toLowerCase();
+    const p = new URLSearchParams(location.search);
+    const categoryFromQuery = (p.get('category') || 'all').toLowerCase();
     setSelectedCategory(categoryFromQuery);
     setDisplayCount(12);
   }, [location.search]);
@@ -24,10 +29,9 @@ function AllProducts({ isLoggedIn, onLogout }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:9000/api/product/categories');
+        const response = await fetch('/api/product/categories');
         if (response.ok) {
           const data = await response.json();
-          console.log('✅ got categories', data.length);
           setCategories(data);
         }
       } catch (err) {
@@ -40,16 +44,12 @@ function AllProducts({ isLoggedIn, onLogout }) {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      console.log('⏱️ fetching all products from backend');
       try {
-        const response = await fetch('http://localhost:9000/api/product');
-        console.log('🗂️ response status', response.status);
+        const response = await fetch('/api/product');
         if (response.ok) {
           const data = await response.json();
-          console.log('✅ got products', data.length, 'items');
           setProducts(data);
         } else {
-          console.warn('⚠️ backend returned non-OK status', response.status);
           setProducts([]);
         }
       } catch (err) {
@@ -67,14 +67,20 @@ function AllProducts({ isLoggedIn, onLogout }) {
     setDisplayCount((prev) => prev + 12);
   };
 
-  const filteredProducts = selectedCategory === 'all'
-    ? products
-    : products.filter((product) => {
-        const productCategory = typeof product.category === 'object'
-          ? product.category?.name
-          : product.category;
-        return (productCategory || '').toLowerCase() === selectedCategory;
-      });
+  const filteredProducts = products
+    .filter((product) => {
+      // category filter
+      if (selectedCategory === 'all') return true;
+      const productCategory = typeof product.category === 'object'
+        ? product.category?.name
+        : product.category;
+      return (productCategory || '').toLowerCase() === selectedCategory;
+    })
+    .filter((product) => {
+      // text search filter
+      if (!isSearchMode) return true;
+      return (product.name || '').toLowerCase().includes(searchQuery);
+    });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if ((a.stock ?? 0) === 0 && (b.stock ?? 0) > 0) return 1;
@@ -103,10 +109,21 @@ function AllProducts({ isLoggedIn, onLogout }) {
       
       <div className="all-products-container">
         <div className="products-header">
-          <h1>ALL PRODUCTS</h1>
-          <p className="product-count">
-            {loading ? 'Loading...' : `Showing ${visibleProducts.length} of ${filteredProducts.length} products`}
-          </p>
+          {isSearchMode ? (
+            <>
+              <h1>Search Results</h1>
+              <p className="product-count">
+                {loading ? 'Searching...' : `${filteredProducts.length} item${filteredProducts.length !== 1 ? 's' : ''} found for "${params.get('q')}"`}
+              </p>
+            </>
+          ) : (
+            <>
+              <h1>ALL PRODUCTS</h1>
+              <p className="product-count">
+                {loading ? 'Loading...' : `Showing ${visibleProducts.length} of ${filteredProducts.length} products`}
+              </p>
+            </>
+          )}
           <div className="products-toolbar">
             <div className="products-stats">
               <div className="products-stat-pill">
@@ -140,9 +157,28 @@ function AllProducts({ isLoggedIn, onLogout }) {
           <div className="loading-state">
             <p>Loading products...</p>
           </div>
-        ) : products.length === 0 ? (
-          <div className="empty-state">
-            <p>No products found</p>
+        ) : filteredProducts.length === 0 ? (
+          <div className="empty-state" style={{ textAlign: 'center', marginTop: '80px' }}>
+            <div style={{ fontSize: '64px', marginBottom: '16px' }}>🔍</div>
+            <h3 style={{ color: '#555', marginBottom: '8px' }}>
+              {isSearchMode ? 'No results found' : 'No products found'}
+            </h3>
+            <p style={{ color: '#aaa', fontSize: '14px' }}>
+              {isSearchMode ? 'Try different keywords or browse all products' : 'Check back later'}
+            </p>
+            {isSearchMode && (
+              <button
+                onClick={() => navigate('/products')}
+                style={{
+                  marginTop: '24px', padding: '10px 24px',
+                  backgroundColor: '#666C49', color: 'white',
+                  border: 'none', borderRadius: '8px',
+                  cursor: 'pointer', fontSize: '14px',
+                }}
+              >
+                Browse All Products
+              </button>
+            )}
           </div>
         ) : (
           <>

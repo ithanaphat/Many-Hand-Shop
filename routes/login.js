@@ -1,5 +1,6 @@
 const express = require("express")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 const router = express.Router()
 const {User} = require("../models/user.js")
 
@@ -32,9 +33,23 @@ router.post("/", async (req,res)=>{
             return res.status(401).json({ message: "Invalid credentials" })
         }
 
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRE || "7d" }
+        )
+
+        res.cookie("mhs_token", token, {
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        })
+
         res.status(200).json({
             message: "login success",
-            user: { // ข้อมูลที่ต้องการส่งกลับไปให้ frontend
+            token,
+            user: {
                 id: user._id,
                 _id: user._id,
                 username: user.username,
@@ -43,8 +58,8 @@ router.post("/", async (req,res)=>{
                 address: user.address || "",
                 images: user.images || [],
                 rating: user.rating || 0
-                }
-            })
+            }
+        })
     } catch (err){
         console.log(err)
         res.status(500).json({ message: "error" })
