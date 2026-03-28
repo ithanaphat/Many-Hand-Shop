@@ -309,7 +309,7 @@ function OrderHistory({ isLoggedIn, onLogout }) {
                                 ))}
                               </div>
                               <small>
-                                Seller rating now {Number(item.seller?.rating || 0).toFixed(1)} ({item.seller?.ratingCount || 0} reviews)
+                                Seller rating now {Number(item.seller?.rating || 0) > 0 ? (Number.isInteger(Number(item.seller?.rating || 0)) ? String(Number(item.seller?.rating || 0)) : Number(item.seller?.rating || 0).toFixed(1)) : '0/0'} ({item.seller?.ratingCount || 0} reviews)
                               </small>
                             </>
                           ) : (

@@ -170,6 +170,12 @@
   font-weight: 700;
 }
 
+.rating-review-count {
+  color: #6c7561;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .rating-badge-button {
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
@@ -189,6 +195,45 @@
 .rating-badge-button:focus-visible {
   outline: 2px solid #7a8a5f;
   outline-offset: 2px;
+}
+
+.pd-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f4ec;
+  border: 1px solid #dfe6d3;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pd-rating-label {
+  color: #4f5f3a;
+  font-weight: 700;
+}
+
+.pd-rating-stars {
+  display: inline-flex;
+  gap: 1px;
+  line-height: 1;
+}
+
+.pd-rating-number {
+  color: #4f5f3a;
+  font-weight: 700;
+}
+
+.pd-reviews {
+  font-size: 13px;
+  color: #888;
 }
 
 /* Action Buttons */

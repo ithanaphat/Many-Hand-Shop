@@ -15,7 +15,7 @@ function SellerProfile({ isLoggedIn, onLogout }) {
     if (!value) return '-';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '-';
-    return date.toLocaleDateString('en-GB', {
+    return date.toLocaleDateString('th-TH', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -93,10 +93,32 @@ function SellerProfile({ isLoggedIn, onLogout }) {
     );
   }
  
-  const ratingValue = Math.round(seller.rating);
+  const ratingValue = Number(seller.rating || 0);
+  const ratingDisplay = ratingValue > 0
+    ? (Number.isInteger(ratingValue) ? String(ratingValue) : ratingValue.toFixed(1))
+    : '0/0';
+  const fullStars = Math.floor(ratingValue);
+  const partialStar = ratingValue % 1;
   const avatarUrl = seller.images && seller.images[0]
     ? seller.images[0]
     : `https://i.pravatar.cc/150?u=${seller.username}`;
+
+  const getStarStyle = (index) => {
+    if (index < fullStars) {
+      return { color: '#f5b301' };
+    }
+
+    if (index === fullStars && partialStar > 0) {
+      return {
+        background: `linear-gradient(to right, #f5b301 ${partialStar * 100}%, #c8cfc0 ${partialStar * 100}%)`,
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+      };
+    }
+
+    return { color: '#c8cfc0' };
+  };
  
   // Helper function to extract province from address string
   const getProvince = (addressStr) => {
@@ -114,16 +136,14 @@ function SellerProfile({ isLoggedIn, onLogout }) {
     setIsLoadingRatings(true);
  
     try {
-      const response = await fetch(`/api/order/seller/${sellerId}/ratings`);
+      const response = await fetch(`${API_BASE_URL}/api/order/seller/${sellerId}/ratings`);
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        alert(data.message || 'Failed to load rating details');
         setRatingDetails([]);
         return;
       }
       setRatingDetails(Array.isArray(data.ratings) ? data.ratings : []);
     } catch (error) {
-      alert('Cannot connect to server');
       setRatingDetails([]);
     } finally {
       setIsLoadingRatings(false);
@@ -156,21 +176,22 @@ function SellerProfile({ isLoggedIn, onLogout }) {
             <p className="user-id">Seller</p>
           </div>
           <div className="profile-badges">
-            <button
-              type="button"
-              className="profile-badge rating-badge rating-badge-button"
-              onClick={openRatingDetails}
-            >
-              <span className="rating-label">Rating</span>
-              <span className="rating-stars" aria-label={`Rating ${ratingValue} out of ${maxRating}`}>
-                {Array.from({ length: maxRating }).map((_, index) => (
-                  <span key={index} className={index < ratingValue ? 'star-filled' : 'star-empty'}>
-                    ★
-                  </span>
-                ))}
+            <div className="pd-rating">
+              <span
+                className="pd-rating-badge"
+                onClick={openRatingDetails}
+                style={{ cursor: 'pointer' }}
+                title="View rating details"
+              >
+                <span className="pd-rating-label">Rating</span>
+                <span className="pd-rating-stars" aria-label={`Rating ${ratingValue || 0} out of ${maxRating}`}>
+                  {Array.from({ length: maxRating }).map((_, index) => (
+                    <span key={index} style={getStarStyle(index)}>★</span>
+                  ))}
+                </span>
+                <span className="pd-rating-number">{ratingValue > 0 ? `${ratingDisplay}/${maxRating}` : ratingDisplay}</span>
               </span>
-              <span className="rating-number">{ratingValue}/{maxRating}</span>
-            </button>
+            </div>
           </div>
         </div>
  
@@ -219,51 +240,62 @@ function SellerProfile({ isLoggedIn, onLogout }) {
       </div>
  
       {isRatingModalOpen && (
-        <div className="profile-modal-backdrop" onClick={closeRatingModal}>
-          <div className="profile-modal rating-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="profile-modal-header">
-              <h3>Rating Details ({ratingDetails.length})</h3>
-              <button className="profile-modal-close" onClick={closeRatingModal}>
-                <i className='bx bx-x'></i>
-              </button>
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={closeRatingModal}
+        >
+          <div
+            style={{ background: '#fff', borderRadius: '16px', padding: '28px 24px', minWidth: '320px', maxWidth: '480px', width: '90%', maxHeight: '80vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.18)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>Seller Ratings</h3>
+              <button onClick={closeRatingModal} style={{ background: 'none', border: 'none', fontSize: '22px', cursor: 'pointer', color: '#666', lineHeight: 1 }}>✕</button>
             </div>
- 
-            <div className="profile-modal-body rating-modal-body">
-              {isLoadingRatings ? (
-                <p className="rating-empty">Loading ratings...</p>
-              ) : ratingDetails.length === 0 ? (
-                <p className="rating-empty">No ratings yet</p>
-              ) : (
-                <div className="rating-list">
-                  {ratingDetails.map((entry) => {
-                    const reviewerName = entry.reviewer?.username || 'Unknown user';
-                    const productName = entry.product?.name || 'Unknown product';
-                    const productImage = Array.isArray(entry.product?.images) && entry.product.images[0]
-                      ? entry.product.images[0]
-                      : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200';
- 
-                    return (
-                      <div className="rating-card" key={entry.orderItemId || `${entry.orderId}-${productName}`}>
-                        <img className="rating-card-image" src={productImage} alt={productName} />
-                        <div className="rating-card-content">
-                          <p className="rating-card-line"><strong>Reviewer:</strong> {reviewerName}</p>
-                          <p className="rating-card-line"><strong>Product:</strong> {productName}</p>
-                          <p className="rating-card-line rating-stars-line" aria-label={`Rating ${entry.rating} out of ${maxRating}`}>
-                            {Array.from({ length: maxRating }).map((_, index) => (
-                              <span key={`${entry.orderItemId || entry.orderId}-${index}`} className={index < Number(entry.rating || 0) ? 'star-filled' : 'star-empty'}>
-                                ★
-                              </span>
-                            ))}
-                            <span className="rating-number-inline">{Number(entry.rating || 0)}/{maxRating}</span>
-                          </p>
-                          <p className="rating-card-line"><strong>Date:</strong> {formatRatingDate(entry.ratedAt)}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', padding: '12px', background: '#f9f9f9', borderRadius: '10px' }}>
+              <span style={{ fontSize: '32px', fontWeight: 700, color: '#f5b301' }}>{ratingValue > 0 ? ratingDisplay : '0'}</span>
+              <div>
+                <div style={{ display: 'flex', gap: '2px' }}>
+                  {Array.from({ length: maxRating }).map((_, i) => (
+                    <span key={i} style={{ fontSize: '18px', ...getStarStyle(i) }}>★</span>
+                  ))}
+                </div>
+                <span style={{ fontSize: '13px', color: '#888' }}>{Number(seller.ratingCount || 0)} {Number(seller.ratingCount || 0) === 1 ? 'review' : 'reviews'}</span>
+              </div>
+            </div>
+            {isLoadingRatings ? (
+              <p style={{ textAlign: 'center', color: '#888', padding: '20px 0' }}>Loading...</p>
+            ) : ratingDetails.length === 0 ? (
+              <p style={{ textAlign: 'center', color: '#888', padding: '20px 0' }}>No reviews yet</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {ratingDetails.map((entry) => (
+                  <div key={entry.orderItemId || `${entry.orderId}-${entry.product?.name || 'product'}`} style={{ padding: '12px', border: '1px solid #eee', borderRadius: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                      <img
+                        src={entry.reviewer?.images?.[0] || `https://i.pravatar.cc/40?u=${entry.reviewer?._id}`}
+                        alt={entry.reviewer?.username || 'Anonymous'}
+                        style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }}
+                      />
+                      <div>
+                        <p style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>{entry.reviewer?.username || 'Anonymous'}</p>
+                        <div style={{ display: 'flex', gap: '1px' }}>
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <span key={i} style={{ fontSize: '14px', color: i < Number(entry.rating || 0) ? '#f5b301' : '#ddd' }}>★</span>
+                          ))}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                    </div>
+                    {entry.product?.name && (
+                      <p style={{ margin: 0, fontSize: '12px', color: '#888' }}>Product: {entry.product.name}</p>
+                    )}
+                    {entry.ratedAt && (
+                      <p style={{ margin: 0, fontSize: '12px', color: '#aaa' }}>{formatRatingDate(entry.ratedAt)}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
