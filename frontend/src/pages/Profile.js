@@ -107,7 +107,7 @@ function Profile({ isLoggedIn, onLogout }) {
           phone: data.phone || '',
           address: data.address || '',
           images: data.images || [],
-          coverImage: data.coverImage || '',
+          backgroundImage: data.backgroundImage || '',
           rating: data.rating || 0,
           ratingCount: data.ratingCount || 0
         });
@@ -257,7 +257,7 @@ function Profile({ isLoggedIn, onLogout }) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          coverImage: uploadData.url
+          backgroundImage: uploadData.url
         }),
       });
  
@@ -269,7 +269,7 @@ function Profile({ isLoggedIn, onLogout }) {
  
       const updatedProfile = {
         ...profile,
-        coverImage: uploadData.url
+        backgroundImage: uploadData.url
       };
       setProfile(updatedProfile);
       setCoverFile(null);
@@ -375,6 +375,7 @@ function Profile({ isLoggedIn, onLogout }) {
           phone: data.phone || payload.phone,
           address: data.address || payload.address,
           images: data.images || profile.images,
+          backgroundImage: data.backgroundImage || profile.backgroundImage,
           rating: data.rating || profile.rating,
           ratingCount: data.ratingCount || profile.ratingCount,
         };
@@ -432,7 +433,7 @@ function Profile({ isLoggedIn, onLogout }) {
       <Header isLoggedIn={isLoggedIn} onLogout={onLogout} />
  
       {/* 1. Purple Banner Area */}
-      <div className="banner-container" style={{ backgroundImage: `url('${previewCover || profile.coverImage || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}')`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+      <div className="banner-container" style={{ backgroundImage: `url('${previewCover || profile.backgroundImage || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}')`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
         <button
           type="button"
           onClick={() => document.getElementById('cover-input').click()}

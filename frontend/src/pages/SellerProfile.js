@@ -54,7 +54,7 @@ function SellerProfile({ isLoggedIn, onLogout }) {
             phone: data.phone || '',
             address: data.address || '',
             images: data.images || [],
-            coverImage: data.coverImage || '',
+            backgroundImage: data.backgroundImage || '',
             rating: data.rating || 0,
             ratingCount: data.ratingCount || 0,
           });
@@ -138,7 +138,7 @@ function SellerProfile({ isLoggedIn, onLogout }) {
       <Header isLoggedIn={isLoggedIn} onSignIn={handleSignIn} onRegister={handleRegister} onLogout={onLogout} />
  
       {/* Banner */}
-      <div className="banner-container" style={{ backgroundImage: `url('${seller.coverImage || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="banner-container" style={{ backgroundImage: `url('${seller.backgroundImage || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="avatar-wrapper">
           <div
             className="avatar-overlay"
