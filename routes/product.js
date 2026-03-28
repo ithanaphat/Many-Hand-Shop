@@ -287,7 +287,10 @@ router.post("/Addproduct", async (req,res)=>{
             seller: sellerId, 
             category: categoryId,
         })
-        res.status(201).json({message:"สำเร็จ", product: createdProduct})
+        const populatedProduct = await Product.findById(createdProduct._id)
+            .populate('seller', 'username images rating ratingCount')
+            .populate('category', 'name')
+        res.status(201).json({message:"สำเร็จ", product: populatedProduct})
     }catch(err){
         console.log("FULL ERROR:", err)
         console.log("ERRORS:", err.errors)
