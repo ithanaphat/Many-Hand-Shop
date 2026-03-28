@@ -331,6 +331,36 @@ function Profile({ isLoggedIn, onLogout }) {
       setIsSaving(false);
     }
   };
+
+  const handleDeleteAccount = async () => {
+    // 1. เด้งหน้าต่างถามเพื่อยืนยันการลบ
+    const isConfirmed = window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีผู้ใช้นี้?\nข้อมูลทั้งหมดจะถูกลบและไม่สามารถกู้คืนได้");
+   
+    // 2. ถ้าผู้ใช้กด 'Cancel' (ยกเลิก) ให้หยุดการทำงานทันที
+    if (!isConfirmed) {
+      return;
+    }
+ 
+    // 3. ถ้าผู้ใช้กด 'OK' ให้ดำเนินการเรียก API เพื่อลบข้อมูล
+    const userId = localStorage.getItem('mhs_user_id');
+    try {
+      const response = await fetch(`/api/user/${userId}`, {
+        method: 'DELETE',
+      });
+ 
+      if (response.ok) {
+        alert('ลบบัญชีผู้ใช้สำเร็จ');
+        onLogout(); // ทำการล็อกเอาท์
+        navigate('/'); // เด้งกลับไปหน้าแรก
+      } else {
+        const data = await response.json().catch(() => ({}));
+        alert(data.message || 'ไม่สามารถลบบัญชีได้');
+      }
+    } catch (error) {
+      alert('Cannot connect to server');
+      console.error(error);
+    }
+  };
  
   return (
     <div className="profile-page">
@@ -594,13 +624,37 @@ function Profile({ isLoggedIn, onLogout }) {
               </div>
             </div>
  
-            <div className="profile-modal-footer">
-              <button className="profile-btn-cancel" onClick={closeEdit}>
-                Cancel
+            <div className="profile-modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '16px 20px' }}>
+              
+              {/* ปุ่ม Delete Account ฝั่งซ้าย */}
+              <button 
+                type="button" 
+                onClick={handleDeleteAccount}
+                style={{
+                  backgroundColor: '#a91e2c', 
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 16px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                }}
+              >
+                ลบบัญชี (Delete Account)
               </button>
-              <button className="profile-btn-save" onClick={saveEdit} disabled={isSaving}>
-                {isSaving ? 'Saving...' : 'Save'}
-              </button>
+
+              {/* กลุ่มปุ่ม Cancel และ Save ฝั่งขวา */}
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button className="profile-btn-cancel" onClick={closeEdit}>
+                  Cancel
+                </button>
+                <button className="profile-btn-save" onClick={saveEdit} disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+              
             </div>
           </div>
         </div>
