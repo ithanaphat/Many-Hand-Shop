@@ -82,6 +82,14 @@ function Home({ isLoggedIn, onLogout }) {
     fetchProducts();
   }, []);
 
+  const sortedProducts = React.useMemo(() => {
+    return [...products].sort((a, b) => {
+      if ((a.stock ?? 0) === 0 && (b.stock ?? 0) > 0) return 1;
+      if ((a.stock ?? 0) > 0 && (b.stock ?? 0) === 0) return -1;
+      return 0; // 👈 ที่เหลือ "ไม่เรียง"
+    });
+  }, [products]);
+
   return (
     <div className="home-page">
       <Header 
@@ -142,7 +150,7 @@ function Home({ isLoggedIn, onLogout }) {
           {loading ? (
             <p>Loading products...</p>
           ) : (
-            products.map((product) => (
+            sortedProducts.map((product) => (
               <ProductCard 
                 key={product._id}
                 id={product._id}

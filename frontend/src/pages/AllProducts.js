@@ -76,7 +76,13 @@ function AllProducts({ isLoggedIn, onLogout }) {
         return (productCategory || '').toLowerCase() === selectedCategory;
       });
 
-  const visibleProducts = filteredProducts.slice(0, displayCount);
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if ((a.stock ?? 0) === 0 && (b.stock ?? 0) > 0) return 1;
+    if ((a.stock ?? 0) > 0 && (b.stock ?? 0) === 0) return -1;
+    return 0;
+  });
+
+  const visibleProducts = sortedProducts.slice(0, displayCount);
   const activeCategoryLabel = selectedCategory === 'all'
     ? 'ALL CATALOG'
     : selectedCategory.toUpperCase();
