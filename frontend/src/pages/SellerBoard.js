@@ -801,20 +801,6 @@ function SellerBoard({ isLoggedIn, onLogout }) {
                   />
                 </div>
               </div>
- 
-              <div className="sb-form-row">
-                <label>Status</label>
-                <select
-                  name="status"
-                  value={addForm.status}
-                  onChange={handleAddFormChange}
-                  className="sb-input sb-select"
-                >
-                  <option value="available">Available</option>
-                  <option value="sold">Sold</option>
-                  <option value="hidden">Hidden</option>
-                </select>
-              </div>
             </div>
  
             <div className="sb-modal-footer">
