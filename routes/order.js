@@ -14,6 +14,14 @@ const formatOrder = (order) => ({
     paymentMethod: order.paymentMethod,
     createdAt: order.createdAt,
     items: order.items.map((item) => ({
+        productSnapshot: item.productSnapshot
+            ? {
+                productId: item.productSnapshot.productId,
+                name: item.productSnapshot.name,
+                images: item.productSnapshot.images || [],
+                price: item.productSnapshot.price,
+            }
+            : null,
         _id: item._id,
         quantity: item.quantity,
         price: item.price,
@@ -28,8 +36,16 @@ const formatOrder = (order) => ({
                 _id: item.product._id,
                 name: item.product.name,
                 images: item.product.images || [],
+                isHistorical: false,
             }
-            : null,
+            : item.productSnapshot
+                ? {
+                    _id: item.productSnapshot.productId || null,
+                    name: item.productSnapshot.name,
+                    images: item.productSnapshot.images || [],
+                    isHistorical: true,
+                }
+                : null,
         seller: item.seller
             ? {
                 _id: item.seller._id,
@@ -116,11 +132,9 @@ router.get("/seller/:sellerId/ratings", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
-    // buyer is taken from the authenticated token, not from the request body
-    const buyer = req.user._id
-    const { items, shippingInfo, shippingFee, totalPrice, paymentMethod } = req.body
+    const { buyer, items, shippingInfo, shippingFee, totalPrice, paymentMethod } = req.body
 
-    if (!Array.isArray(items) || items.length === 0 || !shippingInfo || !paymentMethod) {
+    if (!buyer || !Array.isArray(items) || items.length === 0 || !shippingInfo || !paymentMethod) {
         return res.status(400).json({ message: "Incomplete order payload" })
     }
 
@@ -157,6 +171,12 @@ router.post("/", async (req, res) => {
 
             normalizedItems.push({
                 product: product._id,
+                productSnapshot: {
+                    productId: product._id,
+                    name: product.name,
+                    images: Array.isArray(product.images) ? product.images : [],
+                    price: roundToTwo(product.price),
+                },
                 seller: product.seller._id,
                 quantity,
                 price: roundToTwo(item.price ?? product.price),
@@ -207,13 +227,11 @@ router.post("/", async (req, res) => {
 })
 
 router.post("/:orderId/items/:itemId/rate", async (req, res) => {
-    // buyerId comes from the verified token, not the request body
-    const buyerId = req.user._id
-    const { rating } = req.body
+    const { buyerId, rating } = req.body
     const numericRating = Number(rating)
 
-    if (!Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5) {
-        return res.status(400).json({ message: "rating 1-5 is required" })
+    if (!buyerId || !Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5) {
+        return res.status(400).json({ message: "buyerId and rating 1-5 are required" })
     }
 
     try {
