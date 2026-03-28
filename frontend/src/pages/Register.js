@@ -19,6 +19,11 @@ function Register() {
       return;
     }
 
+    if (password.length < 8) {
+      alert('รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัว');
+      return;
+    }
+
     try {
       const response = await fetch('/api/register', {
         method: 'POST',
