@@ -62,4 +62,26 @@ router.patch("/:id", async (req, res) => {
     }
 })
 
+// DELETE: ลบบัญชีผู้ใช้งาน (Delete Profile)
+router.delete('/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+ 
+    // ค้นหาและลบข้อมูลผู้ใช้จากฐานข้อมูล
+    const deletedUser = await User.findByIdAndDelete(userId);
+ 
+    // เช็คว่ามี User นี้ในระบบให้ลบหรือไม่
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'ไม่พบผู้ใช้งานนี้ในระบบ' });
+    }
+ 
+    // ส่งข้อความกลับไปที่ Frontend ว่าลบสำเร็จ
+    res.status(200).json({ message: 'ลบบัญชีผู้ใช้สำเร็จ' });
+   
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาดจากฝั่งเซิร์ฟเวอร์' });
+  }
+});
+
 module.exports = router
